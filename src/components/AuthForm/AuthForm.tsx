@@ -1,24 +1,45 @@
 import { useState } from "react";
-import { Box, Button, Link, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, Link, TextField, Typography } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
+import { login } from "../../services/student.service";
 
-interface AuthFormProps {
+interface IAuthForm {
   mode: "login" | "register";
 }
 
-export default function AuthForm({ mode }: AuthFormProps) {
+export default function AuthForm({ mode }: IAuthForm) {
   const isLogin = mode === "login";
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [church, setChurch] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+
+    if (!email.trim() || !password.trim()) {
+      setError("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
     if (isLogin) {
-      console.log("Login:", email, password);
+      try {
+        const res = await login(email, password);
+        if (res) {
+          navigate("/");
+        }
+      } catch (error) {
+        setError("Erro ao fazer login. Verifique suas credenciais.");
+        console.error(error);
+      }
     } else {
-      console.log("Register:", username, email, password);
+      console.log("Register:", username, email, password, church);
     }
   };
 
@@ -36,52 +57,43 @@ export default function AuthForm({ mode }: AuthFormProps) {
       }}
     >
       <Box sx={{ minWidth: { xs: "240px", sm: "280px" } }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: "1em",
-          }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Box component="img" src={imLogo} alt="Logo" width="42px" />
         </Box>
+
+        {error && (
+          <Typography color="error" textAlign="center" mb={2}>
+            {error}
+          </Typography>
+        )}
 
         <form
           onSubmit={handleSubmit}
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 22,
-            justifyItems: "center",
+            gap: 24,
           }}
         >
           {!isLogin && (
-            <TextField
-              id="username"
-              label="Nome"
-              variant="standard"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              sx={{
-                "& .MuiInputLabel-root": {
-                  color: "#1F1F1F",
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  fontWeight: "bold",
-                  color: "#ED3237",
-                },
-                color: "#ED3237",
-                "& .MuiInput-underline:before": {
-                  borderBottomColor: "#1F1F1F",
-                },
-                "& .MuiInput-underline:hover:before": {
-                  borderBottomColor: "#ED3237 !important",
-                },
-                "& .MuiInput-underline:after": {
-                  borderBottomColor: "#ED3237",
-                },
-              }}
-            />
+            <>
+              <TextField
+                id="username"
+                label="Nome"
+                variant="standard"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                sx={inputStyle}
+              />
+              <TextField
+                id="church"
+                label="Igreja"
+                variant="standard"
+                value={church}
+                onChange={(e) => setChurch(e.target.value)}
+                sx={inputStyle}
+              />
+            </>
           )}
           <TextField
             id="email"
@@ -89,25 +101,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             variant="standard"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            sx={{
-              "& .MuiInputLabel-root": {
-                color: "#1F1F1F",
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                fontWeight: "bold",
-                color: "#ED3237",
-              },
-              color: "#ED3237",
-              "& .MuiInput-underline:before": {
-                borderBottomColor: "#1F1F1F",
-              },
-              "& .MuiInput-underline:hover:before": {
-                borderBottomColor: "#ED3237 !important",
-              },
-              "& .MuiInput-underline:after": {
-                borderBottomColor: "#ED3237",
-              },
-            }}
+            sx={inputStyle}
           />
           <TextField
             id="password"
@@ -116,25 +110,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             variant="standard"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            sx={{
-              "& .MuiInputLabel-root": {
-                color: "#1F1F1F",
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                fontWeight: "bold",
-                color: "#ED3237",
-              },
-              color: "#ED3237",
-              "& .MuiInput-underline:before": {
-                borderBottomColor: "#1F1F1F",
-              },
-              "& .MuiInput-underline:hover:before": {
-                borderBottomColor: "#ED3237 !important",
-              },
-              "& .MuiInput-underline:after": {
-                borderBottomColor: "#ED3237",
-              },
-            }}
+            sx={inputStyle}
           />
           <Button
             type="submit"
@@ -142,29 +118,23 @@ export default function AuthForm({ mode }: AuthFormProps) {
               backgroundColor: "#BB1626",
               fontWeight: "bold",
               color: "white",
-              marginTop: 2,
+              mt: 2,
             }}
           >
             {isLogin ? "Entrar" : "Registrar"}
           </Button>
         </form>
 
-        <Box
-          sx={{
-            textAlign: "center",
-            marginTop: 4,
-            textDecoration: "underline",
-          }}
-        >
+        <Box sx={{ textAlign: "center", mt: 4 }}>
           <Link
             href={isLogin ? "/register" : "/login"}
             sx={{
               fontSize: "14px",
               color: "#6b7280",
+              textDecoration: "underline",
               cursor: "pointer",
               "&:hover": {
                 color: "#ED3237",
-                textDecoration: "underline",
               },
             }}
           >
@@ -175,3 +145,16 @@ export default function AuthForm({ mode }: AuthFormProps) {
     </Box>
   );
 }
+
+const inputStyle = {
+  "& .MuiInputLabel-root": { color: "#1F1F1F" },
+  "& .MuiInputLabel-root.Mui-focused": {
+    fontWeight: "bold",
+    color: "#ED3237",
+  },
+  "& .MuiInput-underline:before": { borderBottomColor: "#1F1F1F" },
+  "& .MuiInput-underline:hover:before": {
+    borderBottomColor: "#ED3237 !important",
+  },
+  "& .MuiInput-underline:after": { borderBottomColor: "#ED3237" },
+};

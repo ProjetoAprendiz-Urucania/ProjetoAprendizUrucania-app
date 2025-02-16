@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import AuthForm from "../components/AuthForm/AuthForm";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
@@ -7,9 +8,24 @@ export function AuthPage() {
   const location = useLocation();
   const mode = location.pathname.includes("register") ? "register" : "login";
 
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = logoIgreja;
+    img.onload = () => setIsImageLoaded(true);
+
+    const handlePageLoad = () => setIsPageLoaded(true);
+    window.addEventListener("load", handlePageLoad);
+
+    return () => window.removeEventListener("load", handlePageLoad);
+  }, []);
+
+  if (!isPageLoaded || !isImageLoaded) return null;
+
   return (
     <Box
-      id="background"
       sx={{
         position: "fixed",
         top: 0,
@@ -34,7 +50,6 @@ export function AuthPage() {
           component="img"
           src={logoIgreja}
           alt="ICM Logo"
-          loading="lazy"
           sx={{
             width: { xs: "16em" },
             marginBottom: { xs: -8, sm: -10 },
