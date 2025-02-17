@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Link, TextField, Typography } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import { login } from "../../services/student.service";
+import { login, createStudent } from "../../services/student.service";
 
 interface IAuthForm {
   mode: "login" | "register";
@@ -11,7 +11,7 @@ interface IAuthForm {
 export default function AuthForm({ mode }: IAuthForm) {
   const isLogin = mode === "login";
 
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [church, setChurch] = useState("");
@@ -24,22 +24,40 @@ export default function AuthForm({ mode }: IAuthForm) {
     setError(null);
 
     if (!email.trim() || !password.trim()) {
-      setError("Preencha todos os campos obrigatórios.");
+      setError("Preencha todos os campos obrigatórios");
       return;
     }
 
-    if (isLogin) {
-      try {
-        const res = await login(email, password);
-        if (res) {
-          navigate("/");
-        }
-      } catch (error) {
-        setError("Erro ao fazer login. Verifique suas credenciais.");
-        console.error(error);
+    if (!isLogin && !name.trim()) {
+      setError("Preencha todos os campos obrigatórios");
+      return;
+    }
+
+    try {
+      let res;
+      if (isLogin) {
+        res = await login(email, password);
+      } else {
+        const newStudent = { name, email, password, church };
+        res = await createStudent(newStudent);
       }
-    } else {
-      console.log("Register:", username, email, password, church);
+
+      console.log(res.status);
+
+      if (res?.status && res.status >= 200 && res.status < 300) {
+        navigate("/");
+      } else if (res?.error) {
+        setError(res.error);
+      } else {
+        setError("Erro desconhecido");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Erro inesperado. Tente novamente.");
+      }
+      console.error(error);
     }
   };
 
@@ -78,11 +96,11 @@ export default function AuthForm({ mode }: IAuthForm) {
           {!isLogin && (
             <>
               <TextField
-                id="username"
+                id="name"
                 label="Nome"
                 variant="standard"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 sx={inputStyle}
               />
               <TextField

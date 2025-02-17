@@ -1,5 +1,6 @@
 export interface IStudentData {
-    username: string;
+    name: string;
     email: string;
     password: string;
+    church?: string;
 }
