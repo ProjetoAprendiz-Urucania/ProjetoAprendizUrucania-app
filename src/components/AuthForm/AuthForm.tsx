@@ -45,7 +45,7 @@ export default function AuthForm({ mode }: IAuthForm) {
       console.log(res.status);
 
       if (res?.status && res.status >= 200 && res.status < 300) {
-        navigate("/");
+        navigate("/classes");
       } else if (res?.error) {
         setError(res.error);
       } else {

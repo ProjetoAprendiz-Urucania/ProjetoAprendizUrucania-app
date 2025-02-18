@@ -24,7 +24,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
     <Card
       sx={{
         display: "flex",
-        marginY: { sx: 2, sm: 3 },
+        marginY: { xs: 2, sm: 3, md: 4 },
         borderRadius: 2,
         "&:hover": { transform: "scale(1.01)" },
         cursor: "pointer",

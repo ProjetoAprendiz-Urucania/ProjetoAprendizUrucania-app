@@ -39,7 +39,14 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#BB1626" }}>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "#BB1626",
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+      }}
+    >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Tooltip title="Open settings">
