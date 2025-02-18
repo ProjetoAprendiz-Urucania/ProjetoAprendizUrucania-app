@@ -12,7 +12,7 @@ import { Box } from "@mui/material";
 import menu from "../../assets/img/Navbar/menu.png";
 
 const pages = ["Turmas", "Aulas", "Materiais Teóricos"];
-const settings = ["Profile", "Logout"];
+const settings = ["Perfil", "Sair"];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(

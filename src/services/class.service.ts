@@ -1,0 +1,74 @@
+import { IClass } from "../interfaces/class/IClass";
+
+const API_URL = import.meta.env.VITE_API_URL as string;
+
+async function handleResponse(response: Response) {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const errorMessage =
+      errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
+    throw new Error(errorMessage);
+  }
+
+  return response.json(); 
+}
+
+export async function createClass(classData: IClass) {
+  try {
+    const response = await fetch(`${API_URL}/classes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(classData),
+    });
+    return await handleResponse(response);
+  } catch (error) {
+    console.error("Erro ao criar classe:", error);
+    throw error;
+  }
+}
+
+export async function deleteClass(id: string) {
+  try {
+    const response = await fetch(`${API_URL}/classes/${id}`, { method: "DELETE" });
+    return await handleResponse(response);
+  } catch (error) {
+    console.error("Erro ao deletar classe:", error);
+    throw error;
+  }
+}
+
+export async function getClasses() {
+  try {
+    const response = await fetch(`${API_URL}/classes`);
+    
+    const classes = await handleResponse(response)
+    return classes;
+  } catch (error) {
+    console.error("Erro ao obter classes:", error);
+    throw error;
+  }
+}
+
+export async function getClassById(id: string) {
+  try {
+    const response = await fetch(`${API_URL}/classes/${id}`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error("Erro ao obter classe:", error);
+    throw error;
+  }
+}
+
+export async function updateClass(id: string, classData: IClass) {
+  try {
+    const response = await fetch(`${API_URL}/classes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(classData),
+    });
+    return await handleResponse(response);
+  } catch (error) {
+    console.error("Erro ao atualizar classe:", error);
+    throw error;
+  }
+}

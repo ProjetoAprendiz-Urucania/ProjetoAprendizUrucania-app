@@ -2,6 +2,8 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import { AuthPage } from "./Pages/AuthPage";
+import { ClassPage } from "./Pages/ClassPage";
+import { Container } from "@mui/material";
 
 function App() {
   const location = useLocation();
@@ -12,10 +14,13 @@ function App() {
   return (
     <>
       {!isLoginPage && !isRegisterPage && <Navbar />}
-      <Routes>
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<AuthPage />} />
-      </Routes>
+      <Container maxWidth="xl">
+        <Routes>
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/classes" element={<ClassPage />} />
+        </Routes>
+      </Container>
     </>
   );
 }
