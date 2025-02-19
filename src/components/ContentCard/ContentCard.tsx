@@ -5,7 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 
 import Typography from "@mui/material/Typography";
 
-import defaultCardImage from "../../assets/img/defaultCardImage.png";
+import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -13,10 +13,6 @@ import { useState } from "react";
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const [imageSrc, setImageSrc] = useState(coverImage || defaultCardImage);
   const navigate = useNavigate();
-  console.log("id", id);
-  console.log("name", name);
-  console.log("teacherInfo", teacherInfo);
-  console.log("coverImage", coverImage);
 
   const handleOpenLessons = (id: string) => {
     navigate(`/classes/${id}`);
@@ -38,18 +34,20 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          maxWidth: { xs: 100, sm: 120, md: 130 },
+          minWidth: "116px",
           overflow: "hidden",
         }}
       >
         <CardMedia
           component="img"
           sx={{
+            width: "76px",
+            height: "58px",
+            aspectRatio: 4 / 3,
             objectFit: "cover",
-            maxWidth: "60%",
-            minHeight: "56px",
             borderRadius: 1,
-            filter: "drop-shadow(0.8px 0.8px 0.8px rgba(0, 0, 0, 0.7))",
+            border: "1px outset whitesmoke",
+            filter: "drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))",
           }}
           image={imageSrc}
           alt="Live from space album cover"

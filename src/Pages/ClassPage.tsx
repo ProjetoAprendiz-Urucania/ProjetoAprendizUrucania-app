@@ -16,8 +16,6 @@ export function ClassPage() {
     fetchClasses();
   }, []);
 
-  console.log("Classes:", classes);
-
   return (
     <>
       <SearchBar />
