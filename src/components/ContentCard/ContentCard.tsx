@@ -83,7 +83,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
             sx={{
               color: "text.secondary",
               fontSize: { xs: "12px", md: "14px", lg: "16px" },
-              maxWidth: { xs: "180px", sm: "380px", md: "500px", lg: "540px" },
+              maxWidth: { xs: "140px", sm: "380px", md: "500px", lg: "540px" },
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",

@@ -68,7 +68,6 @@ export default function AuthForm({ mode }: IAuthForm) {
         padding: "24px",
         borderRadius: "12px",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        minWidth: { xs: "260px", sm: "360px" },
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
@@ -90,7 +89,7 @@ export default function AuthForm({ mode }: IAuthForm) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 24,
+            gap: 18,
           }}
         >
           {!isLogin && (

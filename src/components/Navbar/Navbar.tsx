@@ -49,7 +49,7 @@ function Navbar() {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Tooltip title="Open settings">
+          <Tooltip title={undefined}>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Box
                 component="img"
