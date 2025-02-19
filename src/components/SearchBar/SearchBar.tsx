@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 export function SearchBar() {
   return (
     <InputBase
-      placeholder="Busque por classes..."
+      placeholder="Busque por turmas..."
       autoFocus
       sx={{
         flex: 1,

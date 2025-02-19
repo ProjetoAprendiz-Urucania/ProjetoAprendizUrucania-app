@@ -5,11 +5,13 @@ import CardMedia from "@mui/material/CardMedia";
 
 import Typography from "@mui/material/Typography";
 
-import defaultClassImage from "../../assets/img/Class/defaultClassImage.png";
+import defaultCardImage from "../../assets/img/defaultCardImage.png";
 import { ICardData } from "../../interfaces/ICardData";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
+  const [imageSrc, setImageSrc] = useState(coverImage || defaultCardImage);
   const navigate = useNavigate();
   console.log("id", id);
   console.log("name", name);
@@ -43,13 +45,15 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
         <CardMedia
           component="img"
           sx={{
-            objectFit: "contain",
+            objectFit: "cover",
             maxWidth: "60%",
+            minHeight: "56px",
             borderRadius: 1,
             filter: "drop-shadow(0.8px 0.8px 0.8px rgba(0, 0, 0, 0.7))",
           }}
-          image={coverImage ? coverImage : defaultClassImage}
+          image={imageSrc}
           alt="Live from space album cover"
+          onError={() => setImageSrc(defaultCardImage)}
         />
       </Box>
 
@@ -81,7 +85,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
             sx={{
               color: "text.secondary",
               fontSize: { xs: "12px", md: "14px", lg: "16px" },
-              maxWidth: { xs: "180px", sm: "190px", md: "200px", lg: "60%" },
+              maxWidth: { xs: "180px", sm: "380px", md: "500px", lg: "540px" },
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
