@@ -37,7 +37,7 @@ export function AuthPage() {
           src={logoIgreja}
           alt="ICM Logo"
           sx={{
-            width: { xs: "12em", sm: "13em", md: "14em" },
+            width: { xs: "16em", sm: "18em", md: "20em" },
             marginTop: 2,
           }}
         />

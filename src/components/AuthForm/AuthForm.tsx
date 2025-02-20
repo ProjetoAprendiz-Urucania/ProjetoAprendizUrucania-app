@@ -74,7 +74,7 @@ export default function AuthForm({ mode }: IAuthForm) {
       }}
     >
       <Box sx={{ minWidth: { xs: "240px", sm: "280px" } }}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
           <Box component="img" src={imLogo} alt="Logo" width="42px" />
         </Box>
 
@@ -89,7 +89,7 @@ export default function AuthForm({ mode }: IAuthForm) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 18,
+            gap: 28,
           }}
         >
           {!isLogin && (
