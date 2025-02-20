@@ -150,6 +150,7 @@ export default function AuthForm({ mode }: IAuthForm) {
               color: "#6b7280",
               textDecoration: "underline",
               cursor: "pointer",
+              marginY: 1.5,
               "&:hover": {
                 color: "#ED3237",
               },
