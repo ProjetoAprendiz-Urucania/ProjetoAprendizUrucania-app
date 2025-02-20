@@ -65,7 +65,8 @@ export default function AuthForm({ mode }: IAuthForm) {
     <Box
       sx={{
         backgroundColor: "white",
-        padding: "24px",
+        marginTop: { xs: "2em", md: "1em" },
+        padding: "30px",
         borderRadius: "12px",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         display: "flex",
