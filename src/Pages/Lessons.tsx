@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
-import { IClass } from "../interfaces/class/IClass";
-import { getClasses } from "../services/class.service";
+import { ILesson } from "../interfaces/lesson/ILesson";
+import { getLessons } from "../services/lesson.service";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { useParams } from "react-router-dom";
 
 export function Lesson() {
-  const {id} = useParams();
-  const [classes, setClasses] = useState<IClass[]>([]);
+  const {id} = useParams<{id: string}>();
+  const [lessons, setLessons] = useState<ILesson[]>([]);
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      const response = await getClasses();
-      setClasses(response);
+    const fetchLessons = async () => {
+      if(id){
+        const response = await getLessons(id);
+      setLessons(response);
+      }else{
+        console.log("ID não informado")
+      }
+      
     };
-    fetchClasses();
+    fetchLessons();
   }, []);
 
   return (
@@ -31,15 +36,15 @@ export function Lesson() {
           Aula
         </Typography>
       </Box>
-      {classes.length > 0 &&
-        classes.map((classItem) => {
+      {lessons.length > 0 &&
+        lessons.map((lessonItem) => {
           return (
             <ContentCard
-              key={classItem.id}
-              id={classItem.id}
-              name={classItem.name}
-              teacherInfo={classItem.teachers}
-              coverImage={classItem.coverImage}
+              key={lessonItem.id}
+              id={lessonItem.id}
+              name={lessonItem.name}
+              teacherInfo={lessonItem.teacher}
+              coverImage={lessonItem.coverImage}
             />
           );
         })}
