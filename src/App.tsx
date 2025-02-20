@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import { AuthPage } from "./Pages/AuthPage";
@@ -16,6 +16,7 @@ function App() {
       {!isLoginPage && !isRegisterPage && <Navbar />}
       <Container maxWidth="xl">
         <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/classes" element={<ClassPage />} />
