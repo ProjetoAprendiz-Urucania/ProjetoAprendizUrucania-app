@@ -1,11 +1,26 @@
 import { Box, InputAdornment, InputBase } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import SearchIcon from "@mui/icons-material/Search";
+import { useLocation } from "react-router-dom";
 
-export function SearchBar() {
+interface ISearchBarProps {
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+}
+
+export function SearchBar({
+  searchTerm,
+  setSearchTerm,
+}: ISearchBarProps): JSX.Element {
+  const location = useLocation();
+  const isLessonsPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+
   return (
     <InputBase
-      placeholder="Busque por turmas..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder={
+        !isLessonsPage ? "Busque por turmas..." : "Busque por aulas..."
+      }
       autoFocus
       sx={{
         flex: 1,
@@ -32,20 +47,7 @@ export function SearchBar() {
                 color: "#4E4E4E",
                 "&:hover": { color: "red" },
               }}
-            />
-            <span
-              style={{
-                height: "26px",
-                backgroundColor: "#4E4E4E",
-                width: "2px",
-              }}
-            ></span>
-            <SearchIcon
-              sx={{
-                cursor: "pointer",
-                color: "#4E4E4E",
-                "&:hover": { color: "red" },
-              }}
+              onClick={() => setSearchTerm("")}
             />
           </Box>
         </InputAdornment>

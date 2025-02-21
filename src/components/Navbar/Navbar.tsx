@@ -9,33 +9,40 @@ import Menu from "@mui/material/Menu";
 import imLogo from "../../assets/img/Navbar/im_logo.svg";
 import avatar from "../../assets/img/Navbar/avatar.png";
 import { Box } from "@mui/material";
-import menu from "../../assets/img/Navbar/menu.png";
+import menuIcon from "../../assets/img/Navbar/menu.png";
+import { useLocation, useNavigate } from "react-router-dom";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
-const pages = ["Turmas", "Aulas", "Materiais Teóricos"];
-const settings = ["Perfil", "Sair"];
+const menuNavigation = ["Turmas", "Perfil", "Sair"];
 
 function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isLessonsPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+
+  const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(
     null
   );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElMenu(event.currentTarget);
   };
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
+  const handleCloseMenu = () => {
+    setAnchorElMenu(null);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const handleMenuItemClick = (page: string) => {
+    handleCloseMenu();
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+    if (page === "Turmas") {
+      navigate("/classes");
+    } else if (page === "Perfil") {
+      navigate("/perfil");
+    } else if (page === "Sair") {
+      console.log("Usuário saiu");
+    }
   };
 
   return (
@@ -49,57 +56,76 @@ function Navbar() {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Tooltip title={undefined}>
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+          {!isLessonsPage ? (
+            <>
+              <Box>
+                <Box
+                  component="img"
+                  src={avatar}
+                  sx={{ width: { xs: "1.8em", sm: "2em" }, marginRight: 0.6 }}
+                />
+              </Box>
               <Box
                 component="img"
-                src={avatar}
-                sx={{ width: { xs: "1.2em", sm: "1.4em" } }}
+                src={imLogo}
+                alt="ICM Logo"
+                loading="lazy"
+                sx={{
+                  width: { xs: "4em", sm: "4.6em", md: "5.2em" },
+                  height: { xs: "2.77em", sm: "3.18em", md: "3.6em" },
+                }}
+              />
+            </>
+          ) : (
+            <Box
+              sx={{
+                borderRadius: "90px",
+                padding: 0.4,
+                backgroundColor: "#E5E5E550",
+                display: "flex",
+                textAlign: "center",
+                justifyContent: "center",
+                alignItems: "center",
+                "&:hover": {
+                  backgroundColor: "#C0515B",
+                  transform: "scale(1.06)",
+                },
+              }}
+            >
+              <ChevronLeftIcon
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": { transform: "scale(1.06)" },
+                }}
+                onClick={() => navigate(-1)}
+              />
+            </Box>
+          )}
+        </Box>
+
+        <Box>
+          <Tooltip title="Abrir menu">
+            <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+              <Box
+                component="img"
+                src={menuIcon}
+                sx={{ width: { xs: "0.8em", sm: "1em" } }}
               />
             </IconButton>
           </Tooltip>
-          <Box
-            component="img"
-            src={imLogo}
-            alt="ICM Logo"
-            loading="lazy"
-            sx={{
-              marginLeft: { xs: "6px", md: "14px" },
-              width: { xs: "4em", sm: "4.6em", md: "5.2em" },
-              height: { xs: "2.77em", sm: "3.18em", md: "3.6em" },
-            }}
-          />
         </Box>
-        <IconButton onClick={handleOpenNavMenu} color="inherit" sx={{ p: 0 }}>
-          <Box component="img" src={menu} sx={{ width: "1em" }} />
-        </IconButton>
 
         <Menu
-          id="menu-nav"
-          anchorEl={anchorElNav}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          transformOrigin={{ vertical: "top", horizontal: "left" }}
-          open={Boolean(anchorElNav)}
-          onClose={handleCloseNavMenu}
+          id="menu-navigation"
+          anchorEl={anchorElMenu}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          open={Boolean(anchorElMenu)}
+          onClose={handleCloseMenu}
         >
-          {pages.map((page) => (
-            <MenuItem key={page} onClick={handleCloseNavMenu}>
-              <Typography sx={{ textAlign: "center" }}>{page}</Typography>
-            </MenuItem>
-          ))}
-        </Menu>
-
-        <Menu
-          id="menu-user"
-          anchorEl={anchorElUser}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          transformOrigin={{ vertical: "top", horizontal: "left" }}
-          open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
-        >
-          {settings.map((setting) => (
-            <MenuItem key={setting} onClick={handleCloseUserMenu}>
-              <Typography sx={{ textAlign: "center" }}>{setting}</Typography>
+          {menuNavigation.map((item) => (
+            <MenuItem key={item} onClick={() => handleMenuItemClick(item)}>
+              <Typography sx={{ textAlign: "center" }}>{item}</Typography>
             </MenuItem>
           ))}
         </Menu>
