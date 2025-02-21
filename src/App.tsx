@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar/Navbar";
 import { AuthPage } from "./Pages/AuthPage";
 import { ClassPage } from "./Pages/ClassPage";
 import { Container } from "@mui/material";
-import { Lesson } from "./Pages/Lessons";
+import { LessonsPage } from "./Pages/LessonsPage";
 
 function App() {
   const location = useLocation();
@@ -21,7 +21,7 @@ function App() {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/classes" element={<ClassPage />} />
-          <Route path="/classes/:id" element={<Lesson />} />
+          <Route path="/classes/:id" element={<LessonsPage />} />
         </Routes>
       </Container>
     </>
