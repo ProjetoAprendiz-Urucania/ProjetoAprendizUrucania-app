@@ -46,6 +46,7 @@ export function SearchBar({
                 cursor: "pointer",
                 color: "#4E4E4E",
                 "&:hover": { color: "red" },
+                "&:active": { color: "#4E4E4E" },
               }}
               onClick={() => setSearchTerm("")}
             />
