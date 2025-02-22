@@ -76,12 +76,12 @@ export default function AuthForm({ mode }: IAuthForm) {
     <Box
       sx={{
         backgroundColor: "white",
-        marginTop: { xs: "2em", md: "1em" },
         padding: "30px",
         borderRadius: "12px",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         flexDirection: "column",
       }}
     >
@@ -185,7 +185,7 @@ export default function AuthForm({ mode }: IAuthForm) {
                   },
                 }}
               >
-                Esqueci a senha
+                Esqueci minha senha
               </Link>
             </Box>
             <Box
