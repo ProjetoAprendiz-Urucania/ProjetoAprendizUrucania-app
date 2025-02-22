@@ -169,45 +169,52 @@ export default function AuthForm({ mode }: IAuthForm) {
           </Button>
         </form>
 
-        <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Link
-            href={isLogin ? "/register" : "/login"}
-            sx={{
-              fontSize: "14px",
-              color: "#6b7280",
-              textDecoration: "underline",
-              cursor: "pointer",
-              marginY: 1,
-              "&:hover": {
-                color: "#ED3237",
-              },
-            }}
-          >
-            Esqueci a senha
-          </Link>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            mt: 3.2,
-          }}
-        >
-          <Box sx={{ flex: 1, height: "1px", backgroundColor: "#6b7280" }} />
-          <Typography
-            sx={{
-              mx: 1,
-              color: "#6b7280",
-              fontWeight: "200",
-              fontSize: "12px",
-            }}
-          >
-            ou
-          </Typography>
-          <Box sx={{ flex: 1, height: "1px", backgroundColor: "#6b7280" }} />
-        </Box>
+        {isLogin && (
+          <>
+            <Box sx={{ textAlign: "center", mt: 3 }}>
+              <Link
+                href={isLogin ? "/register" : "/login"}
+                sx={{
+                  fontSize: "14px",
+                  color: "#6b7280",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  marginY: 1,
+                  "&:hover": {
+                    color: "#ED3237",
+                  },
+                }}
+              >
+                Esqueci a senha
+              </Link>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                mt: 3.2,
+              }}
+            >
+              <Box
+                sx={{ flex: 1, height: "1px", backgroundColor: "#6b7280" }}
+              />
+              <Typography
+                sx={{
+                  mx: 1,
+                  color: "#6b7280",
+                  fontWeight: "200",
+                  fontSize: "12px",
+                }}
+              >
+                ou
+              </Typography>
+              <Box
+                sx={{ flex: 1, height: "1px", backgroundColor: "#6b7280" }}
+              />
+            </Box>
+          </>
+        )}
 
         <Box sx={{ textAlign: "center", mt: 3 }}>
           <Link
