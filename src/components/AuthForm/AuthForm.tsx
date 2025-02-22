@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
 import { login, createStudent } from "../../services/student.service";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 interface IAuthForm {
   mode: "login" | "register";
@@ -16,6 +26,7 @@ export default function AuthForm({ mode }: IAuthForm) {
   const [password, setPassword] = useState("");
   const [church, setChurch] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -124,12 +135,27 @@ export default function AuthForm({ mode }: IAuthForm) {
           <TextField
             id="password"
             label="Senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             variant="standard"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             sx={inputStyle}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
+
           <Button
             type="submit"
             sx={{

@@ -13,6 +13,7 @@ export function LessonsPage() {
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [lessonSearch, setLessonSearch] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
+  const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -82,6 +83,29 @@ export function LessonsPage() {
                   />
                 );
               }))}
+      <Box
+        sx={{
+          textAlign: "left",
+          marginBottom: 4,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        {!materialDrop ? (
+          <KeyboardArrowUpIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setMaterialDrop(true)}
+          />
+        ) : (
+          <KeyboardArrowDownIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setMaterialDrop(false)}
+          />
+        )}
+        <Typography variant="h5" sx={{ fontWeight: "600" }}>
+          Material Teórico
+        </Typography>
+      </Box>
     </>
   );
 }
