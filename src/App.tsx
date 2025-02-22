@@ -2,9 +2,9 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import { AuthPage } from "./Pages/AuthPage";
-import { ClassPage } from "./Pages/ClassPage";
+import { ClassesPage } from "./Pages/ClassesPage";
 import { Container } from "@mui/material";
-import { LessonsPage } from "./Pages/LessonsPage";
+import { ClassPage } from "./Pages/ClassPage";
 
 function App() {
   const location = useLocation();
@@ -20,8 +20,8 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
-          <Route path="/classes" element={<ClassPage />} />
-          <Route path="/classes/:id" element={<LessonsPage />} />
+          <Route path="/classes" element={<ClassesPage />} />
+          <Route path="/classes/:id" element={<ClassPage />} />
         </Routes>
       </Container>
     </>

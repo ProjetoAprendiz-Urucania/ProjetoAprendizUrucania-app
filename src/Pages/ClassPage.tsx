@@ -1,60 +1,155 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
-import { IClass } from "../interfaces/class/IClass";
-import { getClasses } from "../services/class.service";
+import { ILesson } from "../interfaces/lesson/ILesson";
+import { getLessons } from "../services/lesson.service";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
+import { useParams } from "react-router-dom";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { getMaterial } from "../services/theoryMaterials.service";
+import { TheoryMaterial } from "../components/TheoryMaterial/TheoryMaterial";
+import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 
 export function ClassPage() {
-  const [classes, setClasses] = useState<IClass[]>([]);
-  const [classSearch, setClassSearch] = useState("");
+  const { id } = useParams<{ id: string }>();
+  const [lessons, setLessons] = useState<ILesson[]>([]);
+  const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
+
+  const [lessonSearch, setLessonSearch] = useState("");
+  const [lessonsDrop, setLessonsDrop] = useState(false);
+  const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      const response = await getClasses();
-      setClasses(response);
+    const fetchLessons = async () => {
+      if (id) {
+        const response = await getLessons(id);
+        setLessons(response);
+      } else {
+        console.log("ID não informado");
+      }
     };
-    fetchClasses();
-  }, []);
+    fetchLessons();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      if (lessons.length > 0 && id) {
+        let allMaterials: ITheoryMaterial[] = [];
+
+        for (const lesson of lessons) {
+          const materials = await getMaterial(id, lesson.id);
+          allMaterials = [...allMaterials, ...materials];
+        }
+
+        setMaterials(allMaterials);
+      }
+    };
+    fetchMaterials();
+  }, [id, lessons]);
+
+  console.log(materials);
 
   return (
     <>
-      <SearchBar searchTerm={classSearch} setSearchTerm={setClassSearch} />
+      <SearchBar searchTerm={lessonSearch} setSearchTerm={setLessonSearch} />
       <Box
         sx={{
           textAlign: "left",
           marginBottom: 4,
+          display: "flex",
+          alignItems: "center",
         }}
       >
+        {!lessonsDrop ? (
+          <KeyboardArrowUpIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setLessonsDrop(true)}
+          />
+        ) : (
+          <KeyboardArrowDownIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setLessonsDrop(false)}
+          />
+        )}
         <Typography variant="h5" sx={{ fontWeight: "600" }}>
-          Turmas
+          Aula
         </Typography>
       </Box>
-      {classes.length > 0 && !classSearch
-        ? classes.map((classItem) => {
-            return (
-              <ContentCard
-                key={classItem.id}
-                id={classItem.id}
-                name={classItem.name}
-                teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage}
-              />
-            );
-          })
-        : classes
-            .filter((classItem) =>
-              classItem.name.toLowerCase().includes(classSearch.toLowerCase())
-            )
-            .map((classItem) => (
-              <ContentCard
-                key={classItem.id}
-                id={classItem.id}
-                name={classItem.name}
-                teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage}
-              />
-            ))}
+      {!lessonsDrop &&
+        (lessons.length > 0 && !lessonSearch
+          ? lessons.map((lessonItem) => {
+              return (
+                <ContentCard
+                  key={lessonItem.id}
+                  id={lessonItem.id}
+                  name={lessonItem.name}
+                  teacherInfo={lessonItem.teacher}
+                  coverImage={lessonItem.coverImage}
+                />
+              );
+            })
+          : lessons
+              .filter((lessonItem) =>
+                lessonItem.name
+                  .toLowerCase()
+                  .includes(lessonSearch.toLowerCase())
+              )
+              .map((lessonItem) => {
+                return (
+                  <ContentCard
+                    key={lessonItem.id}
+                    id={lessonItem.id}
+                    name={lessonItem.name}
+                    teacherInfo={lessonItem.teacher}
+                    coverImage={lessonItem.coverImage}
+                  />
+                );
+              }))}
+      <Box
+        sx={{
+          textAlign: "left",
+          marginBottom: 4,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        {!materialDrop ? (
+          <KeyboardArrowUpIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setMaterialDrop(true)}
+          />
+        ) : (
+          <KeyboardArrowDownIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setMaterialDrop(false)}
+          />
+        )}
+        <Typography variant="h5" sx={{ fontWeight: "600" }}>
+          Material Teórico
+        </Typography>
+      </Box>
+      <Box sx={{ textAlign: "left" }}>
+        {!materialDrop &&
+          (materials.length > 0 && !lessonSearch
+            ? materials.map((materialItem) => {
+                console.log("materialItem", materialItem);
+                return materialItem ? (
+                  <TheoryMaterial key={materialItem.id} {...materialItem} />
+                ) : null;
+              })
+            : materials
+                .filter((materialItem) =>
+                  materialItem.name
+                    .toLowerCase()
+                    .includes(lessonSearch.toLowerCase())
+                )
+                .map((materialItem) => {
+                  return materialItem ? (
+                    <TheoryMaterial key={materialItem.id} {...materialItem} />
+                  ) : null;
+                }))}
+      </Box>
     </>
   );
 }

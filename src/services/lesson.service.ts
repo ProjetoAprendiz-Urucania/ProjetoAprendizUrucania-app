@@ -15,7 +15,7 @@ async function handleResponse(response: Response) {
 
 export async function getLessons(id: string){
     try {
-        const response = await fetch(`${API_URL}/class/${id}/lesson`);
+        const response = await fetch(`${API_URL}/classes/${id}/lessons`);
         const lessons = await handleResponse(response)
         return lessons;
     } catch (error) {

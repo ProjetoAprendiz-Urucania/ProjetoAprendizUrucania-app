@@ -15,7 +15,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const navigate = useNavigate();
 
   const handleOpenLessons = (id: string) => {
-    navigate(`/classes/${id}`);
+    navigate(`${location.pathname}/${id}`);
   };
 
   return (
