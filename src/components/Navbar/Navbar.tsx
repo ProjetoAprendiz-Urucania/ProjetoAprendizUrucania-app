@@ -56,6 +56,7 @@ function Navbar() {
         backgroundColor: "#BB1626",
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
+        padding: 0.2,
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -66,7 +67,7 @@ function Navbar() {
                 <Box
                   component="img"
                   src={avatar}
-                  sx={{ width: { xs: "1.8em", sm: "2em" }, marginRight: 0.6 }}
+                  sx={{ width: { xs: "2em", sm: "2.2em" }, marginRight: 0.6 }}
                 />
               </Box>
               <Box
@@ -75,7 +76,7 @@ function Navbar() {
                 alt="ICM Logo"
                 loading="lazy"
                 sx={{
-                  width: { xs: "4em", sm: "4.6em", md: "5.2em" },
+                  width: { xs: "4.6em", sm: "5.2em", md: "5.6em" },
                   height: { xs: "2.77em", sm: "3.18em", md: "3.6em" },
                 }}
               />
@@ -132,7 +133,7 @@ function Navbar() {
                     letterSpacing: "1.4px",
                   }}
                 >
-                  Aulas
+                  Aulas e Materiais
                 </Typography>
               )}
             </Box>

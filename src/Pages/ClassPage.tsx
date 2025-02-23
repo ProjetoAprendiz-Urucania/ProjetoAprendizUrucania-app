@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { ILesson } from "../interfaces/lesson/ILesson";
-import { getLessons } from "../services/lesson.service";
+import { getLessonsByClassId } from "../services/lesson.service";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { useParams } from "react-router-dom";
@@ -23,7 +23,7 @@ export function ClassPage() {
   useEffect(() => {
     const fetchLessons = async () => {
       if (id) {
-        const response = await getLessons(id);
+        const response = await getLessonsByClassId(id);
         setLessons(response);
       } else {
         console.log("ID não informado");

@@ -1,5 +1,3 @@
-// import { ILesson } from "../interfaces/lesson/ILesson";
-
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 async function handleResponse(response: Response) {
@@ -13,7 +11,7 @@ async function handleResponse(response: Response) {
     return response.json(); 
 }
 
-export async function getLessons(id: string){
+export async function getLessonsByClassId(id: string){
     try {
         const response = await fetch(`${API_URL}/classes/${id}/lessons`);
         const lessons = await handleResponse(response)
@@ -22,4 +20,15 @@ export async function getLessons(id: string){
         console.error("Erro ao obter lessons:", error);
         throw error;
     }
+}
+
+export async function getLesson(classId: string,lessonId: string){
+  try {
+      const response = await fetch(`${API_URL}/classes/${classId}/${lessonId}`);
+      const lesson = await handleResponse(response)
+      return lesson;
+  } catch (error) {
+      console.error("Erro ao obter lesson:", error);
+      throw error;
+  }
 }
