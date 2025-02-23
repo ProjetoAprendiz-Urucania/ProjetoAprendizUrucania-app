@@ -19,7 +19,11 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isLessonsPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/.test(
+    location.pathname
+  );
+  const isClassesPage = location.pathname === "/classes";
 
   const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(
     null
@@ -56,7 +60,7 @@ function Navbar() {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {!isLessonsPage ? (
+          {isClassesPage ? (
             <>
               <Box>
                 <Box
@@ -79,26 +83,58 @@ function Navbar() {
           ) : (
             <Box
               sx={{
-                borderRadius: "90px",
-                padding: 0.4,
-                backgroundColor: "#E5E5E550",
                 display: "flex",
-                textAlign: "center",
-                justifyContent: "center",
                 alignItems: "center",
-                "&:hover": {
-                  backgroundColor: "#C0515B",
-                  transform: "scale(1.06)",
-                },
+                gap: 1,
+                justifyContent: "center",
               }}
             >
-              <ChevronLeftIcon
+              <Box
                 sx={{
-                  cursor: "pointer",
-                  "&:hover": { transform: "scale(1.06)" },
+                  borderRadius: "90px",
+                  padding: 0.4,
+                  backgroundColor: "#E5E5E550",
+                  display: "flex",
+                  textAlign: "center",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  "&:hover": {
+                    backgroundColor: "#C0515B",
+                    transform: "scale(1.06)",
+                  },
                 }}
-                onClick={() => navigate(-1)}
-              />
+              >
+                <ChevronLeftIcon
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": { transform: "scale(1.06)" },
+                  }}
+                  onClick={() => navigate(-1)}
+                />
+              </Box>
+              {isClassPage && (
+                <Typography
+                  sx={{
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    letterSpacing: "1.4px",
+                  }}
+                >
+                  Turmas
+                </Typography>
+              )}
+
+              {isLessonPage && (
+                <Typography
+                  sx={{
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    letterSpacing: "1.4px",
+                  }}
+                >
+                  Aulas
+                </Typography>
+              )}
             </Box>
           )}
         </Box>

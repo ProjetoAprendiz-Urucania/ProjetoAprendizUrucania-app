@@ -16,7 +16,7 @@ export function ClassPage() {
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
 
-  const [lessonSearch, setLessonSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
 
@@ -52,7 +52,7 @@ export function ClassPage() {
 
   return (
     <>
-      <SearchBar searchTerm={lessonSearch} setSearchTerm={setLessonSearch} />
+      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Box
         sx={{
           textAlign: "left",
@@ -73,11 +73,11 @@ export function ClassPage() {
           />
         )}
         <Typography variant="h5" sx={{ fontWeight: "600" }}>
-          Aula
+          Aulas
         </Typography>
       </Box>
       {!lessonsDrop &&
-        (lessons.length > 0 && !lessonSearch
+        (lessons.length > 0 && !searchTerm
           ? lessons.map((lessonItem) => {
               return (
                 <ContentCard
@@ -91,9 +91,7 @@ export function ClassPage() {
             })
           : lessons
               .filter((lessonItem) =>
-                lessonItem.name
-                  .toLowerCase()
-                  .includes(lessonSearch.toLowerCase())
+                lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
               .map((lessonItem) => {
                 return (
@@ -126,12 +124,12 @@ export function ClassPage() {
           />
         )}
         <Typography variant="h5" sx={{ fontWeight: "600" }}>
-          Material Teórico
+          Materiais Teóricos
         </Typography>
       </Box>
       <Box sx={{ textAlign: "left" }}>
         {!materialDrop &&
-          (materials.length > 0 && !lessonSearch
+          (materials.length > 0 && !searchTerm
             ? materials.map((materialItem) => {
                 console.log("materialItem", materialItem);
                 return materialItem ? (
@@ -142,7 +140,7 @@ export function ClassPage() {
                 .filter((materialItem) =>
                   materialItem.name
                     .toLowerCase()
-                    .includes(lessonSearch.toLowerCase())
+                    .includes(searchTerm.toLowerCase())
                 )
                 .map((materialItem) => {
                   return materialItem ? (
