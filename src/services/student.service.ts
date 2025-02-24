@@ -3,7 +3,7 @@ import { IStudentData } from "../interfaces/student/IStudent";
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 interface CreateStudentResponse {
-  studentData: any;
+  studentData: unknown;
   token: string;
 }
 
