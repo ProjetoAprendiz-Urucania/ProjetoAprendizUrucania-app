@@ -35,16 +35,17 @@ export function ClassPage() {
   useEffect(() => {
     const fetchMaterials = async () => {
       if (lessons.length > 0 && id) {
-        let allMaterials: ITheoryMaterial[] = [];
+        const materialsArray = await Promise.all(
+          lessons.map(async (lesson) => {
+            console.log("lessonId:-----------------------", lesson.id);
+            return getMaterial(id, lesson.id);
+          })
+        );
 
-        for (const lesson of lessons) {
-          const materials = await getMaterial(id, lesson.id);
-          allMaterials = [...allMaterials, ...materials];
-        }
-
-        setMaterials(allMaterials);
+        setMaterials(materialsArray.flat().filter(Boolean));
       }
     };
+
     fetchMaterials();
   }, [id, lessons]);
 

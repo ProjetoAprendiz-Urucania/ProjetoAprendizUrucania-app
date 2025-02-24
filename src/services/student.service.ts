@@ -74,7 +74,8 @@ export async function getStudentById(id: string) {
 
 export async function getStudentByEmail(email: string) {
   try {
-    const response = await fetch(`${API_URL}/students/email/${email}`);
+    const encodedEmail = encodeURIComponent(email);
+    const response = await fetch(`${API_URL}/students/email/${encodedEmail}`);
     return await response.json();
   } catch (error) {
     console.error("Erro ao obter estudante:", error);
