@@ -12,10 +12,13 @@ import { Box } from "@mui/material";
 import menuIcon from "../../assets/img/Navbar/menu.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { useUser } from "../../hooks/useUser";
 
-const menuNavigation = ["Turmas", "Perfil", "Sair"];
+const menuNavigation = ["Turmas", "Aulas"];
+const avatarMenuOptions = ["Perfil", "Sair"];
 
 function Navbar() {
+  const { user, logout } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,6 +31,16 @@ function Navbar() {
   const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(
     null
   );
+  const [anchorElAvatar, setAnchorElAvatar] =
+    React.useState<null | HTMLElement>(null);
+
+  const handleOpenAvatar = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElAvatar(event.currentTarget);
+  };
+
+  const handleCloseAvatar = () => {
+    setAnchorElAvatar(null);
+  };
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElMenu(event.currentTarget);
@@ -39,15 +52,17 @@ function Navbar() {
 
   const handleMenuItemClick = (page: string) => {
     handleCloseMenu();
-
     if (page === "Turmas") {
       navigate("/classes");
     } else if (page === "Perfil") {
       navigate("/perfil");
     } else if (page === "Sair") {
-      console.log("Usuário saiu");
+      logout();
+      navigate("/login");
     }
   };
+
+  console.log("Dados do Usuário:", user);
 
   return (
     <AppBar
@@ -64,12 +79,36 @@ function Navbar() {
           {isClassesPage ? (
             <>
               <Box>
-                <Box
-                  component="img"
-                  src={avatar}
-                  sx={{ width: { xs: "2em", sm: "2.2em" }, marginRight: 0.6 }}
-                />
+                <Tooltip title="Abrir menu do usuário">
+                  <IconButton onClick={handleOpenAvatar}>
+                    <Box
+                      component="img"
+                      src={avatar}
+                      sx={{
+                        width: "1.36em",
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  id="menu-avatar"
+                  anchorEl={anchorElAvatar}
+                  open={Boolean(anchorElAvatar)}
+                  onClose={handleCloseAvatar}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                >
+                  {avatarMenuOptions.map((option) => (
+                    <MenuItem
+                      key={option}
+                      onClick={() => handleMenuItemClick(option)}
+                    >
+                      <Typography>{option}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
               </Box>
+
               <Box
                 component="img"
                 src={imLogo}
@@ -82,21 +121,13 @@ function Navbar() {
               />
             </>
           ) : (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                justifyContent: "center",
-              }}
-            >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Box
                 sx={{
                   borderRadius: "90px",
                   padding: 0.4,
                   backgroundColor: "#E5E5E550",
                   display: "flex",
-                  textAlign: "center",
                   justifyContent: "center",
                   alignItems: "center",
                   "&:hover": {
@@ -113,6 +144,7 @@ function Navbar() {
                   onClick={() => navigate(-1)}
                 />
               </Box>
+
               {isClassPage && (
                 <Typography
                   sx={{

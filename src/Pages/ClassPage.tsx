@@ -48,8 +48,6 @@ export function ClassPage() {
     fetchMaterials();
   }, [id, lessons]);
 
-  console.log(materials);
-
   return (
     <>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -131,7 +129,6 @@ export function ClassPage() {
         {!materialDrop &&
           (materials.length > 0 && !searchTerm
             ? materials.map((materialItem) => {
-                console.log("materialItem", materialItem);
                 return materialItem ? (
                   <TheoryMaterial key={materialItem.id} {...materialItem} />
                 ) : null;

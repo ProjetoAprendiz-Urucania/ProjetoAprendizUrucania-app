@@ -8,6 +8,7 @@ import { ClassesPage } from "./Pages/ClassesPage";
 import { Container } from "@mui/material";
 import { ClassPage } from "./Pages/ClassPage";
 import { LessonPage } from "./Pages/LessonPage";
+import { UserProvider } from "./context/provider/userProvider";
 
 function App() {
   const location = useLocation();
@@ -16,7 +17,8 @@ function App() {
   const isRegisterPage = location.pathname === "/register";
 
   return (
-    <>
+    <UserProvider>
+      {" "}
       <ThemeProvider theme={theme}>
         {!isLoginPage && !isRegisterPage && <Navbar />}
         <Container maxWidth="xl">
@@ -33,7 +35,7 @@ function App() {
           </Routes>
         </Container>
       </ThemeProvider>
-    </>
+    </UserProvider>
   );
 }
 

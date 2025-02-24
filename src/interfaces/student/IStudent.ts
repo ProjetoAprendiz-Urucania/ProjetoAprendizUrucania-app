@@ -3,4 +3,5 @@ export interface IStudentData {
     email: string;
     password: string;
     church?: string;
+    profilePicture?: string;
 }

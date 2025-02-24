@@ -44,7 +44,7 @@ export async function createStudent(studentData: IStudentData) {
 
 export async function deleteStudent(id: string) {
   try {
-    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_URL}/students/${id}`, { method: "DELETE" });
     return await handleResponse(response);
   } catch (error) {
     console.error("Erro ao deletar estudante:", error);
@@ -54,7 +54,7 @@ export async function deleteStudent(id: string) {
 
 export async function getStudents() {
   try {
-    const response = await fetch(`${API_URL}`);
+    const response = await fetch(`${API_URL}/students`);
     return await handleResponse(response);
   } catch (error) {
     console.error("Erro ao obter estudantes:", error);
@@ -64,8 +64,18 @@ export async function getStudents() {
 
 export async function getStudentById(id: string) {
   try {
-    const response = await fetch(`${API_URL}/${id}`);
-    return await handleResponse(response);
+    const response = await fetch(`${API_URL}/students/id/${id}`);
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao obter estudante:", error);
+    throw error;
+  }
+}
+
+export async function getStudentByEmail(email: string) {
+  try {
+    const response = await fetch(`${API_URL}/students/email/${email}`);
+    return await response.json();
   } catch (error) {
     console.error("Erro ao obter estudante:", error);
     throw error;

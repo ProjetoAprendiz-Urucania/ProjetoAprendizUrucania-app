@@ -31,8 +31,6 @@ export function LessonPage() {
     fetchLessons();
   }, [classId, lessonId]);
 
-  console.log(lesson);
-
   useEffect(() => {
     const fetchMaterials = async () => {
       if (lesson && classId && lessonId) {
@@ -46,8 +44,6 @@ export function LessonPage() {
     };
     fetchMaterials();
   }, [classId, lessonId, lesson]);
-
-  console.log(materials);
 
   return (
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
@@ -79,7 +75,6 @@ export function LessonPage() {
         {!materialDrop &&
           materials.length > 0 &&
           materials.map((materialItem) => {
-            console.log("materialItem", materialItem);
             return materialItem ? (
               <TheoryMaterial key={materialItem.id} {...materialItem} />
             ) : null;

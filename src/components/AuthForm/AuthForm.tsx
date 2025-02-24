@@ -10,15 +10,29 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import { login, createStudent } from "../../services/student.service";
+import {
+  login,
+  createStudent,
+  getStudentByEmail,
+} from "../../services/student.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useContext } from "react";
+import { UserContext } from "../../context/userContext";
 
 interface IAuthForm {
   mode: "login" | "register";
 }
 
 export default function AuthForm({ mode }: IAuthForm) {
+  const userContext = useContext(UserContext);
+
+  if (!userContext) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+
+  const { setUser } = userContext;
+
   const isLogin = mode === "login";
 
   const [name, setName] = useState("");
@@ -39,11 +53,6 @@ export default function AuthForm({ mode }: IAuthForm) {
       return;
     }
 
-    if (!isLogin && !name.trim()) {
-      setError("Preencha todos os campos obrigatórios");
-      return;
-    }
-
     try {
       let res;
       if (isLogin) {
@@ -53,22 +62,18 @@ export default function AuthForm({ mode }: IAuthForm) {
         res = await createStudent(newStudent);
       }
 
-      console.log(res.status);
-
       if (res?.status && res.status >= 200 && res.status < 300) {
+        const userData = await getStudentByEmail(email);
+
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
+
         navigate("/classes");
-      } else if (res?.error) {
-        setError(res.error);
       } else {
-        setError("Erro desconhecido");
+        setError(res?.error || "Erro desconhecido");
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Erro inesperado. Tente novamente.");
-      }
-      console.error(error);
+      setError(error instanceof Error ? error.message : "Erro inesperado");
     }
   };
 
