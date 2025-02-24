@@ -77,7 +77,7 @@ function Navbar() {
                 loading="lazy"
                 sx={{
                   width: { xs: "4.6em", sm: "5.2em", md: "5.6em" },
-                  height: { xs: "2.77em", sm: "3.18em", md: "3.6em" },
+                  height: { xs: "2.97em", sm: "3.18em", md: "3.6em" },
                 }}
               />
             </>
