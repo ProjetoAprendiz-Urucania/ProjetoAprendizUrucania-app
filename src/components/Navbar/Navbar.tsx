@@ -59,6 +59,7 @@ function Navbar() {
     } else if (page === "Sair") {
       logout();
       navigate("/login");
+      localStorage.removeItem("token")
     }
   };
 

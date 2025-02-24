@@ -2,6 +2,11 @@ import { IStudentData } from "../interfaces/student/IStudent";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
+interface CreateStudentResponse {
+  studentData: any;
+  token: string;
+}
+
 async function handleResponse(response: Response) {
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
@@ -21,6 +26,10 @@ export async function login(email: string, password: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
+
+    const data:CreateStudentResponse = await response.json()
+    localStorage.setItem("token",data.token)
+    
     return await handleResponse(response);
   } catch (error) {
     console.error("Erro ao fazer login:", error);
@@ -29,12 +38,16 @@ export async function login(email: string, password: string) {
 }
 
 export async function createStudent(studentData: IStudentData) {
+
   try {
     const response = await fetch(`${API_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(studentData),
     });
+    const data:CreateStudentResponse = await response.json()
+    localStorage.setItem("token",data.token)
+
     return await handleResponse(response);
   } catch (error) {
     console.error("Erro ao fazer registro:", error);
