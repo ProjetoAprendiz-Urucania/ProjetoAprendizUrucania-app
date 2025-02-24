@@ -2,7 +2,7 @@ import { IStudentData } from "../interfaces/student/IStudent";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
-interface CreateStudentResponse {
+interface ICreateStudentResponse {
   studentData: unknown;
   token: string;
 }
@@ -14,8 +14,8 @@ async function handleResponse(response: Response) {
     errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
     throw new Error(errorMessage);
   }
-  const data = response.json();
-  return { status: response.status, ...data }; 
+  const data = await response.json().catch(() => ({}));
+  return { status: response.status, ...data };
 }
 
 
@@ -27,7 +27,7 @@ export async function login(email: string, password: string) {
       body: JSON.stringify({ email, password }),
     });
 
-    const data:CreateStudentResponse = await response.json()
+    const data: ICreateStudentResponse = await handleResponse(response);
     localStorage.setItem("token",data.token)
     
     return await handleResponse(response);
@@ -45,7 +45,7 @@ export async function createStudent(studentData: IStudentData) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(studentData),
     });
-    const data:CreateStudentResponse = await response.json()
+    const data: ICreateStudentResponse = await handleResponse(response);
     localStorage.setItem("token",data.token)
 
     return await handleResponse(response);
