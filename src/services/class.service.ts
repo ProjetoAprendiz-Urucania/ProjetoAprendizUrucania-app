@@ -37,9 +37,15 @@ export async function deleteClass(id: string) {
   }
 }
 
-export async function getClasses() {
+export async function getClasses(token:string) {
   try {
-    const response = await fetch(`${API_URL}/classes`);
+    const response = await fetch(`${API_URL}/classes`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     
     const classes = await handleResponse(response)
     return classes;
