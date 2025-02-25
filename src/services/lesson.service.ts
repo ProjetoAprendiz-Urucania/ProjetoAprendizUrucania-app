@@ -1,15 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL as string;
+import handleResponse from "./responseHandler.service";
 
-async function handleResponse(response: Response) {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage =
-        errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
-      throw new Error(errorMessage);
-    }
-  
-    return response.json(); 
-}
+const API_URL = import.meta.env.VITE_API_URL as string;
 
 export async function getLessonsByClassId(id: string,token:string){
     try {
