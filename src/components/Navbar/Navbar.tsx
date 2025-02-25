@@ -14,8 +14,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useUser } from "../../hooks/useUser";
 
-const menuNavigation = ["Turmas", "Aulas"];
-const avatarMenuOptions = ["Perfil", "Sair"];
+const menuNavigation = ["Turmas", "Sair"];
+const avatarMenuOptions = ["Perfil"];
 
 function Navbar() {
   const { user, logout } = useUser();
@@ -59,7 +59,7 @@ function Navbar() {
     } else if (page === "Sair") {
       logout();
       navigate("/login");
-      localStorage.removeItem("token")
+      localStorage.removeItem("token");
     }
   };
 

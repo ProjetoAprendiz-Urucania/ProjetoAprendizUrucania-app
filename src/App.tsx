@@ -9,12 +9,15 @@ import { Container } from "@mui/material";
 import { ClassPage } from "./Pages/ClassPage";
 import { LessonPage } from "./Pages/LessonPage";
 import { UserProvider } from "./context/provider/userProvider";
+import ProtectedRoute from "./hoc/ProtectedRoute";
 
 function App() {
   const location = useLocation();
 
   const isLoginPage = location.pathname === "/login";
   const isRegisterPage = location.pathname === "/register";
+
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
 
   return (
     <UserProvider>
@@ -23,14 +26,43 @@ function App() {
         {!isLoginPage && !isRegisterPage && <Navbar />}
         <Container maxWidth="xl">
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/register" element={<AuthPage />} />
-            <Route path="/classes" element={<ClassesPage />} />
-            <Route path="/classes/:id" element={<ClassPage />} />
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to={isAuthenticated ? "/classes" : "/login"}
+                  replace
+                />
+              }
+            />
+
+            <Route
+              path="/classes"
+              element={
+                <ProtectedRoute>
+                  <ClassesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/classes/:id"
+              element={
+                <ProtectedRoute>
+                  <ClassPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/classes/:classId/:lessonId"
-              element={<LessonPage />}
+              element={
+                <ProtectedRoute>
+                  <LessonPage />
+                </ProtectedRoute>
+              }
             />
           </Routes>
         </Container>
