@@ -1,21 +1,11 @@
 import { IStudentData } from "../interfaces/student/IStudent";
+import {handleResponseStudent} from "./responseHandler.service";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 interface ICreateStudentResponse {
   studentData: unknown;
   token: string;
-}
-
-async function handleResponse(response: Response) {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    const errorMessage =
-    errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
-    throw new Error(errorMessage);
-  }
-  const data = await response.json().catch(() => ({}));
-  return { status: response.status, ...data };
 }
 
 
@@ -27,10 +17,10 @@ export async function login(email: string, password: string) {
       body: JSON.stringify({ email, password }),
     });
 
-    const data: ICreateStudentResponse = await handleResponse(response);
+    const data: ICreateStudentResponse = await handleResponseStudent(response);
     localStorage.setItem("token",data.token)
     
-    return await handleResponse(response);
+    return await handleResponseStudent(response);
   } catch (error) {
     console.error("Erro ao fazer login:", error);
     throw error;
@@ -45,10 +35,10 @@ export async function createStudent(studentData: IStudentData) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(studentData),
     });
-    const data: ICreateStudentResponse = await handleResponse(response);
+    const data: ICreateStudentResponse = await handleResponseStudent(response);
     localStorage.setItem("token",data.token)
 
-    return await handleResponse(response);
+    return await handleResponseStudent(response);
   } catch (error) {
     console.error("Erro ao fazer registro:", error);
     throw error;
@@ -58,7 +48,7 @@ export async function createStudent(studentData: IStudentData) {
 export async function deleteStudent(id: string) {
   try {
     const response = await fetch(`${API_URL}/students/${id}`, { method: "DELETE" });
-    return await handleResponse(response);
+    return await handleResponseStudent(response);
   } catch (error) {
     console.error("Erro ao deletar estudante:", error);
     throw error;
@@ -68,7 +58,7 @@ export async function deleteStudent(id: string) {
 export async function getStudents() {
   try {
     const response = await fetch(`${API_URL}/students`);
-    return await handleResponse(response);
+    return await handleResponseStudent(response);
   } catch (error) {
     console.error("Erro ao obter estudantes:", error);
     throw error;
@@ -103,7 +93,7 @@ export async function updateStudent(id: string, studentData: IStudentData) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(studentData),
     });
-    return await handleResponse(response);
+    return await handleResponseStudent(response);
   } catch (error) {
     console.error("Erro ao atualizar estudante:", error);
     throw error;

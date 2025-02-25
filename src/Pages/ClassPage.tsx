@@ -20,14 +20,13 @@ export function ClassPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
-  
 
 
   useEffect(() => {
     const fetchLessons = async () => {
       if (id) {
         if(!tk){
-           console.log("err get classes() token inexistente")
+          console.log("err get classes() token inexistente")
          }else{
           const response = await getLessonsByClassId(id,tk);
           setLessons(response);
