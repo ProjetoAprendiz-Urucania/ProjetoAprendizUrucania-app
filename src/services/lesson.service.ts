@@ -11,9 +11,15 @@ async function handleResponse(response: Response) {
     return response.json(); 
 }
 
-export async function getLessonsByClassId(id: string){
+export async function getLessonsByClassId(id: string,token:string){
     try {
-        const response = await fetch(`${API_URL}/classes/${id}/lessons`);
+        const response = await fetch(`${API_URL}/classes/${id}/lessons`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         const lessons = await handleResponse(response)
         return lessons;
     } catch (error) {
@@ -22,9 +28,15 @@ export async function getLessonsByClassId(id: string){
     }
 }
 
-export async function getLesson(classId: string,lessonId: string){
+export async function getLesson(classId: string,lessonId: string,token:string){
   try {
-      const response = await fetch(`${API_URL}/classes/${classId}/${lessonId}`);
+      const response = await fetch(`${API_URL}/classes/${classId}/${lessonId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       const lesson = await handleResponse(response)
       return lesson;
   } catch (error) {

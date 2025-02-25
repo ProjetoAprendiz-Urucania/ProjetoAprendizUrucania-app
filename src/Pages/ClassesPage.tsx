@@ -8,7 +8,7 @@ import { SearchBar } from "../components/SearchBar/SearchBar";
 export function ClassesPage() {
   const [classes, setClasses] = useState<IClass[]>([]);
   const [classSearch, setClassSearch] = useState("");
-  const tk:string | null = localStorage.getItem("token")
+  const [tk] = useState<string | null>(localStorage.getItem("token"));
 
   useEffect(() => {
     const fetchClasses = async () => {

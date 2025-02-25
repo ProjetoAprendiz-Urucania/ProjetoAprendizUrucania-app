@@ -12,9 +12,15 @@ async function handleResponse(response: Response) {
     return response.json(); 
 }
 
-export async function getMaterial(classId: string,lessonId: string){
+export async function getMaterial(classId: string,lessonId: string,token:string){
     try {
-        const response = await fetch(`${API_URL}/classes/${classId}/${lessonId}/theoryMaterials`);
+        const response = await fetch(`${API_URL}/classes/${classId}/${lessonId}/theoryMaterials`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         const material = await handleResponse(response)
         return material;
     } catch (error) {

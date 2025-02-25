@@ -18,12 +18,17 @@ export function LessonPage() {
   const [lesson, setLesson] = useState<ILesson>();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
+  const [tk] = useState<string | null>(localStorage.getItem("token"));
 
   useEffect(() => {
     const fetchLessons = async () => {
       if (classId && lessonId) {
-        const response = await getLesson(classId, lessonId);
-        setLesson(response);
+        if(!tk){
+          console.log("err get classes() token inexistente")
+        }else{
+          const response = await getLesson(classId, lessonId,tk);
+          setLesson(response);
+        }
       } else {
         console.log("classId ou lessonId não informados");
       }
@@ -35,11 +40,15 @@ export function LessonPage() {
     const fetchMaterials = async () => {
       if (lesson && classId && lessonId) {
         let allMaterials: ITheoryMaterial[] = [];
+        if(!tk){
+          console.log("err get classes() token inexistente")
+        }else{
+          const materials = await getMaterial(classId, lessonId,tk);
+          allMaterials = [...allMaterials, ...materials];
+          setMaterials(allMaterials);
 
-        const materials = await getMaterial(classId, lessonId);
-        allMaterials = [...allMaterials, ...materials];
-
-        setMaterials(allMaterials);
+        }
+        
       }
     };
     fetchMaterials();
