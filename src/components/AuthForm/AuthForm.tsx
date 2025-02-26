@@ -10,16 +10,13 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import {
-  login,
-  createStudent,
-  getStudentByEmail,
-} from "../../services/student.service";
+import { login, createStudent } from "../../services/student.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { useAuth } from "../../hooks/useAuth";
+import { IUser } from "../../interfaces/IUser";
 
 interface IAuthForm {
   mode: "login" | "register";
@@ -63,11 +60,12 @@ export default function AuthForm({ mode }: IAuthForm) {
         res = await createStudent(newStudent);
       }
 
-      if (res?.status && res.status >= 200 && res.status < 300) {
-        const userData = await getStudentByEmail(email);
-
-        localStorage.setItem("user", JSON.stringify(userData));
-        setUser(userData);
+      if (res.studentWithoutPassword && res.token) {
+        const storedUser = localStorage.getItem("user");
+        const userObject: IUser | null = storedUser
+          ? JSON.parse(storedUser)
+          : null;
+        setUser(userObject);
 
         navigate("/classes");
       }

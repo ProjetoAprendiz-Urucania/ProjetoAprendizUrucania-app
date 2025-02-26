@@ -1,21 +1,5 @@
 import { IClass } from "../interfaces/class/IClass";
-import handleResponse from "./responseHandler.service";
-
-const API_URL = import.meta.env.VITE_API_URL as string;
-
-async function apiRequest(endpoint: string, method: string, body?: unknown, token?: string) {
-  const headers: HeadersInit = { "Content-Type": "application/json" };
-  
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-
-  const response = await fetch(`${API_URL}/${endpoint}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
-
-  return handleResponse(response);
-}
+import { apiRequest } from "./apiRequest.service";
 
 export function createClass(classData: IClass) {
   return apiRequest("classes", "POST", classData);

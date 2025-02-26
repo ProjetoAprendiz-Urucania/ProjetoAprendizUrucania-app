@@ -1,41 +1,26 @@
 import { IStudentData } from "../interfaces/student/IStudent";
-import { handleResponseStudent } from "./responseHandler.service";
-
-const API_URL = import.meta.env.VITE_API_URL as string;
-
-interface IStudentResponse {
-  studentData: unknown;
-  token: string;
-  status: number;
-}
-
-function handleAuthError() {
-  localStorage.removeItem("token");
-  window.dispatchEvent(new Event("auth:logout")); 
-}
-
-async function apiRequest(endpoint: string, method: string, body?: unknown, token?: string) {
-  const headers: HeadersInit = { "Content-Type": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-
-  const response = await fetch(`${API_URL}/${endpoint}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
-
-  if (response.status === 401) {
-    handleAuthError();
-    throw new Error("Sessão expirada. Faça login novamente.");
-  }
-
-  return handleResponseStudent(response);
-}
+import { apiRequest } from "./apiRequest.service";
+import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
 export async function login(email: string, password: string) {
-  const data: IStudentResponse = await apiRequest("login", "POST", { email, password });
-  localStorage.setItem("token", data.token);
-  return data;
+
+  try {
+    const data: IStudentResponse = await apiRequest("login", "POST", { email, password });
+
+
+    if (!data.token) {
+      console.error("Erro: Token ausente na resposta!");
+      throw new Error("Falha no login: token não recebido.");
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.studentWithoutPassword));
+
+    return data;
+  } catch (error) {
+    console.error("Erro no login:", error);
+    throw error;
+  }
 }
 
 export async function createStudent(studentData: IStudentData) {

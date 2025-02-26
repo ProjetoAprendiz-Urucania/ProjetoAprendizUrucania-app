@@ -1,36 +1,24 @@
-export default async function handleResponse(response: Response) {
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      window.dispatchEvent(new Event("auth:logout"));
-      throw new Error("Sessão expirada. Faça login novamente.");
-    }
+import { AxiosResponse } from "axios";
 
-    const errorData = await response.json().catch(() => null);
-    const errorMessage =
-      errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
-    throw new Error(errorMessage);
+export default async function handleResponse(response: AxiosResponse) {
+  if (response.status === 401) {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.dispatchEvent(new Event("auth:logout"));
+    throw new Error("Sessão expirada. Faça login novamente.");
   }
 
-  return response.json();
+  return response.data; 
 }
 
-export async function handleResponseStudent(response: Response) {
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      window.dispatchEvent(new Event("auth:logout"));
-      throw new Error("Sessão expirada. Faça login novamente.");
-    }
-
-    const errorData = await response.json().catch(() => null);
-    const errorMessage =
-      errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
-    throw new Error(errorMessage);
+export async function handleResponseStudent(response: AxiosResponse) {
+  if (response.status === 401) {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.dispatchEvent(new Event("auth:logout"));
+    throw new Error("Sessão expirada. Faça login novamente.");
   }
 
-  const data = await response.json().catch(() => ({}));
-  return { status: response.status, ...data };
+  return { status: response.status, ...response.data };
 }
+
