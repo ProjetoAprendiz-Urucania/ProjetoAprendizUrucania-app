@@ -12,16 +12,15 @@ export function ClassesPage() {
 
   useEffect(() => {
     const fetchClasses = async () => {
-      if(!tk){
-        console.log("err get classes() token inexistente")
-      }else{
+      if (!tk) {
+        console.log("err get classes() token inexistente");
+      } else {
         const response = await getClasses(tk);
         setClasses(response);
       }
-      
     };
     fetchClasses();
-  }, []);
+  }, [tk]);
 
   return (
     <>

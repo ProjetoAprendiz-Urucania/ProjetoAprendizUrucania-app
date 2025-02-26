@@ -1,101 +1,71 @@
 import { IStudentData } from "../interfaces/student/IStudent";
-import {handleResponseStudent} from "./responseHandler.service";
+import { handleResponseStudent } from "./responseHandler.service";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
-interface ICreateStudentResponse {
+interface IStudentResponse {
   studentData: unknown;
   token: string;
+  status: number;
 }
 
+function handleAuthError() {
+  localStorage.removeItem("token");
+  window.dispatchEvent(new Event("auth:logout")); 
+}
+
+async function apiRequest(endpoint: string, method: string, body?: unknown, token?: string) {
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const response = await fetch(`${API_URL}/${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (response.status === 401) {
+    handleAuthError();
+    throw new Error("Sessão expirada. Faça login novamente.");
+  }
+
+  return handleResponseStudent(response);
+}
 
 export async function login(email: string, password: string) {
-  try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data: ICreateStudentResponse = await handleResponseStudent(response);
-    localStorage.setItem("token",data.token)
-    
-    return await handleResponseStudent(response);
-  } catch (error) {
-    console.error("Erro ao fazer login:", error);
-    throw error;
-  }
+  const data: IStudentResponse = await apiRequest("login", "POST", { email, password });
+  localStorage.setItem("token", data.token);
+  return data;
 }
 
 export async function createStudent(studentData: IStudentData) {
-
-  try {
-    const response = await fetch(`${API_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(studentData),
-    });
-    const data: ICreateStudentResponse = await handleResponseStudent(response);
-    localStorage.setItem("token",data.token)
-
-    return await handleResponseStudent(response);
-  } catch (error) {
-    console.error("Erro ao fazer registro:", error);
-    throw error;
-  }
+  const data: IStudentResponse = await apiRequest("register", "POST", studentData);
+  localStorage.setItem("token", data.token);
+  return data;
 }
 
-export async function deleteStudent(id: string) {
-  try {
-    const response = await fetch(`${API_URL}/students/${id}`, { method: "DELETE" });
-    return await handleResponseStudent(response);
-  } catch (error) {
-    console.error("Erro ao deletar estudante:", error);
-    throw error;
-  }
+export function deleteStudent(id: string) {
+  const token = localStorage.getItem("token");
+  return apiRequest(`students/${id}`, "DELETE", undefined, token || undefined);
 }
 
-export async function getStudents() {
-  try {
-    const response = await fetch(`${API_URL}/students`);
-    return await handleResponseStudent(response);
-  } catch (error) {
-    console.error("Erro ao obter estudantes:", error);
-    throw error;
-  }
+export function getStudents() {
+  const token = localStorage.getItem("token");
+  return apiRequest("students", "GET", undefined, token || undefined);
 }
 
-export async function getStudentById(id: string) {
-  try {
-    const response = await fetch(`${API_URL}/students/id/${id}`);
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao obter estudante:", error);
-    throw error;
-  }
+export function getStudentById(id: string) {
+  const token = localStorage.getItem("token");
+  return apiRequest(`students/id/${id}`, "GET", undefined, token || undefined);
 }
 
-export async function getStudentByEmail(email: string) {
-  try {
-    const encodedEmail = encodeURIComponent(email);
-    const response = await fetch(`${API_URL}/students/email/${encodedEmail}`);
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao obter estudante:", error);
-    throw error;
-  }
+export function getStudentByEmail(email: string) {
+  const token = localStorage.getItem("token");
+  const encodedEmail = encodeURIComponent(email);
+  return apiRequest(`students/email/${encodedEmail}`, "GET", undefined, token || undefined);
 }
 
-export async function updateStudent(id: string, studentData: IStudentData) {
-  try {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(studentData),
-    });
-    return await handleResponseStudent(response);
-  } catch (error) {
-    console.error("Erro ao atualizar estudante:", error);
-    throw error;
-  }
+export function updateStudent(id: string, studentData: IStudentData) {
+  const token = localStorage.getItem("token");
+  return apiRequest(`${id}`, "PUT", studentData, token || undefined);
 }

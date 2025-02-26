@@ -1,11 +1,11 @@
 export default async function handleResponse(response: Response) {
   if (!response.ok) {
-    
-    if(response.status === 401){
+    if (response.status === 401) {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
-      alert("Login expirado, faça login novamente");
-    };
+      window.dispatchEvent(new Event("auth:logout"));
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
 
     const errorData = await response.json().catch(() => null);
     const errorMessage =
@@ -17,21 +17,20 @@ export default async function handleResponse(response: Response) {
 }
 
 export async function handleResponseStudent(response: Response) {
-    if (!response.ok) {
-  
-      if(response.status === 401){
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        alert("Login expirado, faça login novamente");
-      };
-  
-      const errorData = await response.json().catch(() => null);
-      const errorMessage =
-      errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
-      throw new Error(errorMessage);
+  if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      window.dispatchEvent(new Event("auth:logout"));
+      throw new Error("Sessão expirada. Faça login novamente.");
     }
-  
-    const data = await response.json().catch(() => ({}));
-    return { status: response.status, ...data };
+
+    const errorData = await response.json().catch(() => null);
+    const errorMessage =
+      errorData?.error || `Erro: ${response.status} - ${response.statusText}`;
+    throw new Error(errorMessage);
   }
-  
+
+  const data = await response.json().catch(() => ({}));
+  return { status: response.status, ...data };
+}

@@ -69,8 +69,6 @@ export default function AuthForm({ mode }: IAuthForm) {
         setUser(userData);
 
         navigate("/classes");
-      } else {
-        setError(res?.error || "Erro desconhecido");
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");

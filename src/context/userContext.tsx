@@ -3,12 +3,15 @@ import { createContext } from "react";
 interface User {
   name: string;
   email: string;
+  role?: string;
   profilePicture?: string;
 }
 
 interface UserContextType {
   user: User | null;
-  setUser: (user: User) => void;
+  token: string | null;
+  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
   logout: () => void;
 }
 

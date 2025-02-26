@@ -13,6 +13,7 @@ import menuIcon from "../../assets/img/Navbar/menu.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useUser } from "../../hooks/useUser";
+import { useEffect, useState } from "react";
 
 const menuNavigation = ["Turmas", "Sair"];
 const avatarMenuOptions = ["Perfil"];
@@ -21,6 +22,7 @@ function Navbar() {
   const { user, logout } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
+  const [canNavigateBack, setCanNavigateBack] = useState(false);
 
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
   const isLessonPage = /^\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/.test(
@@ -52,18 +54,64 @@ function Navbar() {
 
   const handleMenuItemClick = (page: string) => {
     handleCloseMenu();
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.warn("Tentativa de navegação sem token!");
+      logout();
+      navigate("/login");
+      return;
+    }
+
     if (page === "Turmas") {
       navigate("/classes");
     } else if (page === "Perfil") {
       navigate("/perfil");
     } else if (page === "Sair") {
       logout();
-      navigate("/login");
       localStorage.removeItem("token");
+      navigate("/login");
     }
   };
 
-  console.log("Dados do Usuário:", user);
+  useEffect(() => {
+    const checkToken = () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("Token ausente! Redirecionando para login...");
+        logout();
+        navigate("/login");
+      }
+    };
+
+    checkToken();
+
+    window.addEventListener("storage", checkToken);
+
+    return () => {
+      window.removeEventListener("storage", checkToken);
+    };
+  }, [logout, navigate]);
+
+  useEffect(() => {
+    if (canNavigateBack) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        navigate(-1);
+      } else {
+        console.warn("Token ausente! Redirecionando para login...");
+        logout();
+        navigate("/login");
+      }
+      setCanNavigateBack(false); // Reseta o estado
+    }
+  }, [canNavigateBack, logout, navigate]);
+
+  const handleBackClick = () => {
+    setCanNavigateBack(true);
+  };
+
+  console.log(user);
 
   return (
     <AppBar
@@ -142,7 +190,7 @@ function Navbar() {
                     cursor: "pointer",
                     "&:hover": { transform: "scale(1.06)" },
                   }}
-                  onClick={() => navigate(-1)}
+                  onClick={handleBackClick}
                 />
               </Box>
 

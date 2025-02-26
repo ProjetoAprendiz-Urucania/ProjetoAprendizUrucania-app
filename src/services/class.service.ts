@@ -3,67 +3,36 @@ import handleResponse from "./responseHandler.service";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
-export async function createClass(classData: IClass) {
-  try {
-    const response = await fetch(`${API_URL}/classes`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(classData),
-    });
-    return await handleResponse(response);
-  } catch (error) {
-    console.error("Erro ao criar classe:", error);
-    throw error;
-  }
+async function apiRequest(endpoint: string, method: string, body?: unknown, token?: string) {
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const response = await fetch(`${API_URL}/${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  return handleResponse(response);
 }
 
-export async function deleteClass(id: string) {
-  try {
-    const response = await fetch(`${API_URL}/classes/${id}`, { method: "DELETE" });
-    return await handleResponse(response);
-  } catch (error) {
-    console.error("Erro ao deletar classe:", error);
-    throw error;
-  }
+export function createClass(classData: IClass) {
+  return apiRequest("classes", "POST", classData);
 }
 
-export async function getClasses(token: string) {
-  try {
-    const response = await fetch(`${API_URL}/classes`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    const classes = await handleResponse(response)
-    return classes;
-  } catch (error) {
-    console.error("Erro ao obter classes:", error);
-    throw error;
-  }
+export function deleteClass(id: string) {
+  return apiRequest(`classes/${id}`, "DELETE");
 }
 
-export async function getClassById(id: string) {
-  try {
-    const response = await fetch(`${API_URL}/classes/${id}`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error("Erro ao obter classe:", error);
-    throw error;
-  }
+export function getClasses(token: string) {
+  return apiRequest("classes", "GET", undefined, token);
 }
 
-export async function updateClass(id: string, classData: IClass) {
-  try {
-    const response = await fetch(`${API_URL}/classes/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(classData),
-    });
-    return await handleResponse(response);
-  } catch (error) {
-    console.error("Erro ao atualizar classe:", error);
-    throw error;
-  }
+export function getClassById(id: string, token?: string) {
+  return apiRequest(`classes/${id}`, "GET", undefined, token);
+}
+
+export function updateClass(id: string, classData: IClass, token?: string) {
+  return apiRequest(`classes/${id}`, "PUT", classData, token);
 }
