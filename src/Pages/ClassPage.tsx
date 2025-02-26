@@ -21,36 +21,32 @@ export function ClassPage() {
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
 
-
   useEffect(() => {
     const fetchLessons = async () => {
       if (id) {
-        if(!tk){
-          console.log("err get classes() token inexistente")
-         }else{
-          const response = await getLessonsByClassId(id,tk);
+        if (!tk) {
+          console.log("err get classes() token inexistente");
+        } else {
+          const response = await getLessonsByClassId(id, tk);
           setLessons(response);
         }
-
       } else {
         console.log("ID não informado");
       }
     };
     fetchLessons();
-  }, [id]);
+  }, [id, tk]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
       if (lessons.length > 0 && id) {
         const materialsArray = await Promise.all(
           lessons.map(async (lesson) => {
-            console.log("lessonId:-----------------------", lesson.id);
-            if(!tk){
-              console.log("err get classes() token inexistente")
-            }else{
-              return getMaterial(id, lesson.id,tk);
+            if (!tk) {
+              console.log("err get classes() token inexistente");
+            } else {
+              return getMaterial(id, lesson.id, tk);
             }
-            
           })
         );
 
@@ -59,7 +55,7 @@ export function ClassPage() {
     };
 
     fetchMaterials();
-  }, [id, lessons]);
+  }, [id, lessons, tk]);
 
   return (
     <>

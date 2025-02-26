@@ -1,5 +1,5 @@
 import { useState, ReactNode, useEffect } from "react";
-import { UserContext } from "../userContext";
+import { AuthContext } from "./AuthContext";
 
 interface User {
   name: string;
@@ -8,7 +8,7 @@ interface User {
   profilePicture?: string;
 }
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
     try {
       const storedUser = localStorage.getItem("user");
@@ -54,7 +54,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    const handleAuthLogout = () => logout();
+    const handleAuthLogout = () => logout(true);
 
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("auth:logout", handleAuthLogout);
@@ -65,16 +65,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const logout = () => {
+  const logout = (internal = false) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    window.dispatchEvent(new Event("auth:logout"));
+
+    if (!internal) {
+      window.dispatchEvent(new Event("auth:logout"));
+    }
   };
 
   return (
-    <UserContext.Provider
+    <AuthContext.Provider
       value={{
         user,
         token,
@@ -84,6 +87,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };

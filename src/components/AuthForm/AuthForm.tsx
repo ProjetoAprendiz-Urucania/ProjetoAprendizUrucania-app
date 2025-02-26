@@ -18,20 +18,21 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
-import { UserContext } from "../../context/userContext";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 
 interface IAuthForm {
   mode: "login" | "register";
 }
 
 export default function AuthForm({ mode }: IAuthForm) {
-  const userContext = useContext(UserContext);
+  const userContext = useContext(AuthContext);
 
   if (!userContext) {
     throw new Error("UserContext must be used within a UserProvider");
   }
 
-  const { setUser } = userContext;
+  const { setUser } = useAuth();
 
   const isLogin = mode === "login";
 

@@ -1,117 +1,72 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import imLogo from "../../assets/img/Navbar/im_logo.svg";
-import avatar from "../../assets/img/Navbar/avatar.png";
-import { Box } from "@mui/material";
-import menuIcon from "../../assets/img/Navbar/menu.png";
+import React, { useEffect, useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Tooltip,
+  MenuItem,
+  Menu,
+  Box,
+} from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { useUser } from "../../hooks/useUser";
-import { useEffect, useState } from "react";
+import imLogo from "../../assets/img/Navbar/im_logo.svg";
+import avatar from "../../assets/img/Navbar/avatar.png";
+import menuIcon from "../../assets/img/Navbar/menu.png";
 
 const menuNavigation = ["Turmas", "Sair"];
 const avatarMenuOptions = ["Perfil"];
 
-function Navbar() {
-  const { user, logout } = useUser();
+interface NavbarProps {
+  token: string | null;
+  logout: () => void;
+}
+
+function Navbar({ token, logout }: NavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [canNavigateBack, setCanNavigateBack] = useState(false);
-
-  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
-  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/.test(
-    location.pathname
-  );
-  const isClassesPage = location.pathname === "/classes";
-
-  const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(
+  const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
+  const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
     null
   );
-  const [anchorElAvatar, setAnchorElAvatar] =
-    React.useState<null | HTMLElement>(null);
 
-  const handleOpenAvatar = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElAvatar(event.currentTarget);
-  };
+  const isClassesPage = location.pathname === "/classes";
+  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/([a-f0-9]{24})?$/.test(
+    location.pathname
+  );
 
-  const handleCloseAvatar = () => {
-    setAnchorElAvatar(null);
-  };
+  useEffect(() => {
+    if (!token) {
+      logout();
+      navigate("/login");
+    }
+  }, [token, logout, navigate]);
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElMenu(event.currentTarget);
-  };
+  const handleMenuToggle =
+    (setter: React.Dispatch<React.SetStateAction<null | HTMLElement>>) =>
+    (event: React.MouseEvent<HTMLElement>) =>
+      setter(event.currentTarget);
 
-  const handleCloseMenu = () => {
-    setAnchorElMenu(null);
-  };
+  const handleMenuClose =
+    (setter: React.Dispatch<React.SetStateAction<null | HTMLElement>>) => () =>
+      setter(null);
 
   const handleMenuItemClick = (page: string) => {
-    handleCloseMenu();
-    const token = localStorage.getItem("token");
-
+    setAnchorElMenu(null);
     if (!token) {
-      console.warn("Tentativa de navegação sem token!");
       logout();
       navigate("/login");
       return;
     }
-
-    if (page === "Turmas") {
-      navigate("/classes");
-    } else if (page === "Perfil") {
-      navigate("/perfil");
-    } else if (page === "Sair") {
+    if (page === "Turmas") navigate("/classes");
+    if (page === "Perfil") navigate("/perfil");
+    if (page === "Sair") {
       logout();
-      localStorage.removeItem("token");
       navigate("/login");
     }
   };
-
-  useEffect(() => {
-    const checkToken = () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.warn("Token ausente! Redirecionando para login...");
-        logout();
-        navigate("/login");
-      }
-    };
-
-    checkToken();
-
-    window.addEventListener("storage", checkToken);
-
-    return () => {
-      window.removeEventListener("storage", checkToken);
-    };
-  }, [logout, navigate]);
-
-  useEffect(() => {
-    if (canNavigateBack) {
-      const token = localStorage.getItem("token");
-      if (token) {
-        navigate(-1);
-      } else {
-        console.warn("Token ausente! Redirecionando para login...");
-        logout();
-        navigate("/login");
-      }
-      setCanNavigateBack(false); // Reseta o estado
-    }
-  }, [canNavigateBack, logout, navigate]);
-
-  const handleBackClick = () => {
-    setCanNavigateBack(true);
-  };
-
-  console.log(user);
 
   return (
     <AppBar
@@ -127,119 +82,74 @@ function Navbar() {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           {isClassesPage ? (
             <>
-              <Box>
-                <Tooltip title="Abrir menu do usuário">
-                  <IconButton onClick={handleOpenAvatar}>
-                    <Box
-                      component="img"
-                      src={avatar}
-                      sx={{
-                        width: "1.36em",
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  id="menu-avatar"
-                  anchorEl={anchorElAvatar}
-                  open={Boolean(anchorElAvatar)}
-                  onClose={handleCloseAvatar}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                  transformOrigin={{ vertical: "top", horizontal: "left" }}
-                >
-                  {avatarMenuOptions.map((option) => (
-                    <MenuItem
-                      key={option}
-                      onClick={() => handleMenuItemClick(option)}
-                    >
-                      <Typography>{option}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-
+              <Tooltip title="Abrir menu do usuário">
+                <IconButton onClick={handleMenuToggle(setAnchorElAvatar)}>
+                  <Box component="img" src={avatar} sx={{ width: "1.36em" }} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={anchorElAvatar}
+                open={Boolean(anchorElAvatar)}
+                onClose={handleMenuClose(setAnchorElAvatar)}
+              >
+                {avatarMenuOptions.map((option) => (
+                  <MenuItem
+                    key={option}
+                    onClick={() => handleMenuItemClick(option)}
+                  >
+                    <Typography>{option}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
               <Box
                 component="img"
                 src={imLogo}
                 alt="ICM Logo"
                 loading="lazy"
-                sx={{
-                  width: { xs: "4.6em", sm: "5.2em", md: "5.6em" },
-                  height: { xs: "2.97em", sm: "3.18em", md: "3.6em" },
-                }}
+                sx={{ width: "5.6em", height: "3.6em" }}
               />
             </>
           ) : (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
+              <IconButton
                 sx={{
                   borderRadius: "90px",
                   padding: 0.4,
+                  color: "#FFFFFF",
                   backgroundColor: "#E5E5E550",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  "&:hover": {
-                    backgroundColor: "#C0515B",
-                    transform: "scale(1.06)",
-                  },
+                  "&:hover": { backgroundColor: "#C0515B" },
+                }}
+                onClick={() => navigate(-1)}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+              <Typography
+                sx={{
+                  fontWeight: "600",
+                  fontSize: "16px",
+                  letterSpacing: "1.4px",
                 }}
               >
-                <ChevronLeftIcon
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": { transform: "scale(1.06)" },
-                  }}
-                  onClick={handleBackClick}
-                />
-              </Box>
-
-              {isClassPage && (
-                <Typography
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "16px",
-                    letterSpacing: "1.4px",
-                  }}
-                >
-                  Turmas
-                </Typography>
-              )}
-
-              {isLessonPage && (
-                <Typography
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: "16px",
-                    letterSpacing: "1.4px",
-                  }}
-                >
-                  Aulas e Materiais
-                </Typography>
-              )}
+                {isClassPage
+                  ? "Turmas"
+                  : isLessonPage
+                  ? "Aulas e Materiais"
+                  : ""}
+              </Typography>
             </Box>
           )}
         </Box>
 
-        <Box>
-          <Tooltip title="Abrir menu">
-            <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-              <Box
-                component="img"
-                src={menuIcon}
-                sx={{ width: { xs: "0.8em", sm: "1em" } }}
-              />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <Tooltip title="Abrir menu">
+          <IconButton onClick={handleMenuToggle(setAnchorElMenu)}>
+            <Box component="img" src={menuIcon} sx={{ width: "1em" }} />
+          </IconButton>
+        </Tooltip>
 
         <Menu
-          id="menu-navigation"
           anchorEl={anchorElMenu}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
           open={Boolean(anchorElMenu)}
-          onClose={handleCloseMenu}
+          onClose={handleMenuClose(setAnchorElMenu)}
         >
           {menuNavigation.map((item) => (
             <MenuItem key={item} onClick={() => handleMenuItemClick(item)}>
