@@ -3,10 +3,11 @@ import { apiRequest } from "./apiRequest.service";
 import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
 export async function login(email: string, password: string) {
-
   try {
-    const data: IStudentResponse = await apiRequest("login", "POST", { email, password });
-
+    const data: IStudentResponse = await apiRequest("login", "POST", {
+      email,
+      password,
+    });
 
     if (!data.token) {
       console.error("Erro: Token ausente na resposta!");
@@ -23,9 +24,27 @@ export async function login(email: string, password: string) {
   }
 }
 
-export async function createStudent(studentData: IStudentData) {
-  const data: IStudentResponse = await apiRequest("register", "POST", studentData);
+export async function createStudent(
+  name: string,
+  email: string,
+  password: string,
+  church: string
+) {
+  const data: IStudentResponse = await apiRequest("register", "POST", {
+    name,
+    email,
+    password,
+    church,
+  });
+
+  if (!data.token) {
+    console.error("Erro: Token ausente na resposta!");
+    throw new Error("Falha no Registro: token não recebido.");
+  }
+
   localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.studentWithoutPassword));
+
   return data;
 }
 
@@ -47,7 +66,12 @@ export function getStudentById(id: string) {
 export function getStudentByEmail(email: string) {
   const token = localStorage.getItem("token");
   const encodedEmail = encodeURIComponent(email);
-  return apiRequest(`students/email/${encodedEmail}`, "GET", undefined, token || undefined);
+  return apiRequest(
+    `students/email/${encodedEmail}`,
+    "GET",
+    undefined,
+    token || undefined
+  );
 }
 
 export function updateStudent(id: string, studentData: IStudentData) {

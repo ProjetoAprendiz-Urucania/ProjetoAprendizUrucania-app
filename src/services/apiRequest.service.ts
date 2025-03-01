@@ -25,7 +25,6 @@ export async function apiRequest(
       data: body,
       headers,
     });
-
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

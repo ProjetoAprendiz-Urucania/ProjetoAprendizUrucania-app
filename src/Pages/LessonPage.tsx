@@ -3,8 +3,8 @@ import { ILesson } from "../interfaces/lesson/ILesson";
 import { getLesson } from "../services/lesson.service";
 import { Box, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { getMaterial } from "../services/theoryMaterials.service";
-import { TheoryMaterial } from "../components/TheoryMaterial/TheoryMaterial";
+import { getMaterialsByLesson } from "../services/theoryMaterials.service";
+import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -23,10 +23,10 @@ export function LessonPage() {
   useEffect(() => {
     const fetchLessons = async () => {
       if (classId && lessonId) {
-        if(!tk){
-          console.log("err get classes() token inexistente")
-        }else{
-          const response = await getLesson(classId, lessonId,tk);
+        if (!tk) {
+          console.log("err get classes() token inexistente");
+        } else {
+          const response = await getLesson(classId, lessonId, tk);
           setLesson(response);
         }
       } else {
@@ -34,25 +34,23 @@ export function LessonPage() {
       }
     };
     fetchLessons();
-  }, [classId, lessonId]);
+  }, [classId, lessonId, tk]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
       if (lesson && classId && lessonId) {
         let allMaterials: ITheoryMaterial[] = [];
-        if(!tk){
-          console.log("err get classes() token inexistente")
-        }else{
-          const materials = await getMaterial(classId, lessonId,tk);
+        if (!tk) {
+          console.log("err get classes() token inexistente");
+        } else {
+          const materials = await getMaterialsByLesson(classId, lessonId, tk);
           allMaterials = [...allMaterials, ...materials];
           setMaterials(allMaterials);
-
         }
-        
       }
     };
     fetchMaterials();
-  }, [classId, lessonId, lesson]);
+  }, [classId, lessonId, lesson, tk]);
 
   return (
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
@@ -85,7 +83,7 @@ export function LessonPage() {
           materials.length > 0 &&
           materials.map((materialItem) => {
             return materialItem ? (
-              <TheoryMaterial key={materialItem.id} {...materialItem} />
+              <TheoryMaterialItem key={materialItem.id} {...materialItem} />
             ) : null;
           })}
       </Box>

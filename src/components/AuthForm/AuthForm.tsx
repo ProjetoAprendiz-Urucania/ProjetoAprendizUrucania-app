@@ -56,10 +56,9 @@ export default function AuthForm({ mode }: IAuthForm) {
       if (isLogin) {
         res = await login(email, password);
       } else {
-        const newStudent = { name, email, password, church };
-        res = await createStudent(newStudent);
+        res = await createStudent(name, email, password, church);
       }
-
+      console.log("resposta ao registro:", res);
       if (res.studentWithoutPassword && res.token) {
         const storedUser = localStorage.getItem("user");
         const userObject: IUser | null = storedUser

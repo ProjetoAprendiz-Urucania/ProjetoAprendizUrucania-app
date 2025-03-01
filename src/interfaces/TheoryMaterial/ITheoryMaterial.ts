@@ -6,5 +6,5 @@ export interface ITheoryMaterial {
     fileType: string;
     lessonId?: string;
     lesson?: ILesson;
-  
+    fileUrl: string;
 }

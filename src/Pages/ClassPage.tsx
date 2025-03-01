@@ -7,8 +7,8 @@ import { SearchBar } from "../components/SearchBar/SearchBar";
 import { useParams } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { getMaterial } from "../services/theoryMaterials.service";
-import { TheoryMaterial } from "../components/TheoryMaterial/TheoryMaterial";
+import { getAllMaterials } from "../services/theoryMaterials.service";
+import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 
 export function ClassPage() {
@@ -39,18 +39,9 @@ export function ClassPage() {
 
   useEffect(() => {
     const fetchMaterials = async () => {
-      if (lessons.length > 0 && id) {
-        const materialsArray = await Promise.all(
-          lessons.map(async (lesson) => {
-            if (!tk) {
-              console.log("err get classes() token inexistente");
-            } else {
-              return getMaterial(id, lesson.id, tk);
-            }
-          })
-        );
-
-        setMaterials(materialsArray.flat().filter(Boolean));
+      if (lessons.length > 0 && id && tk) {
+        const materials = await getAllMaterials(id, tk);
+        setMaterials(materials);
       }
     };
 
@@ -139,7 +130,7 @@ export function ClassPage() {
           (materials.length > 0 && !searchTerm
             ? materials.map((materialItem) => {
                 return materialItem ? (
-                  <TheoryMaterial key={materialItem.id} {...materialItem} />
+                  <TheoryMaterialItem key={materialItem.id} {...materialItem} />
                 ) : null;
               })
             : materials
@@ -150,7 +141,10 @@ export function ClassPage() {
                 )
                 .map((materialItem) => {
                   return materialItem ? (
-                    <TheoryMaterial key={materialItem.id} {...materialItem} />
+                    <TheoryMaterialItem
+                      key={materialItem.id}
+                      {...materialItem}
+                    />
                   ) : null;
                 }))}
       </Box>
