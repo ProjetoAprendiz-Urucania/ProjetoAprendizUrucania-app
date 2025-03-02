@@ -2,6 +2,18 @@ import { IStudentData } from "../interfaces/student/IStudent";
 import { apiRequest } from "./apiRequest.service";
 import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
+export async function forgotPassword(email: string){
+  const data: IStudentResponse = await apiRequest(`forgot/email/${email}`, "POST");
+  
+  if (!data.hash){
+    console.error("Erro: Hash ausente na resposta!");
+    throw new Error("Falha na redefinição: Hash não recebido.");
+  }
+
+  localStorage.setItem("hash", data.hash)
+  return
+}
+
 export async function login(email: string, password: string) {
   try {
     const data: IStudentResponse = await apiRequest("login", "POST", {

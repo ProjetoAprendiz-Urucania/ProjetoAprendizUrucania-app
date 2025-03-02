@@ -3,9 +3,23 @@ import AuthForm from "../components/AuthForm/AuthForm";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
 import { useLocation } from "react-router-dom";
 
-export function AuthPage() {
+function getMode(): any{
   const location = useLocation();
-  const mode = location.pathname.includes("register") ? "register" : "login";
+  const path = location.pathname;
+  
+  switch (true) {
+    case path.includes("register"):
+      return "register";
+    case path.includes("forgot"):
+      return "forgot";
+    default:
+      return "login";
+  }
+}
+
+export function AuthPage() {
+  
+  const mode = getMode()
 
   return (
     <Box

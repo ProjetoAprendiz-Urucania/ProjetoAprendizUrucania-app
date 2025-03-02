@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import { login, createStudent } from "../../services/student.service";
+import { login, createStudent, forgotPassword } from "../../services/student.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
@@ -19,7 +19,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { IUser } from "../../interfaces/IUser";
 
 interface IAuthForm {
-  mode: "login" | "register";
+  mode: "login" | "register" | "forgot";
 }
 
 export default function AuthForm({ mode }: IAuthForm) {
@@ -32,6 +32,8 @@ export default function AuthForm({ mode }: IAuthForm) {
   const { setUser } = useAuth();
 
   const isLogin = mode === "login";
+  const isRegister = mode ==="register"
+  const isForgot = mode === "forgot";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -46,28 +48,45 @@ export default function AuthForm({ mode }: IAuthForm) {
     e.preventDefault();
     setError(null);
 
-    if (!email.trim() || !password.trim()) {
-      setError("Preencha todos os campos obrigatórios");
-      return;
+    if (!isForgot){
+      if (!email.trim() || !password.trim()) {
+        setError("Preencha todos os campos obrigatórios");
+        return;
+      }
+    }else{
+      if (!email.trim()) {
+        setError("Preencha todos os campos obrigatórios");
+        return;
+      }
     }
+
 
     try {
       let res;
-      if (isLogin) {
+
+      if (isForgot) {
+        res = await forgotPassword(email);
+      }else if(isLogin) {
         res = await login(email, password);
       } else {
         res = await createStudent(name, email, password, church);
       }
-      console.log("resposta ao registro:", res);
-      if (res.studentWithoutPassword && res.token) {
-        const storedUser = localStorage.getItem("user");
-        const userObject: IUser | null = storedUser
-          ? JSON.parse(storedUser)
-          : null;
-        setUser(userObject);
 
-        navigate("/classes");
+      if(localStorage.getItem("hash")){
+        navigate("/newPassword");
+      }else{
+        console.log("resposta ao registro:", res);
+        if (res.studentWithoutPassword && res.token) {
+          const storedUser = localStorage.getItem("user");
+          const userObject: IUser | null = storedUser
+            ? JSON.parse(storedUser)
+            : null;
+          setUser(userObject);
+  
+          navigate("/classes");
+        }
       }
+
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
@@ -105,7 +124,7 @@ export default function AuthForm({ mode }: IAuthForm) {
             gap: 28,
           }}
         >
-          {!isLogin && (
+          {isRegister && (
             <>
               <TextField
                 id="name"
@@ -133,7 +152,9 @@ export default function AuthForm({ mode }: IAuthForm) {
             onChange={(e) => setEmail(e.target.value)}
             sx={inputStyle}
           />
-          <TextField
+
+          {!isForgot &&(
+            <TextField
             id="password"
             label="Senha"
             type={showPassword ? "text" : "password"}
@@ -156,7 +177,8 @@ export default function AuthForm({ mode }: IAuthForm) {
               },
             }}
           />
-
+          )}
+          
           <Button
             type="submit"
             sx={{
@@ -166,7 +188,7 @@ export default function AuthForm({ mode }: IAuthForm) {
               mt: 2,
             }}
           >
-            {isLogin ? "Entrar" : "Registrar"}
+            {isLogin ? "Entrar" : isRegister ? "Registrar" : "Enviar código"}
           </Button>
         </form>
 
@@ -174,7 +196,7 @@ export default function AuthForm({ mode }: IAuthForm) {
           <>
             <Box sx={{ textAlign: "center", mt: 3 }}>
               <Link
-                href={isLogin ? "/register" : "/login"}
+                href="forgot"
                 sx={{
                   fontSize: "14px",
                   color: "#6b7280",

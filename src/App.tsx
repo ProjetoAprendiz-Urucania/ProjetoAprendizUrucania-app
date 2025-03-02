@@ -17,14 +17,17 @@ function App() {
 
   const isLoginPage = location.pathname === "/login";
   const isRegisterPage = location.pathname === "/register";
+  const isForgot = location.pathname === "/forgot";
+  const isnewPassword = location.pathname === "/newPassword";
 
   return (
     <ThemeProvider theme={theme}>
-      {!isLoginPage && !isRegisterPage && (
+      {!isLoginPage && !isRegisterPage && !isForgot && !isnewPassword &&(
         <Navbar logout={logout} token={token} />
       )}
       <Container maxWidth="xl">
         <Routes>
+          <Route path="/forgot" element={<AuthPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route

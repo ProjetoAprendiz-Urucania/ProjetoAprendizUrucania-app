@@ -12,4 +12,5 @@ export interface IStudentResponse {
     updated_at: string;
   };
   token: string;
+  hash:string;
 }
