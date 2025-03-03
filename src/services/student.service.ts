@@ -75,16 +75,20 @@ export function getStudentById(id: string) {
   return apiRequest(`students/id/${id}`, "GET", undefined, token || undefined);
 }
 
-export function getStudentByEmail(email: string) {
-  const token = localStorage.getItem("token");
-  const encodedEmail = encodeURIComponent(email);
-  return apiRequest(
-    `students/email/${encodedEmail}`,
-    "GET",
-    undefined,
-    token || undefined
-  );
-}
+// export function getStudentByEmail(email: string) {
+//   if(!email){
+//     throw new Error("Email is required");
+//   }
+
+//   const token = localStorage.getItem("token");
+//   const encodedEmail = encodeURIComponent(email);
+//   return apiRequest(
+//     `students/email/${encodedEmail}`,
+//     "GET",
+//     undefined,
+//     token || undefined
+//   );
+// }
 
 export function updateStudent(id: string, studentData: IStudentData) {
   const token = localStorage.getItem("token");

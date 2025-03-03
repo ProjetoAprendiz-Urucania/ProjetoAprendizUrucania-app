@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { IClass } from "../interfaces/class/IClass";
-import { getClasses } from "../services/class.service";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
+import { getStudentClasses } from "../services/studentClass.service";
 
 export function ClassesPage() {
   const [classes, setClasses] = useState<IClass[]>([]);
@@ -11,15 +11,25 @@ export function ClassesPage() {
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchStudentClasses = async () => {
       if (!tk) {
         console.log("err get classes() token inexistente");
       } else {
-        const response = await getClasses(tk);
-        setClasses(response);
+        const studentString = localStorage.getItem("user");
+        if (!studentString) {
+          console.error("Erro: usuário não encontrado no localStorage");
+          return;
+        }
+
+        const student = JSON.parse(studentString);
+
+        const response = await getStudentClasses(student.id, tk);
+        console.log(response);
+
+        setClasses(response.classes);
       }
     };
-    fetchClasses();
+    fetchStudentClasses();
   }, [tk]);
 
   return (
