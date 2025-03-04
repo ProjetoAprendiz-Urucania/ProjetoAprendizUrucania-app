@@ -1,25 +1,29 @@
 import { Box } from "@mui/material";
 import AuthForm from "../components/AuthForm/AuthForm";
+import AuthFormPassword from "../components/AuthForm/AuthFormPassword";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
 import { useLocation } from "react-router-dom";
 
-function getMode(): any{
+function getMode(): any {
   const location = useLocation();
   const path = location.pathname;
-  
+
   switch (true) {
     case path.includes("register"):
       return "register";
     case path.includes("forgot"):
       return "forgot";
-    default:
+    case path.includes("login"):
       return "login";
+    case path.includes("newPassword"):
+      return "newPassword";
+    default:
+      return "confirmCode";
   }
 }
 
 export function AuthPage() {
-  
-  const mode = getMode()
+  const mode = getMode();
 
   return (
     <Box
@@ -45,7 +49,12 @@ export function AuthPage() {
           alignItems: "center",
         }}
       >
-        <AuthForm mode={mode} />
+        {mode === "newPassword" || mode === "confirmCode" ? (
+          <AuthFormPassword mode={mode} />
+        ) : (
+          <AuthForm mode={mode} />
+        )}
+
         <Box
           component="img"
           src={logoIgreja}

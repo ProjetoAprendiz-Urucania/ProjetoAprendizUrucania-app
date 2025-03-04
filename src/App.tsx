@@ -19,14 +19,19 @@ function App() {
   const isRegisterPage = location.pathname === "/register";
   const isForgot = location.pathname === "/forgot";
   const isnewPassword = location.pathname === "/newPassword";
+  const isconfirmCode = location.pathname === "/confirmCode";
 
   return (
     <ThemeProvider theme={theme}>
-      {!isLoginPage && !isRegisterPage && !isForgot && !isnewPassword &&(
-        <Navbar logout={logout} token={token} />
-      )}
+      {!isLoginPage &&
+        !isRegisterPage &&
+        !isForgot &&
+        !isnewPassword &&
+        !isconfirmCode && <Navbar logout={logout} token={token} />}
       <Container maxWidth="xl">
         <Routes>
+          <Route path="//confirmCode" element={<AuthPage />} />
+          <Route path="/newPassword" element={<AuthPage />} />
           <Route path="/forgot" element={<AuthPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />

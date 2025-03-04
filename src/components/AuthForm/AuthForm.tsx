@@ -62,7 +62,7 @@ export default function AuthForm({ mode }: IAuthForm) {
 
 
     try {
-      let res;
+      let res : any;
 
       if (isForgot) {
         res = await forgotPassword(email);
@@ -73,7 +73,7 @@ export default function AuthForm({ mode }: IAuthForm) {
       }
 
       if(localStorage.getItem("hash")){
-        navigate("/newPassword");
+        navigate("/confirmCode");
       }else{
         console.log("resposta ao registro:", res);
         if (res.studentWithoutPassword && res.token) {

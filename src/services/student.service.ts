@@ -2,10 +2,12 @@ import { IStudentData } from "../interfaces/student/IStudent";
 import { apiRequest } from "./apiRequest.service";
 import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
-export async function forgotPassword(email: string){
+import bcrypt from "bcryptjs";
+
+export async function forgotPassword(email: string) {
   const data: IStudentResponse = await apiRequest(`forgot/email/${email}`, "POST");
-  
-  if (!data.hash){
+
+  if (!data.hash) {
     console.error("Erro: Hash ausente na resposta!");
     throw new Error("Falha na redefinição: Hash não recebido.");
   }
@@ -26,6 +28,7 @@ export async function login(email: string, password: string) {
       throw new Error("Falha no login: token não recebido.");
     }
 
+    localStorage.removeItem("hash");
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.studentWithoutPassword));
 
@@ -54,6 +57,7 @@ export async function createStudent(
     throw new Error("Falha no Registro: token não recebido.");
   }
 
+  localStorage.removeItem("hash");
   localStorage.setItem("token", data.token);
   localStorage.setItem("user", JSON.stringify(data.studentWithoutPassword));
 
@@ -93,4 +97,13 @@ export function getStudentById(id: string) {
 export function updateStudent(id: string, studentData: IStudentData) {
   const token = localStorage.getItem("token");
   return apiRequest(`${id}`, "PUT", studentData, token || undefined);
+}
+
+export async function confirmHashChangePassword(code: string, localHash: string) {
+  try {
+    const result = await bcrypt.compare(code, localHash);
+    return result;
+  } catch (error) {
+    console.log("Erro ao conferir hash de troca de senha")
+  }
 }
