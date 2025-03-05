@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -9,19 +9,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import imLogo from "../../assets/img/Form/im_logo.png";
-import {
-  confirmHashChangePassword,
-} from "../../services/student.service";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { useAuth } from "../../hooks/useAuth";
-import { IUser } from "../../interfaces/IUser";
+import { IStudentData } from "../../interfaces/student/IStudent";
+import { updateStudent } from "../../services/student.service";
+
+import imLogo from "../../assets/img/Form/im_logo.png";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import {jwtDecode} from "jwt-decode";
 
 interface IAuthForm {
-  mode: "confirmCode" | "newPassword";
+  mode: "newPassword";
 }
 
 export default function AuthFormPassword({ mode }: IAuthForm) {
@@ -31,54 +31,33 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
     throw new Error("UserContext must be used within a UserProvider");
   }
 
-  const { setUser } = useAuth();
-
-  const isConfirmCode = mode === "confirmCode";
+  //const isConfirmCode = mode === "confirmCode";
   const isnewPassword = mode === "newPassword";
-
-  const [code, setCode] = useState("");
+  const { token } = useParams<{ token: any }>();
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
-    if (isConfirmCode) {
-      if (!code.trim()) {
-        setError("Preencha todos os campos obrigatórios");
-        return;
-      }
-    } else {
-      if (!newPassword.trim()) {
-        setError("Preencha todos os campos obrigatórios");
-        return;
-      }
+    if (!newPassword.trim()) {
+      setError("Preencha todos os campos obrigatórios");
+      return;
     }
 
     try {
-      let res: any;
+      let res : any;
+      const tk :any  = jwtDecode(token)
+      let newStudentPassword :IStudentData = {password: newPassword, name: tk.name, email: tk.email};
 
-      if (isConfirmCode) {
-        let localHash = localStorage.getItem("hash");
-        if (localHash) {
-          res = await confirmHashChangePassword(code, localHash);
-        }
-      } /*else if(isLogin) {
-          res = await login(email, password);
-        } else {
-          res = await createStudent(name, email, password, church);
-        }*/
+      localStorage.setItem("token",token)// need for the updateStudent
+      res = updateStudent(tk.id, newStudentPassword);
+      localStorage.removeItem("token") //prevents some kind of bug
 
-      if (res === true) {
-        localStorage.removeItem("hash")
-        navigate("/newPassword");
-      } else {
-        console.log("resposta ao registro:", res);
-      }
+
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
@@ -116,17 +95,6 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
             gap: 28,
           }}
         >
-          {isConfirmCode && (
-            <TextField
-              id="code"
-              label="Code"
-              variant="standard"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              sx={inputStyle}
-            />
-          )}
-
           {isnewPassword && (
             <TextField
               id="password"
@@ -162,7 +130,7 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
               mt: 2,
             }}
           >
-            {isConfirmCode ? "Confirmar" : "Mudar Senha"}
+            {isnewPassword ? "Mudar Senha" : "Confirmar"}
           </Button>
         </form>
 

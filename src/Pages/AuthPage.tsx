@@ -15,10 +15,8 @@ function getMode(): any {
       return "forgot";
     case path.includes("login"):
       return "login";
-    case path.includes("newPassword"):
-      return "newPassword";
     default:
-      return "confirmCode";
+      return "newPassword";
   }
 }
 
@@ -49,7 +47,7 @@ export function AuthPage() {
           alignItems: "center",
         }}
       >
-        {mode === "newPassword" || mode === "confirmCode" ? (
+        {mode === "newPassword" ? (
           <AuthFormPassword mode={mode} />
         ) : (
           <AuthForm mode={mode} />

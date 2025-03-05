@@ -10,7 +10,11 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import { login, createStudent, forgotPassword } from "../../services/student.service";
+import {
+  login,
+  createStudent,
+  forgotPassword,
+} from "../../services/student.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
@@ -32,7 +36,7 @@ export default function AuthForm({ mode }: IAuthForm) {
   const { setUser } = useAuth();
 
   const isLogin = mode === "login";
-  const isRegister = mode ==="register"
+  const isRegister = mode === "register";
   const isForgot = mode === "forgot";
 
   const [name, setName] = useState("");
@@ -48,33 +52,34 @@ export default function AuthForm({ mode }: IAuthForm) {
     e.preventDefault();
     setError(null);
 
-    if (!isForgot){
+    if (!isForgot) {
       if (!email.trim() || !password.trim()) {
         setError("Preencha todos os campos obrigatórios");
         return;
       }
-    }else{
+    } else {
       if (!email.trim()) {
         setError("Preencha todos os campos obrigatórios");
         return;
       }
     }
 
-
     try {
-      let res : any;
+      let res: any;
 
       if (isForgot) {
         res = await forgotPassword(email);
-      }else if(isLogin) {
+      } else if (isLogin) {
         res = await login(email, password);
       } else {
         res = await createStudent(name, email, password, church);
       }
 
-      if(localStorage.getItem("hash")){
-        navigate("/confirmCode");
-      }else{
+      if (res === "userExists") {
+        setError("Seu link de Recuperação foi enviado ao email informado");
+        setEmail("");
+        
+      } else {
         console.log("resposta ao registro:", res);
         if (res.studentWithoutPassword && res.token) {
           const storedUser = localStorage.getItem("user");
@@ -82,11 +87,10 @@ export default function AuthForm({ mode }: IAuthForm) {
             ? JSON.parse(storedUser)
             : null;
           setUser(userObject);
-  
+
           navigate("/classes");
         }
       }
-
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
@@ -153,32 +157,32 @@ export default function AuthForm({ mode }: IAuthForm) {
             sx={inputStyle}
           />
 
-          {!isForgot &&(
+          {!isForgot && (
             <TextField
-            id="password"
-            label="Senha"
-            type={showPassword ? "text" : "password"}
-            variant="standard"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={inputStyle}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      onMouseDown={(e) => e.preventDefault()}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
+              id="password"
+              label="Senha"
+              type={showPassword ? "text" : "password"}
+              variant="standard"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={inputStyle}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        onMouseDown={(e) => e.preventDefault()}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
           )}
-          
+
           <Button
             type="submit"
             sx={{

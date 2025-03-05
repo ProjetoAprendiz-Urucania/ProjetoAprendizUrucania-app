@@ -18,26 +18,23 @@ function App() {
   const isLoginPage = location.pathname === "/login";
   const isRegisterPage = location.pathname === "/register";
   const isForgot = location.pathname === "/forgot";
-  const isnewPassword = location.pathname === "/newPassword";
-  const isconfirmCode = location.pathname === "/confirmCode";
+  const isnewPassword = location.pathname.startsWith("/newPassword");
 
   return (
     <ThemeProvider theme={theme}>
       {!isLoginPage &&
         !isRegisterPage &&
         !isForgot &&
-        !isnewPassword &&
-        !isconfirmCode && <Navbar logout={logout} token={token} />}
+        !isnewPassword && <Navbar logout={logout} token={token} />}
       <Container maxWidth="xl">
         <Routes>
-          <Route path="//confirmCode" element={<AuthPage />} />
-          <Route path="/newPassword" element={<AuthPage />} />
+          <Route path="/newPassword/:token" element={<AuthPage />} />
           <Route path="/forgot" element={<AuthPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route
             path="/"
-            element={<Navigate to={token ? "/classes" : "/login"} replace />}
+            element={<Navigate to={token ?(isnewPassword?"/newPassword/:token" : "/classes")  : (isnewPassword? "/newPassword/:token" : "/login")} replace />}    // Privents from heading to /login when you try to reset password without a user/token on storage
           />
           <Route
             path="/classes"
