@@ -2,8 +2,6 @@ import { IStudentData } from "../interfaces/student/IStudent";
 import { apiRequest } from "./apiRequest.service";
 import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
-import bcrypt from "bcryptjs";
-
 export async function forgotPassword(email: string) {
   try {
     const data: IStudentResponse = await apiRequest(`forgot/email/${email}`, "POST");
@@ -78,23 +76,35 @@ export function getStudents() {
 
 export function getStudentById(id: string) {
   const token = localStorage.getItem("token");
-  return apiRequest(`students/id/${id}`, "GET", undefined, token || undefined);
+  return apiRequest(`students/${id}`, "GET", undefined, token || undefined);
 }
 
-// export function getStudentByEmail(email: string) {
-//   if(!email){
-//     throw new Error("Email is required");
-//   }
+export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
+  const token = localStorage.getItem("token");
 
-//   const token = localStorage.getItem("token");
-//   const encodedEmail = encodeURIComponent(email);
-//   return apiRequest(
-//     `students/email/${encodedEmail}`,
-//     "GET",
-//     undefined,
-//     token || undefined
-//   );
-// }
+  const formData = new FormData();
+  if (profilePhoto) {
+    formData.append("profilePhoto", profilePhoto);  // Adiciona o arquivo ao FormData
+  }
+
+  return apiRequest(`students/${id}/profilePhoto`, "POST", formData, token || undefined);
+}
+
+
+export function getStudentByEmail(email: string) {
+  if(!email){
+    throw new Error("Email is required");
+  }
+
+  const token = localStorage.getItem("token");
+  const encodedEmail = encodeURIComponent(email);
+  return apiRequest(
+    `students/email/${encodedEmail}`,
+    "GET",
+    undefined,
+    token || undefined
+  );
+}
 
 export function updateStudent(id: string, studentData: IStudentData) {
   const token = localStorage.getItem("token");
