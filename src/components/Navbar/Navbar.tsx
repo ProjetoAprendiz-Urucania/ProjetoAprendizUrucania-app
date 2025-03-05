@@ -16,7 +16,7 @@ import avatar from "../../assets/img/Navbar/avatar.png";
 import menuIcon from "../../assets/img/Navbar/menu.png";
 
 const menuNavigation = ["Turmas", "Sair"];
-const avatarMenuOptions = ["Perfil"];
+const avatarMenuOptions = ["Alterar foto de perfil"];
 
 interface NavbarProps {
   token: string | null;
@@ -61,7 +61,7 @@ function Navbar({ token, logout }: NavbarProps) {
       return;
     }
     if (page === "Turmas") navigate("/classes");
-    if (page === "Perfil") navigate("/perfil");
+    if (page === "Alterar foto de perfil") navigate("/perfil");
     if (page === "Sair") {
       logout();
       navigate("/login");
