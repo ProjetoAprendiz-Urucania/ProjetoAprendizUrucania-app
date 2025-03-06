@@ -114,7 +114,41 @@ function Navbar({ token, logout }: NavbarProps) {
         return;
       }
 
-      setSelectedPhoto(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const img = new Image();
+        img.src = reader.result as string;
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) {
+            console.error("Erro ao obter o contexto do canvas.");
+            return;
+          }
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const convertedFile = new File([blob], "profile.jpg", {
+                  type: "image/jpeg",
+                });
+
+                setSelectedPhoto(convertedFile);
+              }
+            },
+            "image/jpeg",
+            0.9
+          );
+        };
+      };
     }
   };
 
@@ -165,7 +199,7 @@ function Navbar({ token, logout }: NavbarProps) {
                       height: { xs: "34px", md: "40px" },
                       objectFit: "cover",
                       borderRadius: "50%",
-                      border: profilePhoto ? "2px solid #FFFFFF" : "none",
+                      border: !profilePhoto ? "2px solid #FFFFFF" : "none",
                     }}
                   />
                 </IconButton>

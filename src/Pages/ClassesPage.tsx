@@ -13,63 +13,61 @@ export function ClassesPage() {
   useEffect(() => {
     const fetchStudentClasses = async () => {
       if (!tk) {
-        console.log("err get classes() token inexistente");
-      } else {
-        const studentString = localStorage.getItem("user");
-        if (!studentString) {
-          console.error("Erro: usuário não encontrado no localStorage");
+        console.error("Erro: Token inexistente.");
+        return;
+      }
+
+      const studentString = localStorage.getItem("user");
+      if (!studentString) {
+        console.error("Erro: Usuário não encontrado no localStorage.");
+        return;
+      }
+
+      const student = JSON.parse(studentString);
+
+      try {
+        const response = await getStudentClasses(student.id, tk);
+        if (!response || !response.classes) {
+          console.error("Erro: Resposta inesperada da API.");
           return;
         }
 
-        const student = JSON.parse(studentString);
-
-        const response = await getStudentClasses(student.id, tk);
-        console.log(response);
-
         setClasses(response.classes);
+      } catch (error) {
+        console.error("Erro ao buscar turmas:", error);
       }
     };
+
     fetchStudentClasses();
   }, [tk]);
+
+  const filteredClasses = classSearch
+    ? classes.filter((classItem) =>
+        classItem.name.toLowerCase().includes(classSearch.toLowerCase())
+      )
+    : classes;
 
   return (
     <>
       <SearchBar searchTerm={classSearch} setSearchTerm={setClassSearch} />
-      <Box
-        sx={{
-          textAlign: "left",
-          marginBottom: 4,
-        }}
-      >
+      <Box sx={{ textAlign: "left", marginBottom: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: "600" }}>
           Turmas
         </Typography>
       </Box>
-      {classes.length > 0 && !classSearch
-        ? classes.map((classItem) => {
-            return (
-              <ContentCard
-                key={classItem.id}
-                id={classItem.id}
-                name={classItem.name}
-                teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage}
-              />
-            );
-          })
-        : classes
-            .filter((classItem) =>
-              classItem.name.toLowerCase().includes(classSearch.toLowerCase())
-            )
-            .map((classItem) => (
-              <ContentCard
-                key={classItem.id}
-                id={classItem.id}
-                name={classItem.name}
-                teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage}
-              />
-            ))}
+      {filteredClasses.length > 0 ? (
+        filteredClasses.map((classItem) => (
+          <ContentCard
+            key={classItem.id}
+            id={classItem.id}
+            name={classItem.name}
+            teacherInfo={classItem.teachers}
+            coverImage={classItem.coverImage}
+          />
+        ))
+      ) : (
+        <Typography variant="body1">Nenhuma turma encontrada.</Typography>
+      )}
     </>
   );
 }
