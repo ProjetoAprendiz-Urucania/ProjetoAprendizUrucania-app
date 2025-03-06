@@ -80,16 +80,20 @@ export function getStudentById(id: string) {
 }
 
 export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
+  console.log("Arquivo recebido no frontend:", profilePhoto);
+
+  if (!profilePhoto) {
+    console.error("Nenhum arquivo foi selecionado!");
+    return Promise.reject("Nenhum arquivo foi selecionado.");
+  }
+
   const token = localStorage.getItem("token");
 
   const formData = new FormData();
-  if (profilePhoto) {
-    formData.append("profilePhoto", profilePhoto);  // Adiciona o arquivo ao FormData
-  }
+  formData.append('profilePhoto', profilePhoto);
 
   return apiRequest(`students/${id}/profilePhoto`, "POST", formData, token || undefined);
 }
-
 
 export function getStudentByEmail(email: string) {
   if(!email){

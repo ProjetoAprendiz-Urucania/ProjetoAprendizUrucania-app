@@ -20,7 +20,6 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import imLogo from "../../assets/img/Navbar/im_logo.svg";
 import avatar from "../../assets/img/Navbar/avatar.png";
 import menuIcon from "../../assets/img/Navbar/menu.png";
-import { useAuth } from "../../hooks/useAuth";
 import { uploadProfilePhoto } from "../../services/student.service";
 
 const menuNavigation = ["Turmas", "Sair"];
@@ -32,7 +31,14 @@ interface NavbarProps {
 }
 
 function Navbar({ token, logout }: NavbarProps) {
-  const user = useAuth();
+  const user = localStorage.getItem("user");
+
+  let parsedUser = null;
+
+  if (user) {
+    parsedUser = JSON.parse(user);
+  }
+
   const location = useLocation();
   const navigate = useNavigate();
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
@@ -59,15 +65,17 @@ function Navbar({ token, logout }: NavbarProps) {
 
   useEffect(() => {
     if (!openProfileModal) {
-      setProfilePhoto(user.user?.profilePicture);
-    }
-  }, [openProfileModal, user.user?.profilePicture]);
-
-  useEffect(() => {
-    if (!openProfileModal) {
       setSelectedPhoto(null);
     }
   }, [openProfileModal]);
+
+  useEffect(() => {
+    if (parsedUser && parsedUser.profilePicture) {
+      setProfilePhoto(parsedUser.profilePicture);
+    } else {
+      setProfilePhoto(null);
+    }
+  }, [parsedUser]);
 
   const handleMenuToggle =
     (setter: React.Dispatch<React.SetStateAction<null | HTMLElement>>) =>
@@ -110,9 +118,18 @@ function Navbar({ token, logout }: NavbarProps) {
     }
   };
 
-  const handleSave = () => {
-    if (user.user?.id && selectedPhoto)
-      uploadProfilePhoto(user.user?.id, selectedPhoto);
+  const handleSave = async () => {
+    if (parsedUser?.id && selectedPhoto) {
+      const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
+      console.log("response updated", res.updatedStudent?.profilePicture);
+      setProfilePhoto(res.updatedStudent?.profilePicture);
+
+      if (parsedUser) {
+        parsedUser.profilePicture = res.updatedStudent?.profilePicture;
+        localStorage.setItem("user", JSON.stringify(parsedUser));
+      }
+    }
+
     setOpenProfileModal(false);
   };
 
@@ -144,11 +161,11 @@ function Navbar({ token, logout }: NavbarProps) {
                       e.currentTarget.onerror = null;
                     }}
                     sx={{
-                      width: "40px",
-                      height: "40px",
+                      width: { xs: "34px", md: "40px" },
+                      height: { xs: "34px", md: "40px" },
                       objectFit: "cover",
-                      border: !profilePhoto ? "2px solid white" : "none",
                       borderRadius: "50%",
+                      border: profilePhoto ? "2px solid #FFFFFF" : "none",
                     }}
                   />
                 </IconButton>
