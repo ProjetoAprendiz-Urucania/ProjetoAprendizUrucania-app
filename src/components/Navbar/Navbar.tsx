@@ -49,6 +49,7 @@ function Navbar({ token, logout }: NavbarProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
   const [profilePhoto, setProfilePhoto] = useState<string | null>();
+  const [imageError, setImageError] = useState(false);
 
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
@@ -182,24 +183,29 @@ function Navbar({ token, logout }: NavbarProps) {
           {isClassesPage ? (
             <>
               <Tooltip title="Abrir menu do usuário">
-                <IconButton onClick={handleMenuToggle(setAnchorElAvatar)}>
+                <IconButton
+                  onClick={handleMenuToggle(setAnchorElAvatar)}
+                  sx={{
+                    borderRadius: "50%",
+                    border: "2px solid #FFFFFF",
+                    width: "40px",
+                    height: "40px",
+                    padding: 0,
+                  }}
+                >
                   <Box
                     component="img"
-                    src={
-                      profilePhoto && profilePhoto.trim() !== ""
-                        ? profilePhoto
-                        : avatar
-                    }
+                    src={imageError ? avatar : profilePhoto || avatar}
                     onError={(e) => {
+                      setImageError(true);
                       e.currentTarget.src = avatar;
-                      e.currentTarget.onerror = null;
                     }}
                     sx={{
-                      width: { xs: "34px", md: "40px" },
-                      height: { xs: "34px", md: "40px" },
+                      width: "38px",
+                      height: "38px",
                       objectFit: "cover",
                       borderRadius: "50%",
-                      border: !profilePhoto ? "2px solid #FFFFFF" : "none",
+                      padding: imageError || !profilePhoto ? 0.8 : 0,
                     }}
                   />
                 </IconButton>
