@@ -102,6 +102,19 @@ function Navbar({ token, logout }: NavbarProps) {
     }
   };
 
+  const handleNavigate = () => {
+    if (isClassPage) {
+      navigate("/classes");
+    } else if (isLessonPage) {
+      navigate(
+        location.pathname.replace(
+          /\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/,
+          "/classes/" + location.pathname.split("/")[2]
+        )
+      );
+    }
+  };
+
   const handleClick = () => {
     fileInputRef.current?.click();
   };
@@ -115,41 +128,7 @@ function Navbar({ token, logout }: NavbarProps) {
         return;
       }
 
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const img = new Image();
-        img.src = reader.result as string;
-
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            console.error("Erro ao obter o contexto do canvas.");
-            return;
-          }
-
-          canvas.width = img.width;
-          canvas.height = img.height;
-
-          ctx.drawImage(img, 0, 0, img.width, img.height);
-
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                const convertedFile = new File([blob], "profile.jpg", {
-                  type: "image/jpeg",
-                });
-
-                setSelectedPhoto(convertedFile);
-              }
-            },
-            "image/jpeg",
-            0.9
-          );
-        };
-      };
+      setSelectedPhoto(file);
     }
   };
 
@@ -166,6 +145,7 @@ function Navbar({ token, logout }: NavbarProps) {
     }
 
     setOpenProfileModal(false);
+    window.location.reload();
   };
 
   return (
@@ -242,7 +222,7 @@ function Navbar({ token, logout }: NavbarProps) {
                   backgroundColor: "#E5E5E550",
                   "&:hover": { backgroundColor: "#C0515B" },
                 }}
-                onClick={() => navigate(-1)}
+                onClick={handleNavigate}
               >
                 <ChevronLeftIcon />
               </IconButton>
