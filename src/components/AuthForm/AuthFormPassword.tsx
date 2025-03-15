@@ -38,6 +38,7 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,6 +62,7 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
+    navigate("/login");
   };
 
   return (
