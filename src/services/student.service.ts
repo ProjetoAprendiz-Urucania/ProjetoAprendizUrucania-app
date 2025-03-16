@@ -112,5 +112,5 @@ export function getStudentByEmail(email: string) {
 
 export function updateStudent(id: string, studentData: IStudentData) {
   const token = localStorage.getItem("token");
-  return apiRequest(`${id}`, "PUT", studentData, token || undefined);
+  return apiRequest(`/students/${id}`, "PUT", studentData, token || undefined);
 }
