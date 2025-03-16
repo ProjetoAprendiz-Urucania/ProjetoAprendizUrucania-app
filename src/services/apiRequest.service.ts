@@ -33,7 +33,7 @@ export async function apiRequest(
       data: body, 
     };
 
-    console.log("Configuração da requisição:", config);
+    //console.log("Configuração da requisição:", config);
 
     const response: AxiosResponse = await axiosInstance(config);
     //console.log("Resposta recebida do servidor:", response);

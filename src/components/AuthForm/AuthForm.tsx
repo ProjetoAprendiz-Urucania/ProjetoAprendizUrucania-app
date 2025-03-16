@@ -50,9 +50,25 @@ export default function AuthForm({ mode }: IAuthForm) {
     e.preventDefault();
     setError(null);
 
-    if (!email.trim() || !password.trim()) {
-      setError("Preencha todos os campos obrigatórios");
-      return;
+    if(isRegister){
+      if (!church.trim()) {
+        setError("Preencha a igreja");
+        return;
+      }else if (!name.trim()){
+        setError("Preencha seu nome");
+        return
+      }else if (!email.trim()) {
+        setError("Preencha seu email");
+        return;
+      }else if (!password.trim()){
+        setError("Preencha sua senha");
+        return
+      }
+    }else{
+      if (!email.trim() || !password.trim()) {
+        setError("Preencha todos os campos obrigatórios");
+        return;
+      }
     }
 
     try {
