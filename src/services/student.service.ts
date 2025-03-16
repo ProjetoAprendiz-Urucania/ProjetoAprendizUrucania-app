@@ -110,7 +110,6 @@ export function getStudentByEmail(email: string) {
   );
 }
 
-export function updateStudent(id: string, studentData: IStudentData) {
-  const token = localStorage.getItem("token");
+export function updateStudent(id: string, studentData: IStudentData, token:string) {
   return apiRequest(`/students/${id}`, "PUT", studentData, token || undefined);
 }

@@ -12,16 +12,12 @@ import {
 
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { IStudentData } from "../../interfaces/student/IStudent";
-import { updateStudent } from "../../services/student.service";
+import { updateStudent, forgotPassword } from "../../services/student.service";
 
 import imLogo from "../../assets/img/Form/im_logo.png";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-
-interface IAuthForm {
-  mode: "newPassword";
-}
 
 interface ITokenPayload extends JwtPayload {
   id: string;
@@ -29,14 +25,21 @@ interface ITokenPayload extends JwtPayload {
   email: string;
 }
 
-export default function AuthFormPassword({ mode }: IAuthForm) {
+interface IAuthFormPassword {
+  mode: "newPassword" | "forgot";
+}
+
+export default function AuthFormPassword({ mode }: IAuthFormPassword) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
     throw new Error("UserContext must be used within a UserProvider");
   }
 
+  const isForgot = mode === "forgot";
   const isnewPassword = mode === "newPassword";
+
+  const [email, setEmail] = useState("");
   const { token } = useParams<{ token?: string }>();
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,26 +51,49 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
     e.preventDefault();
     setError(null);
 
-    if (!newPassword.trim()) {
+    if (isForgot) {
+      if (!email.trim()) {
+        setError("Preencha todos os campos obrigatórios");
+        return;
+      }
+    } else if (!newPassword.trim()) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
 
     try {
-      const tk: ITokenPayload = jwtDecode(token || "");
-      const newStudentPassword: IStudentData = {
-        password: newPassword,
-        name: tk.name,
-        email: tk.email,
-      };
+      let res: any;
 
-      localStorage.setItem("token", token || ""); // need for the updateStudent
-      await updateStudent(tk.id, newStudentPassword);
-      localStorage.removeItem("token"); //prevents some kind of bug
+      if (isForgot) {
+        res = await forgotPassword(email);
+
+        if (res === "userExists") {
+          setEmail("");
+          alert("Seu link de Recuperação foi enviado ao email informado, redirecionando a login");
+          navigate("/login");
+
+        }else{
+        }
+      } else {
+        const tk: ITokenPayload = jwtDecode(token || "");
+        const newStudentPassword: IStudentData = {
+          password: newPassword,
+          name: tk.name,
+          email: tk.email,
+        };
+
+        
+        res = await updateStudent(tk.id, newStudentPassword,token || "");
+
+        if (res.email != null) {
+          setNewPassword("")
+          alert("Senha mudada com sucesso, redirecionando a login");
+          navigate("/login");
+        }
+      }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
-    navigate("/login");
   };
 
   return (
@@ -123,6 +149,17 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
                   </InputAdornment>
                 ),
               }}
+            />
+          )}
+
+          {isForgot && (
+            <TextField
+              id="email"
+              label="Email"
+              variant="standard"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={inputStyle}
             />
           )}
 

@@ -49,9 +49,10 @@ export function AuthPage() {
       >
         {mode === "newPassword" ? (
           <AuthFormPassword mode={mode} />
+        ) : (mode === "forgot" ? (
+          <AuthFormPassword mode={mode} />
         ) : (
-          <AuthForm mode={mode} />
-        )}
+          <AuthForm mode={mode} />))}
 
         <Box
           component="img"

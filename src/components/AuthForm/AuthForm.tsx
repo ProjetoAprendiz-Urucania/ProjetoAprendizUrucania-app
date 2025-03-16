@@ -13,7 +13,6 @@ import imLogo from "../../assets/img/Form/im_logo.png";
 import {
   login,
   createStudent,
-  forgotPassword,
 } from "../../services/student.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -23,7 +22,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { IUser } from "../../interfaces/IUser";
 
 interface IAuthForm {
-  mode: "login" | "register" | "forgot";
+  mode: "login" | "register";
 }
 
 export default function AuthForm({ mode }: IAuthForm) {
@@ -37,7 +36,6 @@ export default function AuthForm({ mode }: IAuthForm) {
 
   const isLogin = mode === "login";
   const isRegister = mode === "register";
-  const isForgot = mode === "forgot";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,43 +50,29 @@ export default function AuthForm({ mode }: IAuthForm) {
     e.preventDefault();
     setError(null);
 
-    if (!isForgot) {
-      if (!email.trim() || !password.trim()) {
-        setError("Preencha todos os campos obrigatórios");
-        return;
-      }
-    } else {
-      if (!email.trim()) {
-        setError("Preencha todos os campos obrigatórios");
-        return;
-      }
+    if (!email.trim() || !password.trim()) {
+      setError("Preencha todos os campos obrigatórios");
+      return;
     }
 
     try {
       let res: any;
 
-      if (isForgot) {
-        res = await forgotPassword(email);
-      } else if (isLogin) {
+      if (isLogin) {
         res = await login(email, password);
       } else {
         res = await createStudent(name, email, password, church);
       }
 
-      if (res === "userExists") {
-        setError("Seu link de Recuperação foi enviado ao email informado");
-        setEmail("");
-      } else {
-        console.log("resposta ao registro:", res);
-        if (res.studentWithoutPassword && res.token) {
-          const storedUser = localStorage.getItem("user");
-          const userObject: IUser | null = storedUser
-            ? JSON.parse(storedUser)
-            : null;
-          setUser(userObject);
+      console.log("resposta ao registro:", res);
+      if (res.studentWithoutPassword && res.token) {
+        const storedUser = localStorage.getItem("user");
+        const userObject: IUser | null = storedUser
+          ? JSON.parse(storedUser)
+          : null;
+        setUser(userObject);
 
-          navigate("/classes");
-        }
+        navigate("/classes");
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
@@ -156,7 +140,7 @@ export default function AuthForm({ mode }: IAuthForm) {
             sx={inputStyle}
           />
 
-          {!isForgot && (
+        
             <TextField
               id="password"
               label="Senha"
@@ -180,7 +164,7 @@ export default function AuthForm({ mode }: IAuthForm) {
                 },
               }}
             />
-          )}
+          
 
           <Button
             type="submit"
