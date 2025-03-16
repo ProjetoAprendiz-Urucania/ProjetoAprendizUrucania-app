@@ -36,7 +36,7 @@ export async function apiRequest(
     console.log("Configuração da requisição:", config);
 
     const response: AxiosResponse = await axiosInstance(config);
-    console.log("Resposta recebida do servidor:", response);
+    //console.log("Resposta recebida do servidor:", response);
     return response.data;
   } catch (error) {
     console.log("Erro na requisição:", error);
@@ -46,7 +46,7 @@ export async function apiRequest(
         throw new Error("Sessão expirada. Faça login novamente.");
       }
 
-      console.log("Detalhes do erro:", error.response?.data);
+      //console.log("Detalhes do erro:", error.response?.data);
       throw new Error(
         error.response?.data?.error ||
           `Erro: ${error.response?.status} - ${error.response?.statusText}`

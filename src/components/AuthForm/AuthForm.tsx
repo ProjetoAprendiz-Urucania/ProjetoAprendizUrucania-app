@@ -165,7 +165,6 @@ export default function AuthForm({ mode }: IAuthForm) {
               }}
             />
           
-
           <Button
             type="submit"
             sx={{
