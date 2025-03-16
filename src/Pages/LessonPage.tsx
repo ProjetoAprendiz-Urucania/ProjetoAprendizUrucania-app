@@ -10,6 +10,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
 import { LinearProgress } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export function LessonPage() {
   const { classId, lessonId } = useParams<{
@@ -78,7 +79,7 @@ export function LessonPage() {
 
       {progress < 99 ? (
         <Box
-          sx={{ width: "100%", marginBottom: 4, marginTop: { sx: -1, md: -4 } }}
+          sx={{ width: "100%", marginBottom: 4, marginTop: { sx: -1, md: -6 } }}
         >
           <Typography
             variant="body2"
@@ -100,10 +101,10 @@ export function LessonPage() {
         <Box
           sx={{
             width: "100%",
-            marginBottom: 4,
-            marginTop: { sx: -1, md: -4 },
+            marginBottom: 6,
+            marginTop: { sx: -1, md: -6 },
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "center",
           }}
         >
           <Button
@@ -112,11 +113,21 @@ export function LessonPage() {
               backgroundColor: "#BB1626",
               fontWeight: "bold",
               color: "white",
-              justifySelf: "flex-end",
-              alignSelf: "flex-end",
+              paddingX: 4,
+              paddingY: 1.2,
+              fontSize: "1rem",
+              textTransform: "none",
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 8,
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+              "&:hover": {
+                backgroundColor: "#9B0E1D",
+              },
             }}
+            startIcon={<CheckCircleIcon />}
           >
-            Presente
+            Confirmar Presença
           </Button>
         </Box>
       )}

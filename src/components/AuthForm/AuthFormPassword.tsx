@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate,useParams } from "react-router-dom";
+import { useState, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { IStudentData } from "../../interfaces/student/IStudent";
 import { updateStudent } from "../../services/student.service";
@@ -18,10 +17,16 @@ import { updateStudent } from "../../services/student.service";
 import imLogo from "../../assets/img/Form/im_logo.png";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 
 interface IAuthForm {
   mode: "newPassword";
+}
+
+interface ITokenPayload extends JwtPayload {
+  id: string;
+  name: string;
+  email: string;
 }
 
 export default function AuthFormPassword({ mode }: IAuthForm) {
@@ -31,9 +36,8 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
     throw new Error("UserContext must be used within a UserProvider");
   }
 
-  //const isConfirmCode = mode === "confirmCode";
   const isnewPassword = mode === "newPassword";
-  const { token } = useParams<{ token: any }>();
+  const { token } = useParams<{ token?: string }>();
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -50,15 +54,16 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
     }
 
     try {
-      let res : any;
-      const tk :any  = jwtDecode(token)
-      let newStudentPassword :IStudentData = {password: newPassword, name: tk.name, email: tk.email};
+      const tk: ITokenPayload = jwtDecode(token || "");
+      const newStudentPassword: IStudentData = {
+        password: newPassword,
+        name: tk.name,
+        email: tk.email,
+      };
 
-      localStorage.setItem("token",token)// need for the updateStudent
-      res = updateStudent(tk.id, newStudentPassword);
-      localStorage.removeItem("token") //prevents some kind of bug
-
-
+      localStorage.setItem("token", token || ""); // need for the updateStudent
+      await updateStudent(tk.id, newStudentPassword);
+      localStorage.removeItem("token"); //prevents some kind of bug
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
@@ -106,19 +111,17 @@ export default function AuthFormPassword({ mode }: IAuthForm) {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               sx={inputStyle}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        onMouseDown={(e) => e.preventDefault()}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
               }}
             />
           )}
