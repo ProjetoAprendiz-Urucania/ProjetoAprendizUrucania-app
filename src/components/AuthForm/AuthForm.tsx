@@ -78,7 +78,6 @@ export default function AuthForm({ mode }: IAuthForm) {
       if (res === "userExists") {
         setError("Seu link de Recuperação foi enviado ao email informado");
         setEmail("");
-        
       } else {
         console.log("resposta ao registro:", res);
         if (res.studentWithoutPassword && res.token) {
