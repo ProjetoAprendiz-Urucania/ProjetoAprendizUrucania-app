@@ -1,26 +1,22 @@
 import { Box } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import AuthForm from "../components/AuthForm/AuthForm";
 import AuthFormPassword from "../components/AuthForm/AuthFormPassword";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
-import { useLocation } from "react-router-dom";
 
-function getMode(): any {
+type AuthMode = "register" | "forgot" | "login" | "newPassword";
+
+export function AuthPage() {
   const location = useLocation();
   const path = location.pathname;
 
-  switch (true) {
-    case path.includes("register"):
-      return "register";
-    case path.includes("forgot"):
-      return "forgot";
-    case path.includes("login"):
-      return "login";
-    default:
-      return "newPassword";
-  }
-}
+  const getMode = (): AuthMode => {
+    if (path.includes("register")) return "register";
+    if (path.includes("forgot")) return "forgot";
+    if (path.includes("login")) return "login";
+    return "newPassword";
+  };
 
-export function AuthPage() {
   const mode = getMode();
 
   return (
@@ -47,12 +43,11 @@ export function AuthPage() {
           alignItems: "center",
         }}
       >
-        {mode === "newPassword" ? (
-          <AuthFormPassword mode={mode} />
-        ) : (mode === "forgot" ? (
+        {mode === "newPassword" || mode === "forgot" ? (
           <AuthFormPassword mode={mode} />
         ) : (
-          <AuthForm mode={mode} />))}
+          <AuthForm mode={mode} />
+        )}
 
         <Box
           component="img"

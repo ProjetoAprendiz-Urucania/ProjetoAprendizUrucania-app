@@ -1,18 +1,21 @@
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-
-import Typography from "@mui/material/Typography";
-
+import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
-  const [imageSrc, setImageSrc] = useState(coverImage || defaultCardImage);
+  const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (coverImage) {
+      const img = new Image();
+      img.src = coverImage;
+      img.onload = () => setImageSrc(coverImage);
+      img.onerror = () => setImageSrc(defaultCardImage);
+    }
+  }, [coverImage]);
 
   const handleOpenLessons = (id: string) => {
     navigate(`${location.pathname}/${id}`);
@@ -50,8 +53,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
             filter: "drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))",
           }}
           image={imageSrc}
-          alt="Live from space album cover"
-          onError={() => setImageSrc(defaultCardImage)}
+          alt="Capa do curso"
         />
       </Box>
 

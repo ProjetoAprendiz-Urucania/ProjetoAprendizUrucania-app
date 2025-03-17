@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { IClass } from "../interfaces/class/IClass";
-import { Box, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { getStudentClasses } from "../services/studentClass.service";
 
 export function ClassesPage() {
   const [classes, setClasses] = useState<IClass[]>([]);
   const [classSearch, setClassSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
   useEffect(() => {
@@ -35,6 +36,8 @@ export function ClassesPage() {
         setClasses(response.classes);
       } catch (error) {
         console.error("Erro ao buscar turmas:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -49,24 +52,39 @@ export function ClassesPage() {
 
   return (
     <>
-      <SearchBar searchTerm={classSearch} setSearchTerm={setClassSearch} />
-      <Box sx={{ textAlign: "left", marginBottom: 4 }}>
-        <Typography variant="h5" sx={{ fontWeight: "600" }}>
-          Turmas
-        </Typography>
-      </Box>
-      {filteredClasses.length > 0 ? (
-        filteredClasses.map((classItem) => (
-          <ContentCard
-            key={classItem.id}
-            id={classItem.id}
-            name={classItem.name}
-            teacherInfo={classItem.teachers}
-            coverImage={classItem.coverImage}
-          />
-        ))
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress sx={{ color: "#BB1626" }} />
+        </Box>
       ) : (
-        <Typography variant="body1">Nenhuma turma encontrada.</Typography>
+        <>
+          <SearchBar searchTerm={classSearch} setSearchTerm={setClassSearch} />
+          <Box sx={{ textAlign: "left", marginBottom: 4 }}>
+            <Typography variant="h5" sx={{ fontWeight: "600" }}>
+              Turmas
+            </Typography>
+          </Box>
+          {filteredClasses.length > 0 ? (
+            filteredClasses.map((classItem) => (
+              <ContentCard
+                key={classItem.id}
+                id={classItem.id}
+                name={classItem.name}
+                teacherInfo={classItem.teachers}
+                coverImage={classItem.coverImage}
+              />
+            ))
+          ) : (
+            <Typography variant="body1">Nenhuma turma encontrada.</Typography>
+          )}
+        </>
       )}
     </>
   );

@@ -27,6 +27,7 @@ export function TheoryMaterialItem({ name, fileUrl }: TheoryMaterialProps) {
         <Typography
           sx={{
             my: 0.6,
+            "&:hover": { fontWeight: 600 },
           }}
         >
           {name}

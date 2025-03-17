@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { ILesson } from "../interfaces/lesson/ILesson";
-import { getLesson } from "../services/lesson.service";
-import { Box, Button, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { Box, Button, Typography, LinearProgress } from "@mui/material";
+import {
+  CheckCircle as CheckCircleIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+} from "@mui/icons-material";
+
+import { ILesson } from "../interfaces/lesson/ILesson";
+import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
+import { getLesson } from "../services/lesson.service";
 import { getMaterialsByLesson } from "../services/theoryMaterials.service";
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
-import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
-import { LinearProgress } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export function LessonPage() {
   const { classId, lessonId } = useParams<{
