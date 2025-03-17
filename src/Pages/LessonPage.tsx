@@ -13,6 +13,7 @@ import { getLesson } from "../services/lesson.service";
 import { getMaterialsByLesson } from "../services/theoryMaterials.service";
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
+import { confirmPresence } from "../services/frequencyList";
 
 export function LessonPage() {
   const { classId, lessonId } = useParams<{
@@ -72,6 +73,16 @@ export function LessonPage() {
     console.log("Progresso atualizado:", progress);
   }, [progress]);
 
+  const handleConfirmPresence = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!user.id || !lessonId || !classId) {
+      console.log("classId ou lessonId ou user.id não informados");
+      return;
+    }
+    await confirmPresence(classId, lessonId, user.id);
+  };
+
   return (
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
       <VideoPlayer
@@ -110,7 +121,7 @@ export function LessonPage() {
           }}
         >
           <Button
-            type="submit"
+            onClick={() => handleConfirmPresence()}
             sx={{
               backgroundColor: "#BB1626",
               fontWeight: "bold",

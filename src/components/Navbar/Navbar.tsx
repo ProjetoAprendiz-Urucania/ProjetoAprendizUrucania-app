@@ -132,7 +132,41 @@ function Navbar({ token, logout }: NavbarProps) {
         return;
       }
 
-      setSelectedPhoto(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) return;
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const jpegFile = new File(
+                  [blob],
+                  file.name.replace(/\.\w+$/, ".jpeg"),
+                  {
+                    type: "image/jpeg",
+                  }
+                );
+                setSelectedPhoto(jpegFile);
+              }
+            },
+            "image/jpeg",
+            0.9
+          );
+        };
+      };
     }
   };
 
