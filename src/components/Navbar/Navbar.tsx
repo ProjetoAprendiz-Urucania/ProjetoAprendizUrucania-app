@@ -15,12 +15,16 @@ import {
   Button,
 } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import imLogo from "../../assets/img/Navbar/im_logo.svg";
 import avatar from "../../assets/img/Navbar/avatar.png";
 import menuIcon from "../../assets/img/Navbar/menu.png";
-import { uploadProfilePhoto } from "../../services/student.service";
+import {
+  uploadProfilePhoto,
+  deleteProfilePhoto,
+} from "../../services/student.service";
 
 const menuNavigation = ["Turmas", "Sair"];
 const avatarMenuOptions = ["Alterar Foto"];
@@ -148,6 +152,26 @@ function Navbar({ token, logout }: NavbarProps) {
     window.location.reload();
   };
 
+  const handleDeletePhoto = async () => {
+    if (!parsedUser?.id) return;
+
+    try {
+      const res = await deleteProfilePhoto(parsedUser.id);
+
+      if (res?.studentData) {
+        setProfilePhoto(res.studentData.profilePicture ?? null);
+        if (parsedUser) {
+          parsedUser.profilePicture = res.studentData.profilePicture ?? null;
+          localStorage.setItem("user", JSON.stringify(parsedUser));
+        }
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Erro ao deletar foto de perfil:", error);
+      alert("Ocorreu um erro ao excluir a foto. Tente novamente.");
+    }
+  };
+
   return (
     <AppBar
       position="static"
@@ -267,7 +291,9 @@ function Navbar({ token, logout }: NavbarProps) {
         onClose={() => setOpenProfileModal(false)}
         sx={{ backgroundClip: "whitesmoke" }}
       >
-        <DialogTitle>Alterar Foto de Perfil</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          Alterar Foto de Perfil
+        </DialogTitle>
         <DialogContent
           sx={{
             display: "flex",
@@ -304,6 +330,47 @@ function Navbar({ token, logout }: NavbarProps) {
                 <AddAPhotoIcon sx={{ color: "whitesmoke", fontSize: "18px" }} />
               </Box>
             </Box>
+          ) : profilePhoto && !imageError ? (
+            <Box>
+              <Box
+                component="img"
+                src={imageError ? avatar : profilePhoto || avatar}
+                onError={(e) => {
+                  setImageError(true);
+                  e.currentTarget.src = avatar;
+                }}
+                sx={{
+                  width: "124px",
+                  height: "124px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+              />{" "}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "45%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "#BB162670",
+                  borderRadius: "50%",
+                  padding: "8px",
+                  opacity: "90%",
+                  ":hover": { cursor: "pointer" },
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <DeleteForeverIcon
+                  onClick={() => handleDeletePhoto()}
+                  sx={{
+                    color: "whitesmoke",
+                    fontSize: "22px",
+                  }}
+                />
+              </Box>
+            </Box>
           ) : (
             <Box
               sx={{
@@ -311,11 +378,14 @@ function Navbar({ token, logout }: NavbarProps) {
                 padding: "2.6em",
                 cursor: "pointer",
                 borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
               onClick={handleClick}
             >
               {" "}
-              <AddAPhotoIcon />
+              <AddAPhotoIcon sx={{ fontSize: "22px" }} />
             </Box>
           )}
           <input

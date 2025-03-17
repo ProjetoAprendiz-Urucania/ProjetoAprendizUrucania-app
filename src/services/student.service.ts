@@ -80,7 +80,6 @@ export function getStudentById(id: string) {
 }
 
 export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
-  console.log("Arquivo recebido no frontend:", profilePhoto);
 
   if (!profilePhoto) {
     console.error("Nenhum arquivo foi selecionado!");
@@ -94,6 +93,18 @@ export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
 
   return apiRequest(`students/${id}/profilePhoto`, "POST", formData, token || undefined);
 }
+
+export function deleteProfilePhoto(userId: string) {
+
+  if (!userId) {
+    return Promise.reject("Nenhum usuário identificado.");
+  }
+
+  const token = localStorage.getItem("token");
+
+  return apiRequest(`students/${userId}/profilePhoto`, "DELETE", null, token || undefined);
+}
+
 
 export function getStudentByEmail(email: string) {
   if(!email){
