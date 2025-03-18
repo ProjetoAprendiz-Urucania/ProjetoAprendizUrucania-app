@@ -25,6 +25,7 @@ export function LessonPage() {
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
   const [progress, setProgress] = useState<number>(0);
+  const [present, setPresent] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -69,18 +70,31 @@ export function LessonPage() {
     fetchMaterials();
   }, [classId, lessonId, tk]);
 
-  useEffect(() => {
-    console.log("Progresso atualizado:", progress);
-  }, [progress]);
-
   const handleConfirmPresence = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    try {
+      const userData = localStorage.getItem("user");
+      if (!userData) {
+        console.error("Usuário não encontrado no localStorage.");
+        return;
+      }
 
-    if (!user.id || !lessonId || !classId) {
-      console.log("classId ou lessonId ou user.id não informados");
-      return;
+      const user = JSON.parse(userData);
+      if (!user.id || !lessonId || !classId) {
+        console.warn("classId, lessonId ou user.id não informados.");
+        return;
+      }
+
+      const res = await confirmPresence(classId, lessonId, user.id);
+
+      if (!res.success) {
+        console.error("Erro ao confirmar presença:", res.message || res);
+        return;
+      }
+
+      setPresent(true);
+    } catch (error) {
+      console.error("Erro inesperado ao confirmar presença:", error);
     }
-    await confirmPresence(classId, lessonId, user.id);
   };
 
   return (
@@ -138,9 +152,9 @@ export function LessonPage() {
                 backgroundColor: "#9B0E1D",
               },
             }}
-            startIcon={<CheckCircleIcon />}
+            endIcon={<CheckCircleIcon />}
           >
-            Confirmar Presença
+            {present ? "Presença Confirmada" : "Confirmar Presença"}
           </Button>
         </Box>
       )}
