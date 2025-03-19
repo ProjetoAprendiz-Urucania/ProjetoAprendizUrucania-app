@@ -47,7 +47,7 @@ function App() {
                 }
                 replace
               />
-            } // Privents from heading to /login when you try to reset password without a user/token on storage
+            }
           />
           <Route
             path="/classes"
@@ -75,7 +75,9 @@ function App() {
           />
         </Routes>
       </Container>
-      <Footer />
+      {!isLoginPage && !isRegisterPage && !isForgot && !isnewPassword && (
+        <Footer />
+      )}
     </ThemeProvider>
   );
 }

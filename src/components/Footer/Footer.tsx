@@ -6,8 +6,16 @@ import projetoAprendizImg from "../../assets/img/Footer/projeto_aprendiz_polo_ur
 
 export function Footer() {
   return (
-    <Box component="footer" sx={{ bgcolor: "#2D3748", py: 5, mt: 10 }}>
-      <Container maxWidth="lg">
+    <Box
+      position="initial"
+      sx={{
+        bgcolor: "#2D3748",
+        mt: { xs: 8, md: 10 },
+        py: 4,
+        width: "100vw",
+      }}
+    >
+      <Container maxWidth="xl">
         <Stack
           direction={{ xs: "column", sm: "row" }}
           justifyContent="space-between"
@@ -24,7 +32,7 @@ export function Footer() {
             src={projetoAprendizImg}
             alt="Projeto Aprendiz Polo Urucânia"
             sx={{
-              width: { xs: 180, sm: 240, md: 280 },
+              width: { xs: 240, md: 280 },
               height: "auto",
             }}
           />
@@ -34,8 +42,8 @@ export function Footer() {
               display: "flex",
               flexDirection: "column",
               height: "100%",
-              justifySelf: "flex-end",
-              alignSelf: "flex-end",
+              justifySelf: { xs: "center", md: "flex-end" },
+              alignSelf: { xs: "center", md: "flex-end" },
               alignItems: "flex-start",
             }}
           >
@@ -53,7 +61,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 sx={{
                   color: "white",
-                  ":hover": { bgcolor: "#25D366" },
+                  ":hover": { color: "#25D366" },
                 }}
               >
                 <WhatsAppIcon sx={{ fontSize: 28, p: 0 }} />
@@ -66,7 +74,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 sx={{
                   color: "white",
-                  ":hover": { bgcolor: "#FF0000" },
+                  ":hover": { color: "#FF0000" },
                 }}
               >
                 <YouTubeIcon sx={{ fontSize: 30, p: 0 }} />
@@ -79,7 +87,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 sx={{
                   color: "white",
-                  ":hover": { bgcolor: "#E1306C" },
+                  ":hover": { color: "#E1306C" },
                 }}
               >
                 <InstagramIcon sx={{ fontSize: 28, p: 0 }} />
