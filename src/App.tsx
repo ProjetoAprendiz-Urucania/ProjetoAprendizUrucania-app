@@ -10,6 +10,7 @@ import { ClassPage } from "./Pages/ClassPage";
 import { LessonPage } from "./Pages/LessonPage";
 import ProtectedRoute from "./hoc/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
+import { Footer } from "./components/Footer/Footer";
 
 function App() {
   const location = useLocation();
@@ -22,10 +23,9 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {!isLoginPage &&
-        !isRegisterPage &&
-        !isForgot &&
-        !isnewPassword && <Navbar logout={logout} token={token} />}
+      {!isLoginPage && !isRegisterPage && !isForgot && !isnewPassword && (
+        <Navbar logout={logout} token={token} />
+      )}
       <Container maxWidth="xl">
         <Routes>
           <Route path="/newPassword/:token" element={<AuthPage />} />
@@ -34,7 +34,20 @@ function App() {
           <Route path="/register" element={<AuthPage />} />
           <Route
             path="/"
-            element={<Navigate to={token ?(isnewPassword?"/newPassword/:token" : "/classes")  : (isnewPassword? "/newPassword/:token" : "/login")} replace />}    // Privents from heading to /login when you try to reset password without a user/token on storage
+            element={
+              <Navigate
+                to={
+                  token
+                    ? isnewPassword
+                      ? "/newPassword/:token"
+                      : "/classes"
+                    : isnewPassword
+                    ? "/newPassword/:token"
+                    : "/login"
+                }
+                replace
+              />
+            } // Privents from heading to /login when you try to reset password without a user/token on storage
           />
           <Route
             path="/classes"
@@ -62,6 +75,7 @@ function App() {
           />
         </Routes>
       </Container>
+      <Footer />
     </ThemeProvider>
   );
 }

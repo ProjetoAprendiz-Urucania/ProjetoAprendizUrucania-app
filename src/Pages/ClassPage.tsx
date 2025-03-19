@@ -125,7 +125,7 @@ export function ClassPage() {
           Materiais Teóricos
         </Typography>
       </Box>
-      <Box sx={{ textAlign: "left" }}>
+      <Box sx={{ textAlign: "left", mb: 4 }}>
         {!materialDrop &&
           (materials.length > 0 && !searchTerm
             ? materials.map((materialItem) => {
