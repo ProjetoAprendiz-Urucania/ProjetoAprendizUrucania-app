@@ -7,11 +7,12 @@ import projetoAprendizImg from "../../assets/img/Footer/projeto_aprendiz_polo_ur
 export function Footer() {
   return (
     <Box
-      position="initial"
       sx={{
         bgcolor: "#2D3748",
         mt: { xs: 8, md: 10 },
         py: 4,
+        bottom: 0,
+        left: 0,
         width: "100vw",
       }}
     >
@@ -32,7 +33,7 @@ export function Footer() {
             src={projetoAprendizImg}
             alt="Projeto Aprendiz Polo Urucânia"
             sx={{
-              width: { xs: 240, md: 280 },
+              width: { xs: 240, md: 300 },
               height: "auto",
             }}
           />
@@ -49,7 +50,12 @@ export function Footer() {
           >
             <Typography
               variant="h5"
-              sx={{ fontWeight: 600, color: "white", mb: 2 }}
+              sx={{
+                fontWeight: 600,
+                color: "white",
+                mb: 5,
+                paddingLeft: "2px",
+              }}
             >
               Redes sociais
             </Typography>

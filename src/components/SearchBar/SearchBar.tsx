@@ -23,7 +23,6 @@ export function SearchBar({
       }
       autoFocus
       sx={{
-        flex: 1,
         minWidth: "100%",
         backgroundColor: "#EAEAEA",
         color: "#1E1E1E",
