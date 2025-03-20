@@ -54,7 +54,7 @@ export function ClassPage() {
       <Box
         sx={{
           textAlign: "left",
-          marginBottom: 4,
+          marginBottom: 1,
           display: "flex",
           alignItems: "center",
         }}
@@ -105,7 +105,7 @@ export function ClassPage() {
       <Box
         sx={{
           textAlign: "left",
-          marginBottom: 4,
+          my: 2,
           display: "flex",
           alignItems: "center",
         }}

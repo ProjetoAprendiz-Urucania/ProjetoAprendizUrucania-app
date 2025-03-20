@@ -13,7 +13,7 @@ export function VideoPlayer({ url, onProgress }: VideoPlayerProps) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        marginY: { xs: 4.2, sm: 6, md: 8, lg: 12 },
+        marginY: { xs: 4.2, sm: 6 },
         backgroundColor: "#000000",
       }}
     >

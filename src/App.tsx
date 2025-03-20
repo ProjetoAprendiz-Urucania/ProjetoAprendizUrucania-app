@@ -32,7 +32,7 @@ function App() {
 
         <Container
           maxWidth="xl"
-          sx={{ flex: 1, display: "flex", flexDirection: "column" }}
+          sx={{ flex: 1, display: "flex", flexDirection: "column", mb: 6 }}
         >
           <Routes>
             <Route path="/newPassword/:token" element={<AuthPage />} />

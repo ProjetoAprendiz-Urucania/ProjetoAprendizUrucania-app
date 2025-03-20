@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
+import { useAuth } from "../../hooks/useAuth";
+import options from "../../assets/img/ContentCard/options.png";
 
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
+  const { user } = useAuth();
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const navigate = useNavigate();
 
@@ -21,11 +24,13 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
     navigate(`${location.pathname}/${id}`);
   };
 
+  console.log(user);
+
   return (
     <Card
       sx={{
         display: "flex",
-        marginY: { xs: 3.2, md: 4 },
+        marginY: 2.8,
         borderRadius: 2,
         "&:hover": { transform: "scale(1.01)" },
         cursor: "pointer",
@@ -62,38 +67,74 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
           marginLeft: -1.8,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "space-between",
+          width: "100%",
         }}
       >
-        <CardContent sx={{ textAlign: "left" }}>
-          <Typography
-            component="div"
-            sx={{
-              fontSize: { xs: "15px", sm: "16px", md: "18px", lg: "20px" },
-              fontWeight: 600,
-              maxWidth: { xs: "180px", sm: "190px", md: "200px", lg: "100%" },
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {name}
-          </Typography>
-          <Typography
-            variant="subtitle2"
-            component="div"
-            sx={{
-              color: "text.secondary",
-              fontSize: { xs: "12px", md: "14px", lg: "16px" },
-              maxWidth: { xs: "140px", sm: "380px", md: "500px", lg: "540px" },
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {teacherInfo}
-          </Typography>
+        <CardContent
+          sx={{
+            textAlign: "left",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography
+              component="div"
+              sx={{
+                fontSize: { xs: "15px", sm: "16px", md: "18px", lg: "20px" },
+                fontWeight: 600,
+                maxWidth: { xs: "180px", sm: "190px", md: "200px", lg: "100%" },
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {name}
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              component="div"
+              sx={{
+                color: "text.secondary",
+                fontSize: { xs: "12px", md: "14px", lg: "16px" },
+                maxWidth: {
+                  xs: "140px",
+                  sm: "380px",
+                  md: "500px",
+                  lg: "540px",
+                },
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {teacherInfo}
+            </Typography>
+          </Box>
         </CardContent>
+        {user?.role === "admin" && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              marginLeft: "auto",
+              width: "100%",
+            }}
+          >
+            <Box
+              component="img"
+              src={options}
+              sx={{
+                width: "24px",
+                mr: 2,
+                ":hover": { transform: "scale(1.2)" },
+              }}
+            />
+          </Box>
+        )}
       </Box>
     </Card>
   );

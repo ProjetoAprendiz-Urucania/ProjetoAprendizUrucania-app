@@ -66,7 +66,7 @@ export function ClassesPage() {
       ) : (
         <>
           <SearchBar searchTerm={classSearch} setSearchTerm={setClassSearch} />
-          <Box sx={{ textAlign: "left", marginBottom: 4 }}>
+          <Box sx={{ textAlign: "left", marginBottom: 1 }}>
             <Typography variant="h5" sx={{ fontWeight: "600" }}>
               Turmas
             </Typography>
@@ -82,7 +82,9 @@ export function ClassesPage() {
               />
             ))
           ) : (
-            <Typography variant="body1">Nenhuma turma encontrada.</Typography>
+            <Typography variant="body1" sx={{ mb: 12, mt: 2 }}>
+              Nenhuma turma encontrada.
+            </Typography>
           )}
         </>
       )}

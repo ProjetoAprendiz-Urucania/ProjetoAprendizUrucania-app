@@ -9,7 +9,6 @@ export function Footer() {
     <Box
       sx={{
         bgcolor: "#2D3748",
-        mt: { xs: 8, md: 10 },
         py: 4,
         bottom: 0,
         left: 0,
@@ -33,7 +32,7 @@ export function Footer() {
             src={projetoAprendizImg}
             alt="Projeto Aprendiz Polo Urucânia"
             sx={{
-              width: { xs: 240, md: 300 },
+              width: { xs: 242, md: 300 },
               height: "auto",
             }}
           />
@@ -54,12 +53,11 @@ export function Footer() {
                 fontWeight: 600,
                 color: "white",
                 mb: 5,
-                paddingLeft: "2px",
               }}
             >
               Redes sociais
             </Typography>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={0.5} sx={{ alignSelf: "flex-end" }}>
               <IconButton
                 aria-label="WhatsApp"
                 href="https://wa.me/"
