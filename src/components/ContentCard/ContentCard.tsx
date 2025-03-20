@@ -63,7 +63,12 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
           display: "flex",
           marginY: 2.8,
           borderRadius: 2,
-          "&:hover": { transform: "scale(1.01)" },
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.51)",
+          transition: "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
+          "&:hover": {
+            transform: "scale(1.01)",
+            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.51)",
+          },
           cursor: "pointer",
         }}
         onClick={handleOpenLessons}

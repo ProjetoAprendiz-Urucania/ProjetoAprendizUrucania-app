@@ -4,6 +4,7 @@ import { IClass } from "../interfaces/class/IClass";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { getStudentClasses } from "../services/studentClass.service";
+import { CreateCard } from "../components/CreateCard/CreateCard";
 
 export function ClassesPage() {
   const [classes, setClasses] = useState<IClass[]>([]);
@@ -86,6 +87,7 @@ export function ClassesPage() {
               Nenhuma turma encontrada.
             </Typography>
           )}
+          <CreateCard />
         </>
       )}
     </>
