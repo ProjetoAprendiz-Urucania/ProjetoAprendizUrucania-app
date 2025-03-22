@@ -32,7 +32,7 @@ export function Footer() {
             src={projetoAprendizImg}
             alt="Projeto Aprendiz Polo Urucânia"
             sx={{
-              width: { xs: 242, md: 300 },
+              width: { xs: 242, md: 312 },
               height: "auto",
             }}
           />

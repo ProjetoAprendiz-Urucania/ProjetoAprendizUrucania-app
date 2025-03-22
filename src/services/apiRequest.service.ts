@@ -36,7 +36,7 @@ export async function apiRequest(
     //console.log("Configuração da requisição:", config);
 
     const response: AxiosResponse = await axiosInstance(config);
-    //console.log("Resposta recebida do servidor:", response);
+    console.log("Resposta recebida do servidor:", response);
     return response.data;
   } catch (error) {
     console.log("Erro na requisição:", error);
