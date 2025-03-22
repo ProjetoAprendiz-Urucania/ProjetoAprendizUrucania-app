@@ -10,10 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import {
-  login,
-  createStudent,
-} from "../../services/student.service";
+import { login, createStudent } from "../../services/student.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
@@ -50,21 +47,21 @@ export default function AuthForm({ mode }: IAuthForm) {
     e.preventDefault();
     setError(null);
 
-    if(isRegister){
+    if (isRegister) {
       if (!church.trim()) {
         setError("Preencha a igreja");
         return;
-      }else if (!name.trim()){
+      } else if (!name.trim()) {
         setError("Preencha seu nome");
-        return
-      }else if (!email.trim()) {
+        return;
+      } else if (!email.trim()) {
         setError("Preencha seu email");
         return;
-      }else if (!password.trim()){
+      } else if (!password.trim()) {
         setError("Preencha sua senha");
-        return
+        return;
       }
-    }else{
+    } else {
       if (!email.trim() || !password.trim()) {
         setError("Preencha todos os campos obrigatórios");
         return;
@@ -132,7 +129,7 @@ export default function AuthForm({ mode }: IAuthForm) {
               <TextField
                 id="name"
                 label="Nome"
-                variant="standard"
+                variant="outlined"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 sx={inputStyle}
@@ -140,7 +137,7 @@ export default function AuthForm({ mode }: IAuthForm) {
               <TextField
                 id="church"
                 label="Igreja"
-                variant="standard"
+                variant="outlined"
                 value={church}
                 onChange={(e) => setChurch(e.target.value)}
                 sx={inputStyle}
@@ -150,37 +147,36 @@ export default function AuthForm({ mode }: IAuthForm) {
           <TextField
             id="email"
             label="Email"
-            variant="standard"
+            variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             sx={inputStyle}
           />
 
-        
-            <TextField
-              id="password"
-              label="Senha"
-              type={showPassword ? "text" : "password"}
-              variant="standard"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={inputStyle}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        onMouseDown={(e) => e.preventDefault()}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          
+          <TextField
+            id="password"
+            label="Senha"
+            type={showPassword ? "text" : "password"}
+            variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={inputStyle}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+
           <Button
             type="submit"
             sx={{
@@ -265,14 +261,26 @@ export default function AuthForm({ mode }: IAuthForm) {
 }
 
 const inputStyle = {
-  "& .MuiInputLabel-root": { color: "#1F1F1F" },
+  "& .MuiInputLabel-root": {
+    color: "#1F1F1F",
+    fontSize: "15px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
   "& .MuiInputLabel-root.Mui-focused": {
     fontWeight: "bold",
     color: "#ED3237",
   },
-  "& .MuiInput-underline:before": { borderBottomColor: "#1F1F1F" },
-  "& .MuiInput-underline:hover:before": {
-    borderBottomColor: "#ED3237 !important",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#1F1F1F",
+    },
+    "&:hover fieldset": {
+      borderColor: "#ED3237",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#ED3237",
+    },
   },
-  "& .MuiInput-underline:after": { borderBottomColor: "#ED3237" },
 };

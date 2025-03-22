@@ -69,10 +69,10 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
 
         if (res === "userExists") {
           setEmail("");
-          alert("Seu link de Recuperação foi enviado ao email informado, redirecionando a login");
+          alert(
+            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
+          );
           navigate("/login");
-
-        }else{
         }
       } else {
         const tk: ITokenPayload = jwtDecode(token || "");
@@ -82,11 +82,10 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
           email: tk.email,
         };
 
-        
-        res = await updateStudent(tk.id, newStudentPassword,token || "");
+        res = await updateStudent(tk.id, newStudentPassword, token || "");
 
         if (res.email != null) {
-          setNewPassword("")
+          setNewPassword("");
           alert("Senha mudada com sucesso, redirecionando a login");
           navigate("/login");
         }
@@ -133,7 +132,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
               id="password"
               label="Nova Senha"
               type={showPassword ? "text" : "password"}
-              variant="standard"
+              variant="outlined"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               sx={inputStyle}
@@ -156,7 +155,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
             <TextField
               id="email"
               label="Email"
-              variant="standard"
+              variant="outlined"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               sx={inputStyle}
@@ -200,14 +199,26 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
 }
 
 const inputStyle = {
-  "& .MuiInputLabel-root": { color: "#1F1F1F" },
+  "& .MuiInputLabel-root": {
+    color: "#1F1F1F",
+    fontSize: "15px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
   "& .MuiInputLabel-root.Mui-focused": {
     fontWeight: "bold",
     color: "#ED3237",
   },
-  "& .MuiInput-underline:before": { borderBottomColor: "#1F1F1F" },
-  "& .MuiInput-underline:hover:before": {
-    borderBottomColor: "#ED3237 !important",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#1F1F1F",
+    },
+    "&:hover fieldset": {
+      borderColor: "#ED3237",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#ED3237",
+    },
   },
-  "& .MuiInput-underline:after": { borderBottomColor: "#ED3237" },
 };

@@ -3,10 +3,15 @@ import { ContentCard } from "../components/ContentCard/ContentCard";
 import { IClass } from "../interfaces/class/IClass";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
-import { getStudentClasses } from "../services/studentClass.service";
-import { CreateCard } from "../components/CreateCard/CreateCard";
+import {
+  getAdminClasses,
+  getStudentClasses,
+} from "../services/studentClass.service";
+import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
+import { useAuth } from "../hooks/useAuth";
 
 export function ClassesPage() {
+  const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
   const [classSearch, setClassSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -28,13 +33,30 @@ export function ClassesPage() {
       const student = JSON.parse(studentString);
 
       try {
-        const response = await getStudentClasses(student.id, tk);
-        if (!response || !response.classes) {
-          console.error("Erro: Resposta inesperada da API.");
+        const response =
+          user?.role === "admin"
+            ? await getAdminClasses(tk)
+            : await getStudentClasses(student.id, tk);
+
+        if (!response && user?.role === "admin") {
+          console.error(
+            "Erro: Resposta inesperada da API na busca das classes do adm."
+          );
           return;
         }
 
-        setClasses(response.classes);
+        if (!response && user?.role === "student") {
+          console.error(
+            "Erro: Resposta inesperada da API na busca das classes do estudante."
+          );
+          return;
+        }
+
+        if (user?.role === "admin") {
+          setClasses(response);
+        } else {
+          setClasses(response.classes);
+        }
       } catch (error) {
         console.error("Erro ao buscar turmas:", error);
       } finally {
@@ -43,7 +65,7 @@ export function ClassesPage() {
     };
 
     fetchStudentClasses();
-  }, [tk]);
+  }, [tk, user?.role]);
 
   const filteredClasses = classSearch
     ? classes.filter((classItem) =>
@@ -83,11 +105,18 @@ export function ClassesPage() {
               />
             ))
           ) : (
-            <Typography variant="body1" sx={{ mb: 12, mt: 2 }}>
-              Nenhuma turma encontrada.
-            </Typography>
+            <>
+              {user?.role === "admin" ? (
+                <CreateCardButton />
+              ) : (
+                <Typography variant="body1" sx={{ mb: 12, mt: 2 }}>
+                  Nenhuma turma encontrada.
+                </Typography>
+              )}
+            </>
           )}
-          <CreateCard />
+
+          {user?.role === "admin" && <CreateCardButton />}
         </>
       )}
     </>

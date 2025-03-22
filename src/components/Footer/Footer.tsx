@@ -57,7 +57,11 @@ export function Footer() {
             >
               Redes sociais
             </Typography>
-            <Stack direction="row" spacing={0.5} sx={{ alignSelf: "flex-end" }}>
+            <Stack
+              direction="row"
+              spacing={0.5}
+              sx={{ alignSelf: { xs: "center", md: "flex-end" } }}
+            >
               <IconButton
                 aria-label="WhatsApp"
                 href="https://wa.me/"
