@@ -6,9 +6,6 @@ export  function createClass(classData: IClass, token: string) {
 }
 
 export  function uploadClassPhoto(classId: string,coverImage: File ,token: string) {
-
-  
-
   const formData = new FormData();
   formData.append('coverImage', coverImage);
 

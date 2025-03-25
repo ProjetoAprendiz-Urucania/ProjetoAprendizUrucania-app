@@ -14,6 +14,7 @@ import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
+import { deleteClass } from "../../services/class.service";
 
 const adminMenu = ["Editar", "Excluir"];
 
@@ -22,6 +23,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
 
@@ -51,7 +53,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
     if (option === "Editar") {
       setOpenProfileModal(true);
     } else if (option === "Excluir") {
-      console.log("Excluir");
+      if (token) deleteClass(id, token);
     }
     handleCloseMenu();
   };

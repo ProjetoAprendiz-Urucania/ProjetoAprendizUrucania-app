@@ -7,6 +7,7 @@ import { IClass } from "../../interfaces/class/IClass";
 
 export function CreateCard() {
   const { user } = useAuth();
+  const token = localStorage.getItem("token");
   const loading = useRef(true);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
   const [name, setName] = useState<string>("");
@@ -69,8 +70,6 @@ export function CreateCard() {
 
   const handleCreateCard = async () => {
     try {
-      const token = localStorage.getItem("token");
-
       if (selectedPhoto && name && teachers && token) {
         const payload: IClass = {
           name: name,
@@ -82,6 +81,7 @@ export function CreateCard() {
         console.log(response);
 
         if (response) {
+          console.log(selectedPhoto);
           await uploadClassPhoto(response.id, selectedPhoto, token);
         }
 
@@ -107,6 +107,7 @@ export function CreateCard() {
             padding: { xs: 4, md: 6 },
             gap: 3,
             width: "100%",
+            minWidth: { xs: "300px", md: "400px" },
             maxWidth: "500px",
             margin: "0 auto",
           }}
