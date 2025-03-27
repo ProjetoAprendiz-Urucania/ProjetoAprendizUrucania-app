@@ -4,14 +4,22 @@ import addimage from "../../assets/img/CreateCard/addImage.svg";
 import { useEffect, useRef, useState } from "react";
 import { createClass, uploadClassPhoto } from "../../services/class.service";
 import { IClass } from "../../interfaces/class/IClass";
+import { ILesson } from "../../interfaces/lesson/ILesson";
+import { createLesson, uploadLessonPhoto } from "../../services/lesson.service";
+import { useParams } from "react-router-dom";
 
 export function CreateCard() {
   const { user } = useAuth();
+  const { id } = useParams<{ id: string }>();
+
   const token = localStorage.getItem("token");
   const loading = useRef(true);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
   const [name, setName] = useState<string>("");
   const [teachers, setTeachers] = useState<string>("");
+  const [lessonLink, setLessonLink] = useState<string>("");
+
+  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -68,7 +76,7 @@ export function CreateCard() {
     }
   };
 
-  const handleCreateCard = async () => {
+  const handleCreateClassCard = async () => {
     try {
       if (selectedPhoto && name && teachers && token) {
         const payload: IClass = {
@@ -78,14 +86,34 @@ export function CreateCard() {
 
         const response = await createClass(payload, token);
 
-        console.log(response);
-
         if (response) {
-          console.log(selectedPhoto);
           await uploadClassPhoto(response.id, selectedPhoto, token);
         }
 
-        console.log(response);
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Erro ao criar card:", error);
+    }
+  };
+
+  const handleCreateLessonCard = async () => {
+    try {
+      console.log(id);
+      if (name && teachers && token && id) {
+        const payload: ILesson = {
+          name: name,
+          teacher: teachers,
+          lessonLink: lessonLink,
+        };
+
+        const response = await createLesson(id, payload, token);
+
+        if (response && selectedPhoto) {
+          await uploadLessonPhoto(id, response.id, selectedPhoto, token);
+        }
+
+        window.location.reload();
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);
@@ -112,6 +140,7 @@ export function CreateCard() {
             margin: "0 auto",
           }}
         >
+          {/* Upload de Imagem */}
           <label htmlFor="file-upload" style={{ width: "100%" }}>
             <Box
               sx={{
@@ -167,32 +196,77 @@ export function CreateCard() {
               onChange={handleFileChange}
             />
           </label>
-          <TextField
-            id="classname"
-            label="Nome da Turma"
-            variant="outlined"
-            sx={inputStyle}
-            fullWidth
-            onChange={(e) => setName(e.target.value)}
-          />
+
+          {/* Campo para link e nome da aula/turma */}
+          {isClassPage && (
+            <>
+              <TextField
+                id="lessonLink"
+                label="Link da Aula"
+                variant="outlined"
+                sx={inputStyle}
+                fullWidth
+                value={lessonLink}
+                onChange={(e) => setLessonLink(e.target.value)}
+              />
+              <TextField
+                id="lessonName"
+                label="Nome da Aula"
+                variant="outlined"
+                sx={inputStyle}
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </>
+          )}
+
+          {!isClassPage && (
+            <TextField
+              id="className"
+              label="Nome da Turma"
+              variant="outlined"
+              sx={inputStyle}
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          )}
+
+          {/* Campo para professores */}
           <TextField
             id="teachers"
-            label="Professores ( separados por ',' )"
+            label={
+              isClassPage ? "Professor" : "Professores (separados por vírgula)"
+            }
             variant="outlined"
             sx={inputStyle}
             fullWidth
+            value={teachers}
             onChange={(e) => setTeachers(e.target.value)}
           />
 
+          {/* Botão de confirmação */}
           <Button
             type="submit"
+            disabled={
+              (!isClassPage && !name) ||
+              (isClassPage && (!name || !lessonLink)) ||
+              !teachers
+            }
             sx={{
               backgroundColor: "#BB1626",
               fontWeight: "bold",
               color: "white",
               mt: 2,
+              ":disabled": {
+                backgroundColor: "#ccc",
+                color: "#666",
+              },
             }}
-            onClick={handleCreateCard}
+            onClick={
+              isClassPage ? handleCreateLessonCard : handleCreateClassCard
+            }
           >
             Confirmar
           </Button>

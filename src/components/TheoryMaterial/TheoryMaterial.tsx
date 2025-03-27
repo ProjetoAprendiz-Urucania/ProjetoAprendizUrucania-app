@@ -26,8 +26,8 @@ export function TheoryMaterialItem({ name, fileUrl }: TheoryMaterialProps) {
       >
         <Typography
           sx={{
-            my: 0.6,
-            "&:hover": { fontWeight: 600 },
+            mt: 0.8,
+            "&:hover": { transform: "scale(1.02)" },
           }}
         >
           {name}
@@ -35,7 +35,7 @@ export function TheoryMaterialItem({ name, fileUrl }: TheoryMaterialProps) {
         <LaunchIcon
           sx={{
             cursor: "pointer",
-            "&:hover": { transform: "scale(1.12)" },
+            "&:hover": { transform: "scale(1.04)" },
             width: "0.8em",
           }}
         />

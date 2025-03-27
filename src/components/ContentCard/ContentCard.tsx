@@ -8,22 +8,26 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
 import { deleteClass } from "../../services/class.service";
+import { deleteLesson } from "../../services/lesson.service";
 
 const adminMenu = ["Editar", "Excluir"];
 
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const { user } = useAuth();
+  const { id: classId } = useParams();
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const token = localStorage.getItem("token");
+
+  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
 
   const navigate = useNavigate();
 
@@ -53,7 +57,10 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
     if (option === "Editar") {
       setOpenProfileModal(true);
     } else if (option === "Excluir") {
-      if (token) deleteClass(id, token);
+      if (token && !isClassPage) deleteClass(id, token);
+      if (token && isClassPage && classId) deleteLesson(classId, id, token);
+
+      window.location.reload();
     }
     handleCloseMenu();
   };

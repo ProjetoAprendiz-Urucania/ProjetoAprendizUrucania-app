@@ -10,9 +10,13 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { getAllMaterials } from "../services/theoryMaterials.service";
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
+import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
+import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
+import { useAuth } from "../hooks/useAuth";
 
 export function ClassPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
@@ -80,10 +84,12 @@ export function ClassPage() {
               return (
                 <ContentCard
                   key={lessonItem.id}
-                  id={lessonItem.id}
+                  id={lessonItem.id ? lessonItem.id : ""}
                   name={lessonItem.name}
                   teacherInfo={lessonItem.teacher}
-                  coverImage={lessonItem.coverImage}
+                  coverImage={
+                    lessonItem.coverImage ? lessonItem.coverImage : ""
+                  }
                 />
               );
             })
@@ -95,13 +101,16 @@ export function ClassPage() {
                 return (
                   <ContentCard
                     key={lessonItem.id}
-                    id={lessonItem.id}
+                    id={lessonItem.id ? lessonItem.id : ""}
                     name={lessonItem.name}
                     teacherInfo={lessonItem.teacher}
-                    coverImage={lessonItem.coverImage}
+                    coverImage={
+                      lessonItem.coverImage ? lessonItem.coverImage : ""
+                    }
                   />
                 );
               }))}
+      <CreateCardButton />
       <Box
         sx={{
           textAlign: "left",
@@ -147,6 +156,7 @@ export function ClassPage() {
                     />
                   ) : null;
                 }))}
+        {user?.role === "admin" ? <CreateMaterialButton /> : null}
       </Box>
     </>
   );

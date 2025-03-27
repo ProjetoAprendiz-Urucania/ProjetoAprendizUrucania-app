@@ -98,10 +98,10 @@ export function ClassesPage() {
             filteredClasses.map((classItem) => (
               <ContentCard
                 key={classItem.id}
-                id={classItem.id}
+                id={classItem.id ? classItem.id : ""}
                 name={classItem.name}
                 teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage}
+                coverImage={classItem.coverImage ? classItem.coverImage : ""}
               />
             ))
           ) : (
