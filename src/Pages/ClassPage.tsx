@@ -156,7 +156,9 @@ export function ClassPage() {
                     />
                   ) : null;
                 }))}
-        {user?.role === "admin" ? <CreateMaterialButton /> : null}
+        {user?.role === "admin" ? (
+          <CreateMaterialButton lessons={lessons} />
+        ) : null}
       </Box>
     </>
   );

@@ -116,7 +116,9 @@ export function ClassesPage() {
             </>
           )}
 
-          {user?.role === "admin" && <CreateCardButton />}
+          {user?.role === "admin" && filteredClasses.length > 0 && (
+            <CreateCardButton />
+          )}
         </>
       )}
     </>
