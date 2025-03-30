@@ -129,7 +129,6 @@ export function LessonPage() {
           sx={{
             width: "100%",
             marginBottom: 6,
-            marginTop: { sx: -1, md: -6 },
             display: "flex",
             justifyContent: "center",
           }}
