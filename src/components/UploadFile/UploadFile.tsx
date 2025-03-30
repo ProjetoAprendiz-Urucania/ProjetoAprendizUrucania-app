@@ -161,7 +161,7 @@ export function UploadFile({ lessons }: { lessons: ILesson[] }) {
                   selectedFile && selectedLesson ? "#A11420" : "#ccc",
               },
             }}
-            onClick={() => handleConfirm}
+            onClick={handleConfirm}
           >
             Confirmar
           </Button>
