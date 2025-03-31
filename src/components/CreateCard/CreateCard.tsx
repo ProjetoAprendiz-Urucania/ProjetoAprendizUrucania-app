@@ -88,9 +88,8 @@ export function CreateCard() {
 
         if (response) {
           await uploadClassPhoto(response.id, selectedPhoto, token);
+          window.location.reload();
         }
-
-        window.location.reload();
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);
@@ -111,9 +110,8 @@ export function CreateCard() {
 
         if (response && selectedPhoto) {
           await uploadLessonPhoto(id, response.id, selectedPhoto, token);
+          window.location.reload();
         }
-
-        window.location.reload();
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);

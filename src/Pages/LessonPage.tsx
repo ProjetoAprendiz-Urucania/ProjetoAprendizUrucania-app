@@ -105,9 +105,7 @@ export function LessonPage() {
       />
 
       {progress < 99 ? (
-        <Box
-          sx={{ width: "100%", marginBottom: 4, marginTop: { sx: -1, md: -6 } }}
-        >
+        <Box sx={{ width: "100%", marginBottom: 4 }}>
           <Typography
             variant="body2"
             sx={{ color: "#000", marginBottom: 1 }}
