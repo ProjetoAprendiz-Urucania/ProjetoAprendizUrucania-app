@@ -22,16 +22,15 @@ const adminMenu = ["Editar", "Excluir"];
 
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const { user } = useAuth();
-  const { id: classId } = useParams();
+  const { id: classId } = useParams(); // ID da turma obtido da URL
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
-  const token = localStorage.getItem("token");
 
-  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
-
-  const navigate = useNavigate();
+  const isClassPage = Boolean(classId); // Indica se está na página de uma turma
 
   useEffect(() => {
     if (coverImage) {
@@ -56,18 +55,19 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   };
 
   const handleMenuClick = (option: string) => {
-    if (option === "Editar") {
-      setSelectedCardId(id);
-      setOpenProfileModal(true);
-    } else if (option === "Excluir") {
-      if (token && !isClassPage) deleteClass(id, token);
-      if (token && isClassPage && classId) deleteLesson(classId, id, token);
+    handleCloseMenu();
 
+    if (option === "Editar") {
+      setOpenProfileModal(true);
+    } else if (option === "Excluir" && token) {
+      if (isClassPage) {
+        deleteLesson(classId!, id, token);
+      } else {
+        deleteClass(id, token);
+      }
       window.location.reload();
     }
-    handleCloseMenu();
   };
-
   return (
     <>
       <Card
@@ -202,7 +202,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
       >
-        <CreateCard cardId={selectedCardId} />
+        <CreateCard cardId={id} />
       </Dialog>
     </>
   );
