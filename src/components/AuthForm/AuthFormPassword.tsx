@@ -84,7 +84,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
 
         res = await updateStudent(tk.id, newStudentPassword, token || "");
 
-        if (res.email != null) {
+        if (res.email) {
           setNewPassword("");
           alert("Senha mudada com sucesso, redirecionando a login");
           navigate("/login");
