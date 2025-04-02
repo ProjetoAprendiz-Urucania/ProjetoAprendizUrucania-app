@@ -130,23 +130,36 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
 
   const handleUpdateClassCard = async () => {
     try {
-      if (token && cardId) {
-        const payload: IClass = {
-          name: name,
-          teacherInfo: teachers,
-        };
+      if (!token || !cardId) {
+        console.log("Token ou ID da classe não encontrados.");
+        return;
+      }
 
+      const payload: Partial<IClass> = {};
+      if (name) payload.name = name;
+      if (teachers) payload.teacherInfo = teachers;
+
+      if (Object.keys(payload).length > 0) {
         const response = await updateClass(cardId, payload, token);
-
         if (response) {
-          if (selectedPhoto) {
-            await uploadClassPhoto(cardId, selectedPhoto, token);
-          }
-
-          window.location.reload();
+          console.log("Dados da classe atualizados com sucesso!");
         }
       }
-      console.log(token, id);
+
+      if (selectedPhoto) {
+        const photoResponse = await uploadClassPhoto(
+          cardId,
+          selectedPhoto,
+          token
+        );
+        if (photoResponse) {
+          console.log("Imagem atualizada com sucesso!");
+        }
+      }
+
+      if (Object.keys(payload).length > 0 || selectedPhoto) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Erro ao atualizar card:", error);
     }
@@ -154,19 +167,42 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
 
   const handleUpdateLessonCard = async () => {
     try {
-      if (token && id && cardId) {
-        const payload: ILesson = {
-          name: name,
-          teacher: teachers,
-          lessonLink: lessonLink,
+      if (!token || !id || !cardId) {
+        console.log("Token, ID da aula ou ID do card não encontrados.");
+        return;
+      }
+
+      const payload: Partial<ILesson> = {};
+      if (name) payload.name = name;
+      if (teachers) payload.teacher = teachers;
+      if (lessonLink) payload.lessonLink = lessonLink;
+
+      if (Object.keys(payload).length > 0) {
+        const completePayload: ILesson = {
+          name: payload.name || "",
+          teacher: payload.teacher || "",
+          lessonLink: payload.lessonLink || "",
         };
-
-        const response = await updateLesson(id, cardId, payload, token);
-
-        if (response && selectedPhoto) {
-          await uploadLessonPhoto(id, cardId, selectedPhoto, token);
-          window.location.reload();
+        const response = await updateLesson(id, cardId, completePayload, token);
+        if (response) {
+          console.log("Dados da aula atualizados com sucesso!");
         }
+      }
+
+      if (selectedPhoto) {
+        const photoResponse = await uploadLessonPhoto(
+          id,
+          cardId,
+          selectedPhoto,
+          token
+        );
+        if (photoResponse) {
+          console.log("Imagem da aula atualizada com sucesso!");
+        }
+      }
+
+      if (Object.keys(payload).length > 0 || selectedPhoto) {
+        window.location.reload();
       }
     } catch (error) {
       console.error("Erro ao atualizar card:", error);
@@ -298,20 +334,11 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
 
           <Button
             type="submit"
-            disabled={
-              (!isClassPage && !name) ||
-              (isClassPage && !cardId && (!name || !lessonLink)) ||
-              !teachers
-            }
             sx={{
               backgroundColor: "#BB1626",
               fontWeight: "bold",
               color: "white",
               mt: 2,
-              ":disabled": {
-                backgroundColor: "#ccc",
-                color: "#666",
-              },
             }}
             onClick={
               isClassPage

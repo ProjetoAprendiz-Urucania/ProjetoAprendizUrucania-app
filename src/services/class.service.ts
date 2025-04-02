@@ -13,6 +13,7 @@ export  function uploadClassPhoto(classId: string,coverImage: File ,token: strin
 }
 
 export function deleteClass(id: string, token: string) {
+  console.log(id);
   return apiRequest(`classes/${id}`, "DELETE", undefined, token);
 }
 

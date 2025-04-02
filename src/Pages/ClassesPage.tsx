@@ -69,7 +69,7 @@ export function ClassesPage() {
 
   const filteredClasses = classSearch
     ? classes.filter((classItem) =>
-        classItem.name.toLowerCase().includes(classSearch.toLowerCase())
+        (classItem.name ?? "").toLowerCase().includes(classSearch.toLowerCase())
       )
     : classes;
 
@@ -99,7 +99,7 @@ export function ClassesPage() {
               <ContentCard
                 key={classItem.id}
                 id={classItem.id ? classItem.id : ""}
-                name={classItem.name}
+                name={classItem.name || ""}
                 teacherInfo={classItem.teachers}
                 coverImage={classItem.coverImage ? classItem.coverImage : ""}
               />

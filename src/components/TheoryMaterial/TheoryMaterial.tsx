@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 interface TheoryMaterialProps {
   name: string;
@@ -10,6 +11,8 @@ export function TheoryMaterialItem({ name, fileUrl }: TheoryMaterialProps) {
   const handleOpenFile = () => {
     window.open(fileUrl, "_blank", "noopener,noreferrer");
   };
+
+  const handleDeleteFile = () => {};
 
   return (
     <Box>
@@ -22,23 +25,34 @@ export function TheoryMaterialItem({ name, fileUrl }: TheoryMaterialProps) {
           justifyContent: "space-between",
           cursor: "pointer",
         }}
-        onClick={handleOpenFile}
       >
         <Typography
           sx={{
             mt: 0.8,
             "&:hover": { transform: "scale(1.02)" },
           }}
+          onClick={handleOpenFile}
         >
           {name}
         </Typography>
-        <LaunchIcon
-          sx={{
-            cursor: "pointer",
-            "&:hover": { transform: "scale(1.04)" },
-            width: "0.8em",
-          }}
-        />
+        <Box display={"flex"} gap={1}>
+          <DeleteForeverIcon
+            onClick={handleDeleteFile}
+            sx={{
+              cursor: "pointer",
+              "&:hover": { transform: "scale(1.04)" },
+              width: "1em",
+            }}
+          />
+          <LaunchIcon
+            onClick={handleOpenFile}
+            sx={{
+              cursor: "pointer",
+              "&:hover": { transform: "scale(1.04)" },
+              width: "0.8em",
+            }}
+          />
+        </Box>
       </Box>
     </Box>
   );
