@@ -48,11 +48,11 @@ export function Footer() {
             }}
           >
             <Typography
-              variant="h5"
               sx={{
                 fontWeight: 600,
+                fontSize: "32px",
                 color: "white",
-                mb: 5,
+                mb: 6,
               }}
             >
               Redes sociais

@@ -139,7 +139,13 @@ export function ClassPage() {
           (materials.length > 0 && !searchTerm
             ? materials.map((materialItem) => {
                 return materialItem ? (
-                  <TheoryMaterialItem key={materialItem.id} {...materialItem} />
+                  <TheoryMaterialItem
+                    key={materialItem.id}
+                    {...materialItem}
+                    lessonId={materialItem.lessonId || ""}
+                    classId={id || ""}
+                    materialId={materialItem.id}
+                  />
                 ) : null;
               })
             : materials
@@ -153,6 +159,9 @@ export function ClassPage() {
                     <TheoryMaterialItem
                       key={materialItem.id}
                       {...materialItem}
+                      lessonId={materialItem.lessonId || ""}
+                      classId={id || ""}
+                      materialId={materialItem.id}
                     />
                   ) : null;
                 }))}

@@ -15,9 +15,7 @@ export async function uploadMaterial(classId: string,lessonId: string,material: 
   return apiRequest(`classes/${classId}/${lessonId}/theoryMaterials`,"POST", formData,token);
 }
 
-export async function deleteMaterial(classId: string,lessonId: string,material: File,token:string){
-  const formData = new FormData();
-  formData.append('TheoryMaterial', material);
-
-  return apiRequest(`classes/${classId}/${lessonId}/theoryMaterials`,"POST", formData,token);
+export async function deleteMaterial(classId: string,lessonId: string, theoryMaterialId: string){
+  const token = localStorage.getItem('token') || undefined;
+  return apiRequest(`classes/${classId}/${lessonId}/theoryMaterials/${theoryMaterialId}`,"DELETE", undefined, token);
 }

@@ -1,18 +1,35 @@
 import { Box, Typography } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { deleteMaterial } from "../../services/theoryMaterials.service";
 
 interface TheoryMaterialProps {
   name: string;
   fileUrl: string;
+  classId: string;
+  lessonId: string;
+  materialId: string;
 }
 
-export function TheoryMaterialItem({ name, fileUrl }: TheoryMaterialProps) {
+export function TheoryMaterialItem({
+  name,
+  fileUrl,
+  materialId,
+  classId,
+  lessonId,
+}: TheoryMaterialProps) {
   const handleOpenFile = () => {
     window.open(fileUrl, "_blank", "noopener,noreferrer");
   };
 
-  const handleDeleteFile = () => {};
+  const handleDeleteFile = async () => {
+    try {
+      await deleteMaterial(classId, lessonId, materialId);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete material:", error);
+    }
+  };
 
   return (
     <Box>
