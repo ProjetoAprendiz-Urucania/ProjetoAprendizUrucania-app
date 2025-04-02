@@ -154,7 +154,7 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
 
   const handleUpdateLessonCard = async () => {
     try {
-      if (name && teachers && lessonLink && token && id && cardId) {
+      if (token && id && cardId) {
         const payload: ILesson = {
           name: name,
           teacher: teachers,
@@ -300,7 +300,7 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
             type="submit"
             disabled={
               (!isClassPage && !name) ||
-              (isClassPage && (!name || !lessonLink)) ||
+              (isClassPage && !cardId && (!name || !lessonLink)) ||
               !teachers
             }
             sx={{
