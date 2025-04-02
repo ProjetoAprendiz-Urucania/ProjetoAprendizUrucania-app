@@ -31,3 +31,7 @@ export  function uploadLessonPhoto(classId: string,lessonId: string,coverImage: 
 
   return apiRequest(`/classes/${classId}/${lessonId}/uploadPhoto`, "POST", formData, token || undefined);
 }
+
+export function updateLesson(classId: string, lessonId: string,classData: ILesson, token?: string) {
+  return apiRequest(`classes/${classId}/${lessonId}`, "PUT", classData, token);
+}

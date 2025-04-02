@@ -16,6 +16,7 @@ import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
 import { deleteClass } from "../../services/class.service";
 import { deleteLesson } from "../../services/lesson.service";
+import { CreateCard } from "../CreateCard/CreateCard";
 
 const adminMenu = ["Editar", "Excluir"];
 
@@ -24,6 +25,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const { id: classId } = useParams();
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const token = localStorage.getItem("token");
 
@@ -55,6 +57,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
 
   const handleMenuClick = (option: string) => {
     if (option === "Editar") {
+      setSelectedCardId(id);
       setOpenProfileModal(true);
     } else if (option === "Excluir") {
       if (token && !isClassPage) deleteClass(id, token);
@@ -198,7 +201,9 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
       <Dialog
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
-      ></Dialog>
+      >
+        <CreateCard cardId={selectedCardId} />
+      </Dialog>
     </>
   );
 }

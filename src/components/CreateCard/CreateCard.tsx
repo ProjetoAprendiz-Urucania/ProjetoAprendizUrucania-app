@@ -2,13 +2,21 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import addimage from "../../assets/img/CreateCard/addImage.svg";
 import { useEffect, useRef, useState } from "react";
-import { createClass, uploadClassPhoto } from "../../services/class.service";
+import {
+  createClass,
+  updateClass,
+  uploadClassPhoto,
+} from "../../services/class.service";
 import { IClass } from "../../interfaces/class/IClass";
 import { ILesson } from "../../interfaces/lesson/ILesson";
-import { createLesson, uploadLessonPhoto } from "../../services/lesson.service";
+import {
+  createLesson,
+  updateLesson,
+  uploadLessonPhoto,
+} from "../../services/lesson.service";
 import { useParams } from "react-router-dom";
 
-export function CreateCard() {
+export function CreateCard({ cardId }: { cardId?: string | null }) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
 
@@ -20,6 +28,8 @@ export function CreateCard() {
   const [lessonLink, setLessonLink] = useState<string>("");
 
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+
+  console.log(cardId);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -118,6 +128,51 @@ export function CreateCard() {
     }
   };
 
+  const handleUpdateClassCard = async () => {
+    try {
+      if (token && cardId) {
+        const payload: IClass = {
+          name: name,
+          teacherInfo: teachers,
+        };
+
+        const response = await updateClass(cardId, payload, token);
+
+        if (response) {
+          if (selectedPhoto) {
+            await uploadClassPhoto(cardId, selectedPhoto, token);
+          }
+
+          window.location.reload();
+        }
+      }
+      console.log(token, id);
+    } catch (error) {
+      console.error("Erro ao atualizar card:", error);
+    }
+  };
+
+  const handleUpdateLessonCard = async () => {
+    try {
+      if (name && teachers && lessonLink && token && id && cardId) {
+        const payload: ILesson = {
+          name: name,
+          teacher: teachers,
+          lessonLink: lessonLink,
+        };
+
+        const response = await updateLesson(id, cardId, payload, token);
+
+        if (response && selectedPhoto) {
+          await uploadLessonPhoto(id, cardId, selectedPhoto, token);
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar card:", error);
+    }
+  };
+
   return (
     <>
       {user?.role === "admin" && (
@@ -138,7 +193,6 @@ export function CreateCard() {
             margin: "0 auto",
           }}
         >
-          {/* Upload de Imagem */}
           <label htmlFor="file-upload" style={{ width: "100%" }}>
             <Box
               sx={{
@@ -195,7 +249,6 @@ export function CreateCard() {
             />
           </label>
 
-          {/* Campo para link e nome da aula/turma */}
           {isClassPage && (
             <>
               <TextField
@@ -231,7 +284,6 @@ export function CreateCard() {
             />
           )}
 
-          {/* Campo para professores */}
           <TextField
             id="teachers"
             label={
@@ -244,7 +296,6 @@ export function CreateCard() {
             onChange={(e) => setTeachers(e.target.value)}
           />
 
-          {/* Botão de confirmação */}
           <Button
             type="submit"
             disabled={
@@ -263,10 +314,16 @@ export function CreateCard() {
               },
             }}
             onClick={
-              isClassPage ? handleCreateLessonCard : handleCreateClassCard
+              isClassPage
+                ? cardId
+                  ? handleUpdateLessonCard
+                  : handleCreateLessonCard
+                : cardId
+                ? handleUpdateClassCard
+                : handleCreateClassCard
             }
           >
-            Confirmar
+            {cardId ? "Atualizar" : "Confirmar"}
           </Button>
         </Box>
       )}

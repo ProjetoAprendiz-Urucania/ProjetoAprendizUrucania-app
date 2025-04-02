@@ -20,9 +20,13 @@ import { IUser } from "../../interfaces/IUser";
 
 interface IAuthForm {
   mode: "login" | "register";
+  handleApiResponse: (
+    message: string,
+    severity: "success" | "error" | "info" | "warning"
+  ) => void;
 }
 
-export default function AuthForm({ mode }: IAuthForm) {
+export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
@@ -38,57 +42,45 @@ export default function AuthForm({ mode }: IAuthForm) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [church, setChurch] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-
-    if (isRegister) {
-      if (!church.trim()) {
-        setError("Preencha a igreja");
-        return;
-      } else if (!name.trim()) {
-        setError("Preencha seu nome");
-        return;
-      } else if (!email.trim()) {
-        setError("Preencha seu email");
-        return;
-      } else if (!password.trim()) {
-        setError("Preencha sua senha");
-        return;
-      }
-    } else {
-      if (!email.trim() || !password.trim()) {
-        setError("Preencha todos os campos obrigatórios");
-        return;
-      }
-    }
 
     try {
       let res: any;
 
       if (isLogin) {
         res = await login(email, password);
+        handleApiResponse("Login bem-sucedido!", "success");
       } else {
         res = await createStudent(name, email, password, church);
+        handleApiResponse("Registro realizado com sucesso!", "success");
       }
 
-      console.log("resposta ao registro:", res);
+      console.log("Resposta da API:", res);
+
       if (res.studentWithoutPassword && res.token) {
         const storedUser = localStorage.getItem("user");
         const userObject: IUser | null = storedUser
           ? JSON.parse(storedUser)
           : null;
         setUser(userObject);
-
         navigate("/classes");
       }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Erro inesperado");
+    } catch (error: any) {
+      handleApiResponse(
+        error.message === "Bad Request"
+          ? "Preencha todos os campos"
+          : error.message === "Login error: Invalid email or password."
+          ? "Email ou senha inválidos"
+          : error.message === "Email already registered."
+          ? "Email já está em uso"
+          : error.message,
+        "error"
+      );
     }
   };
 
@@ -109,12 +101,6 @@ export default function AuthForm({ mode }: IAuthForm) {
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
           <Box component="img" src={imLogo} alt="Logo" width="42px" />
         </Box>
-
-        {error && (
-          <Typography color="error" textAlign="center" mb={2}>
-            {error}
-          </Typography>
-        )}
 
         <form
           onSubmit={handleSubmit}

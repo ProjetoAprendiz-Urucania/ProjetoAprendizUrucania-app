@@ -1,8 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, Snackbar, Alert } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import AuthForm from "../components/AuthForm/AuthForm";
-import AuthFormPassword from "../components/AuthForm/AuthFormPassword";
+import AuthForm from "./AuthForm/AuthForm";
+import AuthFormPassword from "./AuthForm/AuthFormPassword";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
+import { useState } from "react";
 
 type AuthMode = "register" | "forgot" | "login" | "newPassword";
 
@@ -18,6 +19,25 @@ export function AuthPage() {
   };
 
   const mode = getMode();
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("info");
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleApiResponse = (
+    message: string,
+    severity: "success" | "error" | "info" | "warning"
+  ) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   return (
     <Box
@@ -44,9 +64,9 @@ export function AuthPage() {
         }}
       >
         {mode === "newPassword" || mode === "forgot" ? (
-          <AuthFormPassword mode={mode} />
+          <AuthFormPassword mode={mode} handleApiResponse={handleApiResponse} />
         ) : (
-          <AuthForm mode={mode} />
+          <AuthForm mode={mode} handleApiResponse={handleApiResponse} />
         )}
 
         <Box
@@ -60,6 +80,16 @@ export function AuthPage() {
           }}
         />
       </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

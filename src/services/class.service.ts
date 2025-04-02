@@ -25,5 +25,6 @@ export function getClassById(id: string, token?: string) {
 }
 
 export function updateClass(id: string, classData: IClass, token?: string) {
+  console.log("passei aqui")
   return apiRequest(`classes/${id}`, "PUT", classData, token);
 }

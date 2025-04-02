@@ -8,6 +8,8 @@ import {
   Link,
   TextField,
   Typography,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -27,6 +29,10 @@ interface ITokenPayload extends JwtPayload {
 
 interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
+  handleApiResponse: (
+    message: string,
+    severity: "success" | "error" | "info" | "warning"
+  ) => void;
 }
 
 export default function AuthFormPassword({ mode }: IAuthFormPassword) {
@@ -43,6 +49,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
   const { token } = useParams<{ token?: string }>();
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -50,6 +57,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     if (isForgot) {
       if (!email.trim()) {
@@ -69,10 +77,10 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
 
         if (res === "userExists") {
           setEmail("");
-          alert(
+          setSuccess(
             "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
           );
-          navigate("/login");
+          setTimeout(() => navigate("/login"), 3000);
         }
       } else {
         const tk: ITokenPayload = jwtDecode(token || "");
@@ -86,8 +94,8 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
 
         if (res.email) {
           setNewPassword("");
-          alert("Senha mudada com sucesso, redirecionando a login");
-          navigate("/login");
+          setSuccess("Senha mudada com sucesso, redirecionando a login");
+          setTimeout(() => navigate("/login"), 3000);
         }
       }
     } catch (error) {
@@ -112,12 +120,6 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
           <Box component="img" src={imLogo} alt="Logo" width="42px" />
         </Box>
-
-        {error && (
-          <Typography color="error" textAlign="center" mb={2}>
-            {error}
-          </Typography>
-        )}
 
         <form
           onSubmit={handleSubmit}
@@ -194,6 +196,26 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
           </Link>
         </Box>
       </Box>
+
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={!!success}
+        autoHideDuration={6000}
+        onClose={() => setSuccess(null)}
+      >
+        <Alert severity="success" sx={{ width: "100%" }}>
+          {success}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

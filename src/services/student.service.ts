@@ -5,9 +5,10 @@ import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 export async function forgotPassword(email: string) {
   try {
     const data: IStudentResponse = await apiRequest(`forgot/email/${email}`, "POST");
+    
     if (!data.hash) {
       console.error("Erro: Hash ausente na resposta!");
-      throw new Error("Falha na redefinição");
+      throw new Error("Email não identificado");
     }
 
     return "userExists"
