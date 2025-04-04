@@ -13,7 +13,6 @@ export  function uploadClassPhoto(classId: string,coverImage: File ,token: strin
 }
 
 export function deleteClass(id: string, token: string) {
-  console.log(id);
   return apiRequest(`classes/${id}`, "DELETE", undefined, token);
 }
 
@@ -26,6 +25,5 @@ export function getClassById(id: string, token?: string) {
 }
 
 export function updateClass(id: string, classData: IClass, token?: string) {
-  console.log("passei aqui")
   return apiRequest(`classes/${id}`, "PUT", classData, token);
 }

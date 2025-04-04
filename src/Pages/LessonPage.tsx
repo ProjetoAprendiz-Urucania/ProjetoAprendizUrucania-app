@@ -183,7 +183,13 @@ export function LessonPage() {
       {!materialDrop &&
         materials.length > 0 &&
         materials.map((materialItem) => (
-          <TheoryMaterialItem key={materialItem.id} {...materialItem} />
+          <TheoryMaterialItem
+            classId={classId || ""}
+            lessonId={lessonId || ""}
+            materialId={""}
+            key={materialItem.id}
+            {...materialItem}
+          />
         ))}
     </Box>
   );

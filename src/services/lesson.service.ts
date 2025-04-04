@@ -18,12 +18,11 @@ export function createLesson(
 }
 
 export async function deleteLesson(classId: string, lessonId: string, token: string) {
-  console.log("Enviando requisição DELETE para:", `classes/${classId}/${lessonId}`);
   try {
-    const res = await apiRequest(`classes/${classId}/${lessonId}`, "DELETE", undefined, token);
-    return console.log("Resposta da API:", res);
+    return await apiRequest(`classes/${classId}/${lessonId}`, "DELETE", undefined, token);
   } catch (err) {
-    return console.error("Erro ao deletar:", err);
+    console.error("Erro ao deletar aula:", err);
+    throw new Error("Erro ao deletar aula. Tente novamente mais tarde.");
   }
 }
 

@@ -22,7 +22,7 @@ const adminMenu = ["Editar", "Excluir"];
 
 export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const { user } = useAuth();
-  const { id: classId } = useParams(); // ID da turma obtido da URL
+  const { id: classId } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
-  const isClassPage = Boolean(classId); // Indica se está na página de uma turma
+  const isClassPage = Boolean(classId);
 
   useEffect(() => {
     if (coverImage) {
@@ -54,18 +54,22 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
     setAnchorEl(null);
   };
 
-  const handleMenuClick = (option: string) => {
+  const handleMenuClick = async (option: string) => {
     handleCloseMenu();
 
     if (option === "Editar") {
       setOpenProfileModal(true);
     } else if (option === "Excluir" && token) {
-      if (isClassPage) {
-        deleteLesson(classId!, id, token);
-      } else {
-        deleteClass(id, token);
+      try {
+        if (isClassPage) {
+          await deleteLesson(classId!, id, token);
+        } else {
+          await deleteClass(id, token);
+        }
+        window.location.reload();
+      } catch (error) {
+        console.error("Erro ao excluir:", error);
       }
-      window.location.reload();
     }
   };
   return (
