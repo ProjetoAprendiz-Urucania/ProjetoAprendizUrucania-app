@@ -9,26 +9,25 @@ import {
 } from "../services/studentClass.service";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
 import { useAuth } from "../hooks/useAuth";
+import { getStudents } from "../services/student.service";
+import { IStudent } from "../interfaces/student/IStudent";
+import { StudentTable } from "../components/StudentTable/StudentTable";
 
 export function ClassesPage() {
   const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
-  const [classSearch, setClassSearch] = useState("");
+  const [students, setStudents] = useState<IStudent[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
   useEffect(() => {
     const fetchStudentClasses = async () => {
-      if (!tk) {
-        console.error("Erro: Token inexistente.");
-        return;
-      }
+      if (!tk) return console.error("Erro: Token inexistente.");
 
       const studentString = localStorage.getItem("user");
-      if (!studentString) {
-        console.error("Erro: Usuário não encontrado no localStorage.");
-        return;
-      }
+      if (!studentString)
+        return console.error("Erro: Usuário não encontrado no localStorage.");
 
       const student = JSON.parse(studentString);
 
@@ -38,25 +37,9 @@ export function ClassesPage() {
             ? await getAdminClasses(tk)
             : await getStudentClasses(student.id, tk);
 
-        if (!response && user?.role === "admin") {
-          console.error(
-            "Erro: Resposta inesperada da API na busca das classes do adm."
-          );
-          return;
-        }
+        if (!response) return console.error("Erro: Resposta inesperada da API");
 
-        if (!response && user?.role === "student") {
-          console.error(
-            "Erro: Resposta inesperada da API na busca das classes do estudante."
-          );
-          return;
-        }
-
-        if (user?.role === "admin") {
-          setClasses(response);
-        } else {
-          setClasses(response.classes);
-        }
+        setClasses(user?.role === "admin" ? response : response.classes);
       } catch (error) {
         console.error("Erro ao buscar turmas:", error);
       } finally {
@@ -67,9 +50,23 @@ export function ClassesPage() {
     fetchStudentClasses();
   }, [tk, user?.role]);
 
-  const filteredClasses = classSearch
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const studentsData = await getStudents();
+        console.log("studentsData:", studentsData);
+        setStudents(studentsData);
+      } catch (error) {
+        console.error("Erro ao buscar alunos:", error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  const filteredClasses = searchTerm
     ? classes.filter((classItem) =>
-        (classItem.name ?? "").toLowerCase().includes(classSearch.toLowerCase())
+        (classItem.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     : classes;
 
@@ -88,36 +85,48 @@ export function ClassesPage() {
         </Box>
       ) : (
         <>
-          <SearchBar searchTerm={classSearch} setSearchTerm={setClassSearch} />
+          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
           <Box sx={{ textAlign: "left", marginBottom: 1 }}>
             <Typography variant="h5" sx={{ fontWeight: "600" }}>
               Turmas
             </Typography>
           </Box>
+
           {filteredClasses.length > 0 ? (
             filteredClasses.map((classItem) => (
               <ContentCard
                 key={classItem.id}
-                id={classItem.id ? classItem.id : ""}
+                id={classItem.id || ""}
                 name={classItem.name || ""}
                 teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage ? classItem.coverImage : ""}
+                coverImage={classItem.coverImage || ""}
               />
             ))
           ) : (
-            <>
-              {user?.role === "admin" ? (
-                <CreateCardButton />
-              ) : (
-                <Typography variant="body1" sx={{ mb: 12, mt: 2 }}>
-                  Nenhuma turma encontrada.
-                </Typography>
-              )}
-            </>
+            <Typography variant="body1" sx={{ mb: 12, mt: 2 }}>
+              Nenhuma turma encontrada.
+            </Typography>
           )}
 
-          {user?.role === "admin" && filteredClasses.length > 0 && (
-            <CreateCardButton />
+          {user?.role === "admin" && <CreateCardButton />}
+
+          <Box
+            sx={{
+              textAlign: "left",
+              my: 2,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "600" }}>
+              Alunos
+            </Typography>
+          </Box>
+          {user?.role === "admin" && (
+            <Box sx={{ textAlign: "left", mb: 4 }}>
+              <StudentTable students={students} />
+            </Box>
           )}
         </>
       )}

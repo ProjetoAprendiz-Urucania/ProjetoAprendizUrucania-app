@@ -1,4 +1,4 @@
-import { IStudentData } from "../interfaces/student/IStudent";
+import { IStudent } from "../interfaces/student/IStudent";
 import { apiRequest } from "./apiRequest.service";
 import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
@@ -122,6 +122,6 @@ export function getStudentByEmail(email: string) {
   );
 }
 
-export function updateStudent(id: string, studentData: IStudentData, token:string) {
+export function updateStudent(id: string, studentData: IStudent, token:string) {
   return apiRequest(`/students/${id}`, "PUT", studentData, token || undefined);
 }
