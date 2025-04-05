@@ -3,15 +3,13 @@ import { ContentCard } from "../components/ContentCard/ContentCard";
 import { IClass } from "../interfaces/class/IClass";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
-import {
-  getAdminClasses,
-  getStudentClasses,
-} from "../services/studentClass.service";
+import { getStudentClasses } from "../services/studentClass.service";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
 import { useAuth } from "../hooks/useAuth";
 import { getStudents } from "../services/student.service";
 import { IStudent } from "../interfaces/student/IStudent";
 import { StudentTable } from "../components/StudentTable/StudentTable";
+import { getAdminClasses } from "../services/class.service";
 
 export function ClassesPage() {
   const { user } = useAuth();
@@ -125,7 +123,7 @@ export function ClassesPage() {
           </Box>
           {user?.role === "admin" && (
             <Box sx={{ textAlign: "left", mb: 4 }}>
-              <StudentTable students={students} />
+              <StudentTable students={students} classes={classes} />
             </Box>
           )}
         </>
