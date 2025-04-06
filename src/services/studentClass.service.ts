@@ -5,6 +5,6 @@ export function getStudentClasses(userId: string,token: string) {
 }
 
 export function addStudentToClass(userId: string,classId: string,token: string) {
-  return apiRequest(`/userClass/${classId}${userId}`, "GET", undefined, token);
+  return apiRequest(`/userClass/${classId}/${userId}`, "POST", undefined, token);
 }
 

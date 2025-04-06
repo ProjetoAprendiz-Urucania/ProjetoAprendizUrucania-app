@@ -60,8 +60,6 @@ export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
         handleApiResponse("Registro realizado com sucesso!", "success");
       }
 
-      console.log("Resposta da API:", res);
-
       if (res.studentWithoutPassword && res.token) {
         const storedUser = localStorage.getItem("user");
         const userObject: IUser | null = storedUser
@@ -72,7 +70,7 @@ export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
       }
     } catch (error: any) {
       handleApiResponse(
-        error.message === "Bad Request"
+        error.message === "Preencha todos os campos"
           ? "Preencha todos os campos"
           : error.message === "Login error: Invalid email or password."
           ? "Email ou senha inválidos"

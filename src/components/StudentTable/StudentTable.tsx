@@ -32,7 +32,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
   const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
 
-  // Carrega as turmas do aluno ao montar ou atualizar alunos
   useEffect(() => {
     const fetchStudentClasses = async () => {
       const token = localStorage.getItem("token") || "";
@@ -42,13 +41,11 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           try {
             if (!student.id) throw new Error("Student ID is undefined");
             const response = await getStudentClasses(student.id, token);
-            interface ClassResponse {
-              name: string;
-            }
-            const classes = response.map((c: ClassResponse) => c.name);
+            console.log("response:", response);
+
+            const classes = response.map((c: { name: string }) => c.name);
             return { ...student, classes };
-          } catch (error) {
-            console.error("Erro ao buscar classes:", error);
+          } catch {
             return { ...student, classes: [] };
           }
         })
@@ -60,7 +57,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     fetchStudentClasses();
   }, [students]);
 
-  // Função para adicionar aluno à turma selecionada
   const handleAddToClass = async () => {
     if (!selectedStudent?.id || !selectedClassId) return;
 
@@ -71,7 +67,10 @@ export function StudentTable({ students, classes }: StudentTableProps) {
       const updatedStudent = await getStudentClasses(selectedStudent.id, token);
       const updatedStudents = studentsWithClasses.map((student) =>
         student.id === selectedStudent.id
-          ? { ...student, classes: updatedStudent.map((c: any) => c.name) }
+          ? {
+              ...student,
+              classes: updatedStudent.map((c: { name: string }) => c.name),
+            }
           : student
       );
       setStudentsWithClasses(updatedStudents);
