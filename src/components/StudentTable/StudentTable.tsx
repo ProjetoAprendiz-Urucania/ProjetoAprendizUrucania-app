@@ -25,33 +25,34 @@ interface StudentTableProps {
 }
 
 export function StudentTable({ students, classes }: StudentTableProps) {
-  const [studentsWithClasses, setStudentsWithClasses] = useState<IStudent[]>(
-    []
-  );
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
+  const [studentClasses, setStudentClasses] = useState<IStudent[]>([]);
 
   useEffect(() => {
     const fetchStudentClasses = async () => {
       const token = localStorage.getItem("token") || "";
 
-      const updatedStudents = await Promise.all(
+      const loadedClasses = await Promise.all(
         students.map(async (student) => {
           try {
             if (!student.id) throw new Error("Student ID is undefined");
-            const response = await getStudentClasses(student.id, token);
-            console.log("response:", response);
 
-            const classes = response.map((c: { name: string }) => c.name);
-            return { ...student, classes };
-          } catch {
+            const response = await getStudentClasses(student.id, token);
+            const classNames = response.classes
+              ? response.classes.map((cls: IClass) => cls.name).join(", ")
+              : "";
+
+            return { ...student, classes: classNames };
+          } catch (error) {
+            console.error("Erro ao buscar classes do aluno:", error);
             return { ...student, classes: [] };
           }
         })
       );
 
-      setStudentsWithClasses(updatedStudents);
+      setStudentClasses(loadedClasses);
     };
 
     fetchStudentClasses();
@@ -64,16 +65,19 @@ export function StudentTable({ students, classes }: StudentTableProps) {
 
     try {
       await addStudentToClass(selectedStudent.id, selectedClassId, token);
-      const updatedStudent = await getStudentClasses(selectedStudent.id, token);
-      const updatedStudents = studentsWithClasses.map((student) =>
-        student.id === selectedStudent.id
-          ? {
-              ...student,
-              classes: updatedStudent.map((c: { name: string }) => c.name),
-            }
-          : student
-      );
-      setStudentsWithClasses(updatedStudents);
+
+      const response = await getStudentClasses(selectedStudent.id, token);
+
+      const classesArray = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+        ? response.data
+        : [];
+
+      const classNames = classesArray.map((c: IClass) => c.name);
+
+      setStudentClasses(classNames);
+      window.location.reload();
     } catch (error) {
       console.error("Erro ao adicionar aluno à turma:", error);
     } finally {
@@ -88,12 +92,11 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     { field: "church", headerName: "Igreja", flex: 1, sortable: false },
     {
       field: "classes",
-      headerName: "Classes",
+      headerName: "Turmas",
       flex: 1,
       sortable: false,
       renderCell: (params) => {
-        const classList = params.value?.join(", ");
-        return <span>{classList || "Nenhuma"}</span>;
+        return <span>{params.row.classes || "Nenhuma"}</span>;
       },
     },
     {
@@ -127,9 +130,9 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     <>
       <Box sx={{ height: 500, width: "100%" }}>
         <DataGrid
-          rows={studentsWithClasses}
+          rows={studentClasses}
           columns={columns}
-          getRowId={(row: IStudent) => row.id || ""}
+          getRowId={(row: IStudent) => row.id ?? ""}
           pageSizeOptions={[5, 10, 20]}
           checkboxSelection
           disableColumnResize

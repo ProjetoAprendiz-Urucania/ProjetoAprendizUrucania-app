@@ -1,7 +1,8 @@
 import { apiRequest } from "./apiRequest.service";
 
-export function getStudentClasses(userId: string,token: string) {
-  return apiRequest(`/userClass/${userId}`, "GET", undefined, token);
+export async function getStudentClasses(userId: string,token: string) {
+  const res = await apiRequest(`/userClass/${userId}`, "GET", undefined, token);
+  return res;
 }
 
 export function addStudentToClass(userId: string,classId: string,token: string) {

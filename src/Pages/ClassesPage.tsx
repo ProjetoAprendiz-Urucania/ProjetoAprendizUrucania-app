@@ -52,7 +52,6 @@ export function ClassesPage() {
     const fetchStudents = async () => {
       try {
         const studentsData = await getStudents();
-        console.log("studentsData:", studentsData);
         setStudents(studentsData);
       } catch (error) {
         console.error("Erro ao buscar alunos:", error);
@@ -109,22 +108,24 @@ export function ClassesPage() {
 
           {user?.role === "admin" && <CreateCardButton />}
 
-          <Box
-            sx={{
-              textAlign: "left",
-              my: 2,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h5" sx={{ fontWeight: "600" }}>
-              Alunos
-            </Typography>
-          </Box>
           {user?.role === "admin" && (
-            <Box sx={{ textAlign: "left", mb: 4 }}>
-              <StudentTable students={students} classes={classes} />
-            </Box>
+            <>
+              <Box
+                sx={{
+                  textAlign: "left",
+                  my: 2,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h5" sx={{ fontWeight: "600" }}>
+                  Alunos
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: "left", mb: 4 }}>
+                <StudentTable students={students} classes={classes} />
+              </Box>
+            </>
           )}
         </>
       )}
