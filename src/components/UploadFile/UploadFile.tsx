@@ -43,12 +43,12 @@ export function UploadFile({ lessons }: { lessons: ILesson[] }) {
     setSelectedLesson(event.target.value);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     try {
       if (selectedFile && selectedLesson && id && token) {
-        uploadMaterial(id, selectedLesson, selectedFile, token);
+        await uploadMaterial(id, selectedLesson, selectedFile, token);
+        window.location.reload();
       }
-      window.location.reload();
     } catch (error) {
       console.error("An error occurred during file upload:", error);
     }
