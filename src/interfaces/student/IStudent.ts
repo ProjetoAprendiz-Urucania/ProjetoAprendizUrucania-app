@@ -6,4 +6,5 @@ export interface IStudent {
     role?: string,
     church?: string;
     profilePicture?: string;
+    classes?: string;
 }

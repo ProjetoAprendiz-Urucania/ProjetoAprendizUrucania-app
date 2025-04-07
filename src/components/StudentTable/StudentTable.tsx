@@ -1,11 +1,11 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import {
+  Avatar,
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import {
   getStudentClasses,
   addStudentToClass,
+  removeStudentToClass,
 } from "../../services/studentClass.service";
 import { IClass } from "../../interfaces/class/IClass";
 
@@ -29,34 +30,37 @@ export function StudentTable({ students, classes }: StudentTableProps) {
   const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [studentClasses, setStudentClasses] = useState<IStudent[]>([]);
+  const [actionType, setActionType] = useState<"add" | "remove" | null>(null);
 
   useEffect(() => {
-    const fetchStudentClasses = async () => {
-      const token = localStorage.getItem("token") || "";
-
-      const loadedClasses = await Promise.all(
-        students.map(async (student) => {
-          try {
-            if (!student.id) throw new Error("Student ID is undefined");
-
-            const response = await getStudentClasses(student.id, token);
-            const classNames = response.classes
-              ? response.classes.map((cls: IClass) => cls.name).join(", ")
-              : "";
-
-            return { ...student, classes: classNames };
-          } catch (error) {
-            console.error("Erro ao buscar classes do aluno:", error);
-            return { ...student, classes: [] };
-          }
-        })
-      );
-
-      setStudentClasses(loadedClasses);
-    };
-
-    fetchStudentClasses();
+    if (students.length > 0) {
+      fetchStudentClasses();
+    }
   }, [students]);
+
+  const fetchStudentClasses = async () => {
+    const token = localStorage.getItem("token") || "";
+
+    const loadedClasses = await Promise.all(
+      students.map(async (student) => {
+        try {
+          if (!student.id) throw new Error("Student ID is undefined");
+
+          const response = await getStudentClasses(student.id, token);
+          const classNames = response.classes
+            ? response.classes.map((cls: IClass) => cls.name).join(", ")
+            : "";
+
+          return { ...student, classes: classNames };
+        } catch (error) {
+          console.error("Erro ao buscar classes do aluno:", error);
+          return { ...student, classes: [] };
+        }
+      })
+    );
+
+    setStudentClasses(loadedClasses);
+  };
 
   const handleAddToClass = async () => {
     if (!selectedStudent?.id || !selectedClassId) return;
@@ -77,7 +81,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
       const classNames = classesArray.map((c: IClass) => c.name);
 
       setStudentClasses(classNames);
-      window.location.reload();
+      await fetchStudentClasses();
     } catch (error) {
       console.error("Erro ao adicionar aluno à turma:", error);
     } finally {
@@ -86,42 +90,139 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     }
   };
 
+  const handleRemoveToClass = async () => {
+    if (!selectedStudent?.id || !selectedClassId) return;
+
+    const token = localStorage.getItem("token") || "";
+
+    try {
+      await removeStudentToClass(selectedStudent.id, selectedClassId, token);
+      await fetchStudentClasses();
+    } catch (error) {
+      console.error("Erro ao remover aluno à turma:", error);
+    } finally {
+      setSelectedClassId("");
+      setOpenProfileModal(false);
+    }
+  };
+
+  console.log("Student :", students);
+
   const columns: GridColDef[] = [
+    {
+      field: "profilePicture",
+      headerName: "Foto",
+      flex: 0.3,
+      width: 60,
+      sortable: false,
+      renderCell: (params) =>
+        params.value ? (
+          <Box
+            component="img"
+            src={params.value}
+            alt="Foto do aluno"
+            sx={{
+              width: 42,
+              height: 42,
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          <Avatar src="/broken-image.jpg" />
+        ),
+    },
     { field: "name", headerName: "Nome", flex: 1, sortable: false },
     { field: "email", headerName: "Email", flex: 1, sortable: false },
     { field: "church", headerName: "Igreja", flex: 1, sortable: false },
     {
       field: "classes",
-      headerName: "Turmas",
+      headerName: "Turmas do usuário",
       flex: 1,
       sortable: false,
       renderCell: (params) => {
-        return <span>{params.row.classes || "Nenhuma"}</span>;
+        const classList = (params.row.classes || "")
+          .split(",")
+          .map((name: string) => name.trim())
+          .filter(Boolean);
+
+        return (
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              mt: 1,
+              gap: "4px",
+              maxHeight: "100%",
+              overflowY: "auto",
+            }}
+          >
+            {classList.map((name: string, index: number) => (
+              <Box
+                key={index}
+                sx={{
+                  fontSize: "0.7rem",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word",
+                  color: "#BB1626",
+                  p: "3px 6px",
+                  borderRadius: "4px",
+                  backgroundColor: "#BB162610",
+                }}
+              >
+                {name}
+              </Box>
+            ))}
+          </Box>
+        );
       },
     },
     {
       field: "actions",
-      headerName: "Ações",
+      headerName: "Ações das turmas",
       flex: 1,
       renderCell: (params) => (
-        <Button
-          variant="outlined"
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedStudent(params.row as IStudent);
-            setOpenProfileModal(true);
-          }}
-          sx={{
-            color: "#BB1626",
-            borderColor: "#BB1626",
-            "&:hover": {
-              backgroundColor: "#BB1626",
-              color: "#fff",
-            },
-          }}
-        >
-          Editar
-        </Button>
+        <Box sx={{ display: "flex", gap: "12px" }}>
+          {" "}
+          <Button
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedStudent(params.row as IStudent);
+              setActionType("add");
+              setOpenProfileModal(true);
+            }}
+            sx={{
+              color: "#BB1626",
+              borderColor: "#BB1626",
+              "&:hover": {
+                backgroundColor: "#BB1626",
+                color: "#fff",
+              },
+            }}
+          >
+            Adicionar
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedStudent(params.row as IStudent);
+              setActionType("remove");
+              setOpenProfileModal(true);
+            }}
+            sx={{
+              color: "#BB1626",
+              borderColor: "#BB1626",
+              "&:hover": {
+                backgroundColor: "#BB1626",
+                color: "#fff",
+              },
+            }}
+          >
+            Remover
+          </Button>
+        </Box>
       ),
     },
   ];
@@ -134,9 +235,9 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           columns={columns}
           getRowId={(row: IStudent) => row.id ?? ""}
           pageSizeOptions={[5, 10, 20]}
-          checkboxSelection
           disableColumnResize
           disableRowSelectionOnClick
+          getRowHeight={() => "auto"}
           sx={{
             "& .MuiCheckbox-root": {
               color: "#BB1626",
@@ -162,6 +263,14 @@ export function StudentTable({ students, classes }: StudentTableProps) {
             "& .MuiDataGrid-footerContainer": {
               borderTop: "1px solid #BB1626",
             },
+
+            "& .MuiDataGrid-cell": {
+              display: "flex",
+              alignItems: "center",
+            },
+            "& .MuiDataGrid-row": {
+              minHeight: "60px !important",
+            },
           }}
         />
       </Box>
@@ -170,26 +279,37 @@ export function StudentTable({ students, classes }: StudentTableProps) {
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
       >
-        <DialogTitle>Adicionar aluno à turma</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2 }}>
             <InputLabel id="class-select-label">Turma</InputLabel>
             <Select
-              labelId="class-select-label"
               value={selectedClassId}
-              label="Turma"
               onChange={(e) => setSelectedClassId(e.target.value)}
+              fullWidth
             >
-              {classes.map((classItem) => (
-                <MenuItem key={classItem.id} value={classItem.id}>
-                  {classItem.name}
-                </MenuItem>
-              ))}
+              {classes
+                .filter((classItem) => {
+                  const studentClassNames =
+                    selectedStudent?.classes?.split(",").map((c) => c.trim()) ||
+                    [];
+
+                  const isInStudentClass = studentClassNames.includes(
+                    classItem.name ?? ""
+                  );
+
+                  if (actionType === "add") return !isInStudentClass;
+                  if (actionType === "remove") return isInStudentClass;
+                  return false;
+                })
+                .map((classItem) => (
+                  <MenuItem key={classItem.id} value={classItem.id}>
+                    {classItem.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenProfileModal(false)}>Cancelar</Button>
           <Button
             variant="contained"
             sx={{ backgroundColor: "#BB1626", color: "#fff" }}
@@ -197,6 +317,14 @@ export function StudentTable({ students, classes }: StudentTableProps) {
             disabled={!selectedClassId}
           >
             Adicionar
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#BB1626", color: "#fff" }}
+            onClick={handleRemoveToClass}
+            disabled={!selectedClassId}
+          >
+            Remover
           </Button>
         </DialogActions>
       </Dialog>
