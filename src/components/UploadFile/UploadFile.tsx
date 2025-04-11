@@ -15,7 +15,15 @@ import { useParams } from "react-router-dom";
 import { ILesson } from "../../interfaces/lesson/ILesson";
 import { uploadMaterial } from "../../services/theoryMaterials.service";
 
-export function UploadFile({ lessons }: { lessons: ILesson[] }) {
+export function UploadFile({
+  lessons,
+  setLoading,
+  setOpenProfileModal,
+}: {
+  lessons: ILesson[];
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const token = localStorage.getItem("token");
@@ -43,14 +51,18 @@ export function UploadFile({ lessons }: { lessons: ILesson[] }) {
     setSelectedLesson(event.target.value);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     try {
       if (selectedFile && selectedLesson && id && token) {
-        uploadMaterial(id, selectedLesson, selectedFile, token);
+        await uploadMaterial(id, selectedLesson, selectedFile, token);
+        setOpenProfileModal(false);
+        setSelectedFile(null);
+        setSelectedLesson("");
+        setLoading(true);
       }
-      window.location.reload();
     } catch (error) {
       console.error("An error occurred during file upload:", error);
+      setLoading(false);
     }
   };
 

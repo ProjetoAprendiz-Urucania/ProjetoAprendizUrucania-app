@@ -9,6 +9,7 @@ interface TheoryMaterialProps {
   classId: string;
   lessonId: string;
   materialId: string;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function TheoryMaterialItem({
@@ -17,6 +18,7 @@ export function TheoryMaterialItem({
   materialId,
   classId,
   lessonId,
+  setLoading,
 }: TheoryMaterialProps) {
   const handleOpenFile = () => {
     window.open(fileUrl, "_blank", "noopener,noreferrer");
@@ -25,9 +27,10 @@ export function TheoryMaterialItem({
   const handleDeleteFile = async () => {
     try {
       await deleteMaterial(classId, lessonId, materialId);
-      window.location.reload();
+      setLoading(true);
     } catch (error) {
       console.error("Failed to delete material:", error);
+      setLoading(false);
     }
   };
 

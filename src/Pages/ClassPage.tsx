@@ -24,6 +24,7 @@ export function ClassPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -50,7 +51,8 @@ export function ClassPage() {
     };
 
     fetchMaterials();
-  }, [id, lessons, tk]);
+    setLoading(false);
+  }, [id, lessons, tk, loading]);
 
   return (
     <>
@@ -140,6 +142,7 @@ export function ClassPage() {
             ? materials.map((materialItem) => {
                 return materialItem ? (
                   <TheoryMaterialItem
+                    setLoading={setLoading}
                     key={materialItem.id}
                     {...materialItem}
                     lessonId={materialItem.lessonId || ""}
@@ -157,6 +160,7 @@ export function ClassPage() {
                 .map((materialItem) => {
                   return materialItem ? (
                     <TheoryMaterialItem
+                      setLoading={setLoading}
                       key={materialItem.id}
                       {...materialItem}
                       lessonId={materialItem.lessonId || ""}
@@ -166,7 +170,7 @@ export function ClassPage() {
                   ) : null;
                 }))}
         {user?.role === "admin" ? (
-          <CreateMaterialButton lessons={lessons} />
+          <CreateMaterialButton lessons={lessons} setLoading={setLoading} />
         ) : null}
       </Box>
     </>

@@ -106,8 +106,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     }
   };
 
-  console.log("Student :", students);
-
   const columns: GridColDef[] = [
     {
       field: "profilePicture",
