@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 
 import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { IStudentData } from "../../interfaces/student/IStudent";
-import { updateStudent, forgotPassword } from "../../services/student.service";
+import { IStudent } from "../../interfaces/student/IStudent";
+import { updateStudent, forgotPassword } from "../../services/user.service";
 
 import imLogo from "../../assets/img/Form/im_logo.png";
 import Visibility from "@mui/icons-material/Visibility";
@@ -83,7 +83,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
         }
       } else {
         const tk: ITokenPayload = jwtDecode(token || "");
-        const newStudentPassword: IStudentData = {
+        const newStudentPassword: IStudent = {
           password: newPassword,
           name: tk.name,
           email: tk.email,

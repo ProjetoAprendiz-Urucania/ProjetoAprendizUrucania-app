@@ -92,6 +92,7 @@ export function ClassPage() {
                   coverImage={
                     lessonItem.coverImage ? lessonItem.coverImage : ""
                   }
+                  setLoading={setLoading}
                 />
               );
             })
@@ -109,10 +110,11 @@ export function ClassPage() {
                     coverImage={
                       lessonItem.coverImage ? lessonItem.coverImage : ""
                     }
+                    setLoading={setLoading}
                   />
                 );
               }))}
-      <CreateCardButton />
+      <CreateCardButton setLoading={setLoading} />
       <Box
         sx={{
           textAlign: "left",

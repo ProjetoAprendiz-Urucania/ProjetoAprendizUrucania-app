@@ -25,7 +25,7 @@ export async function getAdminClasses(token: string) {
 }
 
 export function deleteClass(id: string, token: string) {
-  return apiRequest(`classes/${id}`, "DELETE", undefined, token);
+  return apiRequest(`classes/${id}`, "DELETE", undefined, token || undefined);
 }
 
 export function getClasses(token: string) {

@@ -20,7 +20,13 @@ import { CreateCard } from "../CreateCard/CreateCard";
 
 const adminMenu = ["Editar", "Excluir"];
 
-export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
+export function ContentCard({
+  id,
+  name,
+  teacherInfo,
+  coverImage,
+  setLoading,
+}: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   const { user } = useAuth();
   const { id: classId } = useParams();
   const token = localStorage.getItem("token");
@@ -31,6 +37,10 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
   const isClassPage = Boolean(classId);
+
+  useEffect(() => {
+    console.log(openProfileModal);
+  }, [openProfileModal]);
 
   useEffect(() => {
     if (coverImage) {
@@ -61,6 +71,7 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
       setOpenProfileModal(true);
     } else if (option === "Excluir" && token) {
       try {
+        setLoading(true);
         if (isClassPage) {
           await deleteLesson(classId!, id, token);
         } else {
@@ -69,6 +80,8 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
         window.location.reload();
       } catch (error) {
         console.error("Erro ao excluir:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -206,7 +219,11 @@ export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
       >
-        <CreateCard cardId={id} />
+        <CreateCard
+          cardId={id}
+          setLoading={setLoading}
+          setOpenProfileModal={setOpenProfileModal}
+        />
       </Dialog>
     </>
   );

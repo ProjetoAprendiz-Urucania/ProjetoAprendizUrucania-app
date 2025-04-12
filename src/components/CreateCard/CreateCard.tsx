@@ -16,7 +16,15 @@ import {
 } from "../../services/lesson.service";
 import { useParams } from "react-router-dom";
 
-export function CreateCard({ cardId }: { cardId?: string | null }) {
+export function CreateCard({
+  cardId,
+  setLoading,
+  setOpenProfileModal,
+}: {
+  cardId?: string | null;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
 
@@ -98,7 +106,8 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
 
         if (response) {
           await uploadClassPhoto(response.id, selectedPhoto, token);
-          window.location.reload();
+          setLoading(true);
+          setOpenProfileModal(false);
         }
       }
     } catch (error) {
@@ -120,7 +129,8 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
 
         if (response && selectedPhoto) {
           await uploadLessonPhoto(id, response.id, selectedPhoto, token);
-          window.location.reload();
+          setLoading(true);
+          setOpenProfileModal(false);
         }
       }
     } catch (error) {
@@ -153,15 +163,14 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
           token
         );
         if (photoResponse) {
-          console.log("Imagem atualizada com sucesso!");
+          console.log("Imagem da classe atualizada com sucesso!");
         }
-      }
-
-      if (Object.keys(payload).length > 0 || selectedPhoto) {
-        window.location.reload();
       }
     } catch (error) {
       console.error("Erro ao atualizar card:", error);
+    } finally {
+      setOpenProfileModal(false);
+      setLoading(true);
     }
   };
 
@@ -186,6 +195,7 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
         const response = await updateLesson(id, cardId, completePayload, token);
         if (response) {
           console.log("Dados da aula atualizados com sucesso!");
+          setLoading(true);
         }
       }
 
@@ -197,15 +207,13 @@ export function CreateCard({ cardId }: { cardId?: string | null }) {
           token
         );
         if (photoResponse) {
-          console.log("Imagem da aula atualizada com sucesso!");
+          setLoading(true);
         }
-      }
-
-      if (Object.keys(payload).length > 0 || selectedPhoto) {
-        window.location.reload();
       }
     } catch (error) {
       console.error("Erro ao atualizar card:", error);
+    } finally {
+      setOpenProfileModal(false);
     }
   };
 

@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import { login, createStudent } from "../../services/student.service";
+import { login, createStudent } from "../../services/user.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";

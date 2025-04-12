@@ -6,7 +6,7 @@ import { SearchBar } from "../components/SearchBar/SearchBar";
 import { getStudentClasses } from "../services/studentClass.service";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
 import { useAuth } from "../hooks/useAuth";
-import { getStudents } from "../services/student.service";
+import { getStudents } from "../services/user.service";
 import { IStudent } from "../interfaces/student/IStudent";
 import { StudentTable } from "../components/StudentTable/StudentTable";
 import { getAdminClasses } from "../services/class.service";
@@ -16,7 +16,7 @@ export function ClassesPage() {
   const [classes, setClasses] = useState<IClass[]>([]);
   const [students, setStudents] = useState<IStudent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export function ClassesPage() {
     };
 
     fetchStudentClasses();
-  }, [tk, user?.role]);
+  }, [tk, user?.role, loading]);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -98,6 +98,7 @@ export function ClassesPage() {
                 name={classItem.name || ""}
                 teacherInfo={classItem.teachers}
                 coverImage={classItem.coverImage || ""}
+                setLoading={setLoading}
               />
             ))
           ) : (
@@ -106,7 +107,9 @@ export function ClassesPage() {
             </Typography>
           )}
 
-          {user?.role === "admin" && <CreateCardButton />}
+          {user?.role === "admin" && (
+            <CreateCardButton setLoading={setLoading} />
+          )}
 
           {user?.role === "admin" && (
             <>

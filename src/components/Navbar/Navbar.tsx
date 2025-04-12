@@ -24,7 +24,7 @@ import menuIcon from "../../assets/img/Navbar/menu.png";
 import {
   uploadProfilePhoto,
   deleteProfilePhoto,
-} from "../../services/student.service";
+} from "../../services/user.service";
 
 const menuNavigation = ["Turmas", "Sair"];
 const avatarMenuOptions = ["Alterar Foto"];
@@ -54,6 +54,7 @@ function Navbar({ token, logout }: NavbarProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
   const [profilePhoto, setProfilePhoto] = useState<string | null>();
   const [imageError, setImageError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
@@ -80,7 +81,7 @@ function Navbar({ token, logout }: NavbarProps) {
     } else {
       setProfilePhoto(null);
     }
-  }, [parsedUser]);
+  }, [parsedUser, loading]);
 
   const handleMenuToggle =
     (setter: React.Dispatch<React.SetStateAction<null | HTMLElement>>) =>
@@ -183,7 +184,7 @@ function Navbar({ token, logout }: NavbarProps) {
     }
 
     setOpenProfileModal(false);
-    window.location.reload();
+    setLoading(true);
   };
 
   const handleDeletePhoto = async () => {
@@ -198,7 +199,8 @@ function Navbar({ token, logout }: NavbarProps) {
           parsedUser.profilePicture = res.studentData.profilePicture ?? null;
           localStorage.setItem("user", JSON.stringify(parsedUser));
         }
-        window.location.reload();
+        setLoading(true);
+        setOpenProfileModal(false);
       }
     } catch (error) {
       console.error("Erro ao deletar foto de perfil:", error);
