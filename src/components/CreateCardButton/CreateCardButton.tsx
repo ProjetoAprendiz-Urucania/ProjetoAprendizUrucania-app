@@ -50,7 +50,10 @@ export function CreateCardButton({
             open={openProfileModal}
             onClose={() => setOpenProfileModal(false)}
           >
-            <CreateCard setLoading={setLoading} />
+            <CreateCard
+              setLoading={setLoading}
+              setOpenProfileModal={setOpenProfileModal}
+            />
           </Dialog>
         </>
       )}

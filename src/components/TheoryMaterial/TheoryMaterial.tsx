@@ -3,13 +3,15 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { deleteMaterial } from "../../services/theoryMaterials.service";
 
-interface TheoryMaterialProps {
+export interface TheoryMaterialProps {
+  id: string;
   name: string;
+  fileType: string;
+  lessonId: string;
   fileUrl: string;
   classId: string;
-  lessonId: string;
   materialId: string;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: (loading: boolean) => void;
 }
 
 export function TheoryMaterialItem({

@@ -24,6 +24,7 @@ export function LessonPage() {
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
+  const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
 
@@ -48,7 +49,7 @@ export function LessonPage() {
     };
 
     fetchLessons();
-  }, [classId, lessonId, tk]);
+  }, [classId, lessonId, tk, loading]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -68,7 +69,7 @@ export function LessonPage() {
     };
 
     fetchMaterials();
-  }, [classId, lessonId, tk]);
+  }, [classId, lessonId, tk, loading]);
 
   const handleConfirmPresence = async () => {
     try {
@@ -184,11 +185,15 @@ export function LessonPage() {
         materials.length > 0 &&
         materials.map((materialItem) => (
           <TheoryMaterialItem
-            classId={classId || ""}
+            id={materialItem.id}
+            name={materialItem.name}
+            fileType={materialItem.fileType}
             lessonId={lessonId || ""}
-            materialId={""}
+            fileUrl={materialItem.fileUrl}
+            classId={classId || ""}
+            materialId={materialItem.id}
             key={materialItem.id}
-            {...materialItem}
+            setLoading={setLoading}
           />
         ))}
     </Box>
