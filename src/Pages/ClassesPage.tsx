@@ -35,9 +35,20 @@ export function ClassesPage() {
             ? await getAdminClasses(tk)
             : await getStudentClasses(student.id, tk);
 
+        console.log("Resposta da API:", response);
+
         if (!response) return console.error("Erro: Resposta inesperada da API");
 
-        setClasses(user?.role === "admin" ? response : response.classes);
+        const fetchedClasses =
+          user?.role === "admin"
+            ? Array.isArray(response)
+              ? response
+              : []
+            : Array.isArray(response.classes)
+            ? response.classes
+            : [];
+
+        setClasses(fetchedClasses);
       } catch (error) {
         console.error("Erro ao buscar turmas:", error);
       } finally {
@@ -102,7 +113,7 @@ export function ClassesPage() {
               />
             ))
           ) : (
-            <Typography variant="body1" sx={{ mb: 12, mt: 2 }}>
+            <Typography variant="body1" sx={{ mb: 2, mt: 4 }}>
               Nenhuma turma encontrada.
             </Typography>
           )}
