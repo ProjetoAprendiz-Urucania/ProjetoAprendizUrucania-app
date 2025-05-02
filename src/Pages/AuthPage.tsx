@@ -75,7 +75,7 @@ export function AuthPage() {
           alt="ICM Logo"
           sx={{
             width: { xs: "16.6em", sm: "18.4em", md: "20.2em" },
-            marginTop: { xs: "2em", sm: "2.2em", md: "2.4em" },
+            marginTop: { sm: "1.4em", md: "1.6em" },
             marginBottom: -1.8,
           }}
         />
