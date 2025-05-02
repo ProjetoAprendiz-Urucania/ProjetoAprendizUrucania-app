@@ -245,6 +245,7 @@ export function CreateCard({
                 justifyContent: "center",
                 alignItems: "center",
                 border: "2px dashed #1E1E1E",
+                textAlign: "center",
                 borderRadius: "12px",
                 padding: { xs: 3, md: 4 },
                 cursor: "pointer",
