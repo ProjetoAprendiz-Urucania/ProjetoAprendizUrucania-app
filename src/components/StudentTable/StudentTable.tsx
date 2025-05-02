@@ -110,8 +110,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     {
       field: "profilePicture",
       headerName: "Foto",
-      flex: 0.3,
-      width: 60,
+      width: 100,
       sortable: false,
       renderCell: (params) =>
         params.value ? (
@@ -130,16 +129,16 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           <Avatar src="/broken-image.jpg" />
         ),
     },
-    { field: "name", headerName: "Nome", flex: 1, sortable: false },
-    { field: "email", headerName: "Email", flex: 1, sortable: false },
-    { field: "church", headerName: "Igreja", flex: 1, sortable: false },
+    { field: "name", headerName: "Nome", width: 200, sortable: false },
+    { field: "email", headerName: "Email", width: 250, sortable: false },
+    { field: "church", headerName: "Igreja", width: 200, sortable: false },
     {
       field: "classes",
       headerName: "Turmas do usuário",
-      flex: 1,
+      width: 200,
       sortable: false,
       renderCell: (params) => {
-        const classList = (params.row.classes || "")
+        const classList = (params.row.classes || " Não há turmas")
           .split(",")
           .map((name: string) => name.trim())
           .filter(Boolean);
@@ -152,7 +151,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
               mt: 1,
               gap: "4px",
               maxHeight: "100%",
-              overflowY: "auto",
+              overflow: "auto",
             }}
           >
             {classList.map((name: string, index: number) => (
@@ -178,7 +177,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     {
       field: "actions",
       headerName: "Ações das turmas",
-      flex: 1,
+      width: 300,
       renderCell: (params) => (
         <Box sx={{ display: "flex", gap: "12px" }}>
           {" "}
