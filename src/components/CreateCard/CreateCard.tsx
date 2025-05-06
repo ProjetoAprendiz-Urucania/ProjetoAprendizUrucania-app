@@ -1,7 +1,7 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import addimage from "../../assets/img/CreateCard/addImage.svg";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   createClass,
   updateClass,
@@ -29,7 +29,6 @@ export function CreateCard({
   const { id } = useParams<{ id: string }>();
 
   const token = localStorage.getItem("token");
-  const loading = useRef(true);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
   const [name, setName] = useState<string>("");
   const [teachers, setTeachers] = useState<string>("");
@@ -37,18 +36,9 @@ export function CreateCard({
 
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
 
-  console.log(cardId);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      loading.current = false;
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
+      setSelectedPhoto(null);
       const file = event.target.files[0];
 
       if (!file.type.startsWith("image/")) {
@@ -106,12 +96,15 @@ export function CreateCard({
 
         if (response) {
           await uploadClassPhoto(response.id, selectedPhoto, token);
-          setLoading(true);
-          setOpenProfileModal(false);
         }
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);
+    } finally {
+      if (name && teachers && token) {
+        setLoading(true);
+        setOpenProfileModal(false);
+      }
     }
   };
 
@@ -127,14 +120,22 @@ export function CreateCard({
 
         const response = await createLesson(id, payload, token);
 
-        if (response && selectedPhoto) {
-          await uploadLessonPhoto(id, response.id, selectedPhoto, token);
-          setLoading(true);
-          setOpenProfileModal(false);
+        if (response) {
+          await uploadLessonPhoto(
+            id,
+            response.id,
+            token,
+            selectedPhoto ? selectedPhoto : undefined
+          );
         }
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);
+    } finally {
+      if (name && teachers && token && id) {
+        setLoading(true);
+        setOpenProfileModal(false);
+      }
     }
   };
 
@@ -203,8 +204,8 @@ export function CreateCard({
         const photoResponse = await uploadLessonPhoto(
           id,
           cardId,
-          selectedPhoto,
-          token
+          token,
+          selectedPhoto
         );
         if (photoResponse) {
           setLoading(true);
@@ -217,10 +218,30 @@ export function CreateCard({
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (isClassPage) {
+      if (cardId) {
+        await handleUpdateLessonCard();
+      } else {
+        await handleCreateLessonCard();
+      }
+    } else {
+      if (cardId) {
+        await handleUpdateClassCard();
+      } else {
+        await handleCreateClassCard();
+      }
+    }
+  };
+
   return (
     <>
       {user?.role === "admin" && (
         <Box
+          component="form"
+          onSubmit={handleSubmit}
           sx={{
             backgroundColor: "white",
             borderRadius: "12px",
@@ -297,6 +318,7 @@ export function CreateCard({
           {isClassPage && (
             <>
               <TextField
+                required={!cardId}
                 id="lessonLink"
                 label="Link da Aula"
                 variant="outlined"
@@ -306,6 +328,7 @@ export function CreateCard({
                 onChange={(e) => setLessonLink(e.target.value)}
               />
               <TextField
+                required={!cardId}
                 id="lessonName"
                 label="Nome da Aula"
                 variant="outlined"
@@ -319,6 +342,7 @@ export function CreateCard({
 
           {!isClassPage && (
             <TextField
+              required={!cardId}
               id="className"
               label="Nome da Turma"
               variant="outlined"
@@ -330,6 +354,7 @@ export function CreateCard({
           )}
 
           <TextField
+            required={!cardId}
             id="teachers"
             label={
               isClassPage ? "Professor" : "Professores (separados por vírgula)"
@@ -349,15 +374,6 @@ export function CreateCard({
               color: "white",
               mt: 2,
             }}
-            onClick={
-              isClassPage
-                ? cardId
-                  ? handleUpdateLessonCard
-                  : handleCreateLessonCard
-                : cardId
-                ? handleUpdateClassCard
-                : handleCreateClassCard
-            }
           >
             {cardId ? "Atualizar" : "Confirmar"}
           </Button>

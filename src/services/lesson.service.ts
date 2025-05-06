@@ -30,11 +30,11 @@ export async function deleteLesson(classId: string, lessonId: string, token: str
 export function uploadLessonPhoto(
   classId: string,
   lessonId: string,
-  coverImage: File,
-  token: string
+  token: string,
+  coverImage?: File,
 ) {
   const formData = new FormData();
-  formData.append("coverImage", coverImage);
+  formData.append("coverImage", coverImage ? coverImage : "");
 
   return apiRequest(
     `/classes/${classId}/${lessonId}/uploadPhoto`,

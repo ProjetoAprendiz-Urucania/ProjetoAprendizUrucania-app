@@ -40,7 +40,7 @@ export function ClassPage() {
       }
     };
     fetchLessons();
-  }, [id, tk]);
+  }, [id, tk, loading]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
