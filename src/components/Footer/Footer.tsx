@@ -32,7 +32,7 @@ export function Footer() {
             src={projetoAprendizImg}
             alt="Projeto Aprendiz Polo Urucânia"
             sx={{
-              width: { xs: 242, md: 312 },
+              width: { xs: 242, md: 362 },
               height: "auto",
             }}
           />
@@ -64,7 +64,7 @@ export function Footer() {
             >
               <IconButton
                 aria-label="WhatsApp"
-                href="https://wa.me/"
+                href="https://wa.me/5521987255902"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
@@ -77,7 +77,7 @@ export function Footer() {
 
               <IconButton
                 aria-label="YouTube"
-                href="https://www.youtube.com/"
+                href="https://www.youtube.com/@ProjetoAprendizUruc%C3%A2nia"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
@@ -90,7 +90,7 @@ export function Footer() {
 
               <IconButton
                 aria-label="Instagram"
-                href="https://www.instagram.com/"
+                href="https://www.instagram.com/icm.pedregoso/"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
