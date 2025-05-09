@@ -34,7 +34,7 @@ interface IAuthFormPassword {
   ) => void;
 }
 
-export default function AuthFormPassword({ mode }: IAuthFormPassword) {
+export function AuthFormPassword({ mode }: IAuthFormPassword) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {

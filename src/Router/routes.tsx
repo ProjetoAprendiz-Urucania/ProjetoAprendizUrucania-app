@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import AuthForm from "../components/AuthForm/AuthForm";
 import { AuthPage } from "../Pages/AuthPage";
+import { AuthForm } from "../Pages/AuthForm/AuthForm";
+import { AuthFormPassword } from "../Pages/AuthForm/AuthFormPassword";
 
 export const routes = createBrowserRouter([
   {
@@ -8,13 +9,20 @@ export const routes = createBrowserRouter([
     element: <AuthPage />,
     children: [
       {
-        index: true,
         path: "/login",
-        element: <AuthForm mode="login" />,
+        element: <AuthForm mode="login" handleApiResponse={(message, severity) => console.log(`${severity}: ${message}`)} />,
       },
       {
         path: "/register",
-        element: <AuthForm mode="register" />,
+        element: <AuthForm mode="register" handleApiResponse={(message, severity) => console.log(`${severity}: ${message}`)} />,
+      },
+      {
+        path: "/forgot",
+        element: <AuthFormPassword mode="forgot" handleApiResponse={(message, severity) => console.log(`${severity}: ${message}`)} />,
+      },
+      {
+        path: "/newPassword",
+        element: <AuthFormPassword mode="newPassword" handleApiResponse={(message, severity) => console.log(`${severity}: ${message}`)} />,
       },
     ],
   },

@@ -26,7 +26,7 @@ interface IAuthForm {
   ) => void;
 }
 
-export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
+export function AuthForm({ mode, handleApiResponse }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
