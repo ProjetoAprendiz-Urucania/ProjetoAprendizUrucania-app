@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import imLogo from "../../assets/img/Form/im_logo.png";
-import { login, createStudent } from "../../services/student.service";
+import { login, createStudent } from "../../services/user.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
@@ -20,9 +20,13 @@ import { IUser } from "../../interfaces/IUser";
 
 interface IAuthForm {
   mode: "login" | "register";
+  handleApiResponse: (
+    message: string,
+    severity: "success" | "error" | "info" | "warning"
+  ) => void;
 }
 
-export default function AuthForm({ mode }: IAuthForm) {
+export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
@@ -32,32 +36,28 @@ export default function AuthForm({ mode }: IAuthForm) {
   const { setUser } = useAuth();
 
   const isLogin = mode === "login";
+  const isRegister = mode === "register";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [church, setChurch] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-
-    if (!email.trim() || !password.trim()) {
-      setError("Preencha todos os campos obrigatórios");
-      return;
-    }
 
     try {
-      let res;
+      let res: any;
+
       if (isLogin) {
         res = await login(email, password);
+        handleApiResponse("Login bem-sucedido!", "success");
       } else {
-        const newStudent = { name, email, password, church };
-        res = await createStudent(newStudent);
+        res = await createStudent(name, email, password, church);
+        handleApiResponse("Registro realizado com sucesso!", "success");
       }
 
       if (res.studentWithoutPassword && res.token) {
@@ -66,11 +66,23 @@ export default function AuthForm({ mode }: IAuthForm) {
           ? JSON.parse(storedUser)
           : null;
         setUser(userObject);
-
         navigate("/classes");
       }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Erro inesperado");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        handleApiResponse(
+          error.message === "Preencha todos os campos"
+            ? "Preencha todos os campos"
+            : error.message === "Login error: Invalid email or password."
+            ? "Email ou senha inválidos"
+            : error.message === "Email already registered."
+            ? "Email já está em uso"
+            : error.message,
+          "error"
+        );
+      } else {
+        handleApiResponse("Ocorreu um erro desconhecido.", "error");
+      }
     }
   };
 
@@ -92,12 +104,6 @@ export default function AuthForm({ mode }: IAuthForm) {
           <Box component="img" src={imLogo} alt="Logo" width="42px" />
         </Box>
 
-        {error && (
-          <Typography color="error" textAlign="center" mb={2}>
-            {error}
-          </Typography>
-        )}
-
         <form
           onSubmit={handleSubmit}
           style={{
@@ -106,12 +112,12 @@ export default function AuthForm({ mode }: IAuthForm) {
             gap: 28,
           }}
         >
-          {!isLogin && (
+          {isRegister && (
             <>
               <TextField
                 id="name"
                 label="Nome"
-                variant="standard"
+                variant="outlined"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 sx={inputStyle}
@@ -119,7 +125,7 @@ export default function AuthForm({ mode }: IAuthForm) {
               <TextField
                 id="church"
                 label="Igreja"
-                variant="standard"
+                variant="outlined"
                 value={church}
                 onChange={(e) => setChurch(e.target.value)}
                 sx={inputStyle}
@@ -129,16 +135,17 @@ export default function AuthForm({ mode }: IAuthForm) {
           <TextField
             id="email"
             label="Email"
-            variant="standard"
+            variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             sx={inputStyle}
           />
+
           <TextField
             id="password"
             label="Senha"
             type={showPassword ? "text" : "password"}
-            variant="standard"
+            variant="outlined"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             sx={inputStyle}
@@ -167,7 +174,7 @@ export default function AuthForm({ mode }: IAuthForm) {
               mt: 2,
             }}
           >
-            {isLogin ? "Entrar" : "Registrar"}
+            {isLogin ? "Entrar" : isRegister ? "Registrar" : "Enviar código"}
           </Button>
         </form>
 
@@ -175,7 +182,7 @@ export default function AuthForm({ mode }: IAuthForm) {
           <>
             <Box sx={{ textAlign: "center", mt: 3 }}>
               <Link
-                href={isLogin ? "/register" : "/login"}
+                href="forgot"
                 sx={{
                   fontSize: "14px",
                   color: "#6b7280",
@@ -242,14 +249,26 @@ export default function AuthForm({ mode }: IAuthForm) {
 }
 
 const inputStyle = {
-  "& .MuiInputLabel-root": { color: "#1F1F1F" },
+  "& .MuiInputLabel-root": {
+    color: "#1F1F1F",
+    fontSize: "15px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
   "& .MuiInputLabel-root.Mui-focused": {
     fontWeight: "bold",
     color: "#ED3237",
   },
-  "& .MuiInput-underline:before": { borderBottomColor: "#1F1F1F" },
-  "& .MuiInput-underline:hover:before": {
-    borderBottomColor: "#ED3237 !important",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#1F1F1F",
+    },
+    "&:hover fieldset": {
+      borderColor: "#ED3237",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#ED3237",
+    },
   },
-  "& .MuiInput-underline:after": { borderBottomColor: "#ED3237" },
 };

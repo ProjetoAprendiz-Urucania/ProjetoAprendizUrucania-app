@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { IStudentData } from "../interfaces/student/IStudent";
+import { IStudent } from "../interfaces/student/IStudent";
 
 interface IProtectedRouteProps {
   children: ReactNode;
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, roleRequired }: IProtectedRouteProps) => {
   const storedUser = localStorage.getItem("user");
   const storeToken = localStorage.getItem("token");
 
-  let user: IStudentData | null = null;
+  let user: IStudent | null = null;
 
   try {
     user = storedUser ? JSON.parse(storedUser) : null;

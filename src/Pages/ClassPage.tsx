@@ -7,12 +7,16 @@ import { SearchBar } from "../components/SearchBar/SearchBar";
 import { useParams } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { getMaterial } from "../services/theoryMaterials.service";
-import { TheoryMaterial } from "../components/TheoryMaterial/TheoryMaterial";
+import { getAllMaterials } from "../services/theoryMaterials.service";
+import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
+import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
+import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
+import { useAuth } from "../hooks/useAuth";
 
 export function ClassPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
@@ -20,6 +24,7 @@ export function ClassPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -35,27 +40,19 @@ export function ClassPage() {
       }
     };
     fetchLessons();
-  }, [id, tk]);
+  }, [id, tk, loading]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
-      if (lessons.length > 0 && id) {
-        const materialsArray = await Promise.all(
-          lessons.map(async (lesson) => {
-            if (!tk) {
-              console.log("err get classes() token inexistente");
-            } else {
-              return getMaterial(id, lesson.id, tk);
-            }
-          })
-        );
-
-        setMaterials(materialsArray.flat().filter(Boolean));
+      if (lessons.length > 0 && id && tk) {
+        const materials = await getAllMaterials(id, tk);
+        setMaterials(materials);
       }
     };
 
     fetchMaterials();
-  }, [id, lessons, tk]);
+    setLoading(false);
+  }, [id, lessons, tk, loading]);
 
   return (
     <>
@@ -63,7 +60,7 @@ export function ClassPage() {
       <Box
         sx={{
           textAlign: "left",
-          marginBottom: 4,
+          marginBottom: 1,
           display: "flex",
           alignItems: "center",
         }}
@@ -89,10 +86,13 @@ export function ClassPage() {
               return (
                 <ContentCard
                   key={lessonItem.id}
-                  id={lessonItem.id}
+                  id={lessonItem.id ? lessonItem.id : ""}
                   name={lessonItem.name}
                   teacherInfo={lessonItem.teacher}
-                  coverImage={lessonItem.coverImage}
+                  coverImage={
+                    lessonItem.coverImage ? lessonItem.coverImage : ""
+                  }
+                  setLoading={setLoading}
                 />
               );
             })
@@ -104,17 +104,21 @@ export function ClassPage() {
                 return (
                   <ContentCard
                     key={lessonItem.id}
-                    id={lessonItem.id}
+                    id={lessonItem.id ? lessonItem.id : ""}
                     name={lessonItem.name}
                     teacherInfo={lessonItem.teacher}
-                    coverImage={lessonItem.coverImage}
+                    coverImage={
+                      lessonItem.coverImage ? lessonItem.coverImage : ""
+                    }
+                    setLoading={setLoading}
                   />
                 );
               }))}
+      <CreateCardButton setLoading={setLoading} />
       <Box
         sx={{
           textAlign: "left",
-          marginBottom: 4,
+          my: 2,
           display: "flex",
           alignItems: "center",
         }}
@@ -134,12 +138,19 @@ export function ClassPage() {
           Materiais Teóricos
         </Typography>
       </Box>
-      <Box sx={{ textAlign: "left" }}>
+      <Box sx={{ textAlign: "left", mb: 4 }}>
         {!materialDrop &&
           (materials.length > 0 && !searchTerm
             ? materials.map((materialItem) => {
                 return materialItem ? (
-                  <TheoryMaterial key={materialItem.id} {...materialItem} />
+                  <TheoryMaterialItem
+                    setLoading={setLoading}
+                    key={materialItem.id}
+                    {...materialItem}
+                    lessonId={materialItem.lessonId || ""}
+                    classId={id || ""}
+                    materialId={materialItem.id}
+                  />
                 ) : null;
               })
             : materials
@@ -150,9 +161,19 @@ export function ClassPage() {
                 )
                 .map((materialItem) => {
                   return materialItem ? (
-                    <TheoryMaterial key={materialItem.id} {...materialItem} />
+                    <TheoryMaterialItem
+                      setLoading={setLoading}
+                      key={materialItem.id}
+                      {...materialItem}
+                      lessonId={materialItem.lessonId || ""}
+                      classId={id || ""}
+                      materialId={materialItem.id}
+                    />
                   ) : null;
                 }))}
+        {user?.role === "admin" ? (
+          <CreateMaterialButton lessons={lessons} setLoading={setLoading} />
+        ) : null}
       </Box>
     </>
   );

@@ -1,98 +1,230 @@
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-
-import Typography from "@mui/material/Typography";
-
+import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Dialog,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import options from "../../assets/img/ContentCard/options.png";
+import { deleteClass } from "../../services/class.service";
+import { deleteLesson } from "../../services/lesson.service";
+import { CreateCard } from "../CreateCard/CreateCard";
 
-export function ContentCard({ id, name, teacherInfo, coverImage }: ICardData) {
-  const [imageSrc, setImageSrc] = useState(coverImage || defaultCardImage);
+const adminMenu = ["Editar", "Excluir"];
+
+export function ContentCard({
+  id,
+  name,
+  teacherInfo,
+  coverImage,
+  setLoading,
+}: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
+  const { user } = useAuth();
+  const { id: classId } = useParams();
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const handleOpenLessons = (id: string) => {
+  const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openProfileModal, setOpenProfileModal] = useState(false);
+
+  const isClassPage = Boolean(classId);
+
+  useEffect(() => {
+    console.log(openProfileModal);
+  }, [openProfileModal]);
+
+  useEffect(() => {
+    if (coverImage) {
+      const img = new Image();
+      img.src = coverImage;
+      img.onload = () => setImageSrc(coverImage);
+      img.onerror = () => setImageSrc(defaultCardImage);
+    }
+  }, [coverImage]);
+
+  const handleOpenLessons = () => {
     navigate(`${location.pathname}/${id}`);
   };
 
-  return (
-    <Card
-      sx={{
-        display: "flex",
-        marginY: { xs: 3.2, md: 4 },
-        borderRadius: 2,
-        "&:hover": { transform: "scale(1.01)" },
-        cursor: "pointer",
-      }}
-      onClick={() => handleOpenLessons(id)}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minWidth: "116px",
-          overflow: "hidden",
-        }}
-      >
-        <CardMedia
-          component="img"
-          sx={{
-            width: "76px",
-            height: "58px",
-            aspectRatio: 4 / 3,
-            objectFit: "cover",
-            borderRadius: 1,
-            border: "1px outset whitesmoke",
-            filter: "drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))",
-          }}
-          image={imageSrc}
-          alt="Live from space album cover"
-          onError={() => setImageSrc(defaultCardImage)}
-        />
-      </Box>
+  const handleOpenMenu = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    setAnchorEl(e.currentTarget);
+  };
 
-      <Box
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuClick = async (option: string) => {
+    handleCloseMenu();
+
+    if (option === "Editar") {
+      setOpenProfileModal(true);
+    } else if (option === "Excluir" && token) {
+      try {
+        setLoading(true);
+        if (isClassPage) {
+          await deleteLesson(classId!, id, token);
+        } else {
+          await deleteClass(id, token);
+        }
+        window.location.reload();
+      } catch (error) {
+        console.error("Erro ao excluir:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  return (
+    <>
+      <Card
         sx={{
-          marginLeft: -1.8,
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          marginY: 2.8,
+          borderRadius: 2,
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.51)",
+          transition: "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
+          "&:hover": {
+            transform: "scale(1.001)",
+            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.51)",
+          },
+          cursor: "pointer",
         }}
+        onClick={handleOpenLessons}
       >
-        <CardContent sx={{ textAlign: "left" }}>
-          <Typography
-            component="div"
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: "116px",
+            overflow: "hidden",
+          }}
+        >
+          <CardMedia
+            component="img"
             sx={{
-              fontSize: { xs: "15px", sm: "16px", md: "18px", lg: "20px" },
-              fontWeight: 600,
-              maxWidth: { xs: "180px", sm: "190px", md: "200px", lg: "100%" },
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              width: "76px",
+              height: "58px",
+              aspectRatio: "4 / 3",
+              objectFit: "cover",
+              borderRadius: 1,
+              border: "1px outset whitesmoke",
+              filter: "drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))",
+            }}
+            image={imageSrc}
+            alt="Capa do curso"
+          />
+        </Box>
+
+        <Box
+          sx={{
+            marginLeft: -1.8,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <CardContent
+            sx={{
+              textAlign: "left",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
-            {name}
-          </Typography>
-          <Typography
-            variant="subtitle2"
-            component="div"
-            sx={{
-              color: "text.secondary",
-              fontSize: { xs: "12px", md: "14px", lg: "16px" },
-              maxWidth: { xs: "140px", sm: "380px", md: "500px", lg: "540px" },
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {teacherInfo}
-          </Typography>
-        </CardContent>
-      </Box>
-    </Card>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography
+                sx={{
+                  fontSize: { xs: "15px", sm: "16px", md: "18px", lg: "20px" },
+                  fontWeight: 600,
+                  maxWidth: {
+                    xs: "180px",
+                    sm: "190px",
+                    md: "200px",
+                    lg: "100%",
+                  },
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {name}
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: { xs: "12px", md: "14px", lg: "16px" },
+                  maxWidth: {
+                    xs: "140px",
+                    sm: "380px",
+                    md: "500px",
+                    lg: "540px",
+                  },
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {teacherInfo}
+              </Typography>
+            </Box>
+          </CardContent>
+
+          {user?.role === "admin" && (
+            <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+              <Box
+                component="img"
+                src={options}
+                onClick={handleOpenMenu}
+                alt="Opções"
+                sx={{
+                  width: "24px",
+                  mr: 2,
+                  ":hover": { transform: "scale(1.2)" },
+                  cursor: "pointer",
+                }}
+              />
+            </Box>
+          )}
+        </Box>
+      </Card>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        {adminMenu.map((option) => (
+          <MenuItem key={option} onClick={() => handleMenuClick(option)}>
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Dialog
+        open={openProfileModal}
+        onClose={() => setOpenProfileModal(false)}
+      >
+        <CreateCard
+          cardId={id}
+          setLoading={setLoading}
+          setOpenProfileModal={setOpenProfileModal}
+        />
+      </Dialog>
+    </>
   );
 }
