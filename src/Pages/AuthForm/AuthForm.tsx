@@ -68,17 +68,21 @@ export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
         setUser(userObject);
         navigate("/classes");
       }
-    } catch (error: any) {
-      handleApiResponse(
-        error.message === "Preencha todos os campos"
-          ? "Preencha todos os campos"
-          : error.message === "Login error: Invalid email or password."
-          ? "Email ou senha inválidos"
-          : error.message === "Email already registered."
-          ? "Email já está em uso"
-          : error.message,
-        "error"
-      );
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        handleApiResponse(
+          error.message === "Preencha todos os campos"
+            ? "Preencha todos os campos"
+            : error.message === "Login error: Invalid email or password."
+            ? "Email ou senha inválidos"
+            : error.message === "Email already registered."
+            ? "Email já está em uso"
+            : error.message,
+          "error"
+        );
+      } else {
+        handleApiResponse("Ocorreu um erro desconhecido.", "error");
+      }
     }
   };
 
