@@ -1,15 +1,9 @@
 import { useState, ReactNode, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
-
-interface User {
-  name: string;
-  email: string;
-  role?: string;
-  profilePicture?: string;
-}
+import { IUser } from "../../interfaces/IUser";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
+  const [user, setUser] = useState<IUser | null>(() => {
     try {
       const storedUser = localStorage.getItem("user");
       return storedUser ? JSON.parse(storedUser) : null;
@@ -23,7 +17,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return localStorage.getItem("token");
   });
 
-  const setUserWithStorage = (user: User | null) => {
+  const setUserWithStorage = (user: IUser | null) => {
     setUser(user);
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));

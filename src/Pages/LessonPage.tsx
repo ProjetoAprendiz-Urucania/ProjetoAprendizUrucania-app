@@ -1,62 +1,162 @@
 import { useEffect, useState } from "react";
-import { ILesson } from "../interfaces/lesson/ILesson";
-import { getLesson } from "../services/lesson.service";
-import { Box, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { getMaterial } from "../services/theoryMaterials.service";
-import { TheoryMaterial } from "../components/TheoryMaterial/TheoryMaterial";
+import { Box, Button, Typography, LinearProgress } from "@mui/material";
+import {
+  CheckCircle as CheckCircleIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+} from "@mui/icons-material";
+
+import { ILesson } from "../interfaces/lesson/ILesson";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { getLesson } from "../services/lesson.service";
+import { getMaterialsByLesson } from "../services/theoryMaterials.service";
+import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
+import { confirmPresence } from "../services/frequencyList";
 
 export function LessonPage() {
   const { classId, lessonId } = useParams<{
     classId: string;
     lessonId: string;
   }>();
-  const [lesson, setLesson] = useState<ILesson>();
+  const [lesson, setLesson] = useState<ILesson | null>(null);
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
+  const [loading, setLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [present, setPresent] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
-      if (classId && lessonId) {
-        if(!tk){
-          console.log("err get classes() token inexistente")
-        }else{
-          const response = await getLesson(classId, lessonId,tk);
-          setLesson(response);
-        }
-      } else {
+      if (!classId || !lessonId) {
         console.log("classId ou lessonId não informados");
+        return;
+      }
+
+      if (!tk) {
+        console.log("err get classes() token inexistente");
+        return;
+      }
+
+      try {
+        const response = await getLesson(classId, lessonId, tk);
+        setLesson(response);
+      } catch (error) {
+        console.error("Erro ao buscar a lição:", error);
       }
     };
+
     fetchLessons();
-  }, [classId, lessonId]);
+  }, [classId, lessonId, tk, loading]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
-      if (lesson && classId && lessonId) {
-        let allMaterials: ITheoryMaterial[] = [];
-        if(!tk){
-          console.log("err get classes() token inexistente")
-        }else{
-          const materials = await getMaterial(classId, lessonId,tk);
-          allMaterials = [...allMaterials, ...materials];
-          setMaterials(allMaterials);
+      if (!classId || !lessonId) return;
 
-        }
-        
+      if (!tk) {
+        console.log("err get classes() token inexistente");
+        return;
+      }
+
+      try {
+        const materials = await getMaterialsByLesson(classId, lessonId, tk);
+        setMaterials(materials);
+      } catch (error) {
+        console.error("Erro ao buscar materiais:", error);
       }
     };
+
     fetchMaterials();
-  }, [classId, lessonId, lesson]);
+  }, [classId, lessonId, tk, loading]);
+
+  const handleConfirmPresence = async () => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (!userData) {
+        console.error("Usuário não encontrado no localStorage.");
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      if (!user.id || !lessonId || !classId) {
+        console.warn("classId, lessonId ou user.id não informados.");
+        return;
+      }
+
+      const res = await confirmPresence(classId, lessonId, user.id);
+
+      if (!res.success) {
+        console.error("Erro ao confirmar presença:", res.message || res);
+        return;
+      }
+
+      setPresent(true);
+    } catch (error) {
+      console.error("Erro inesperado ao confirmar presença:", error);
+    }
+  };
 
   return (
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
-      <VideoPlayer url={lesson?.lessonLink || ""} />
+      <VideoPlayer
+        url={lesson?.lessonLink || ""}
+        onProgress={(progress) => setProgress(progress)}
+      />
+
+      {progress < 99 ? (
+        <Box sx={{ width: "100%", marginBottom: 4 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "#000", marginBottom: 1 }}
+          ></Typography>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
+              height: 4.2,
+              backgroundColor: "#ddd",
+              "& .MuiLinearProgress-bar": {
+                backgroundColor: "#BB1626",
+              },
+            }}
+          />
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            width: "100%",
+            marginBottom: 6,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Button
+            onClick={() => handleConfirmPresence()}
+            sx={{
+              backgroundColor: "#BB1626",
+              fontWeight: "bold",
+              color: "white",
+              paddingX: 4,
+              paddingY: 1.2,
+              fontSize: "1rem",
+              textTransform: "none",
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 8,
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+              "&:hover": {
+                backgroundColor: "#9B0E1D",
+              },
+            }}
+            endIcon={<CheckCircleIcon />}
+          >
+            {present ? "Presença Confirmada" : "Confirmar Presença"}
+          </Button>
+        </Box>
+      )}
+
       <Box
         sx={{
           textAlign: "left",
@@ -80,15 +180,22 @@ export function LessonPage() {
           Materiais Teóricos
         </Typography>
       </Box>
-      <Box sx={{ textAlign: "left", marginBottom: 4 }}>
-        {!materialDrop &&
-          materials.length > 0 &&
-          materials.map((materialItem) => {
-            return materialItem ? (
-              <TheoryMaterial key={materialItem.id} {...materialItem} />
-            ) : null;
-          })}
-      </Box>
+
+      {!materialDrop &&
+        materials.length > 0 &&
+        materials.map((materialItem) => (
+          <TheoryMaterialItem
+            id={materialItem.id}
+            name={materialItem.name}
+            fileType={materialItem.fileType}
+            lessonId={lessonId || ""}
+            fileUrl={materialItem.fileUrl}
+            classId={classId || ""}
+            materialId={materialItem.id}
+            key={materialItem.id}
+            setLoading={setLoading}
+          />
+        ))}
     </Box>
   );
 }

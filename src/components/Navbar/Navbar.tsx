@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,15 +8,26 @@ import {
   MenuItem,
   Menu,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import imLogo from "../../assets/img/Navbar/im_logo.svg";
 import avatar from "../../assets/img/Navbar/avatar.png";
 import menuIcon from "../../assets/img/Navbar/menu.png";
+import {
+  uploadProfilePhoto,
+  deleteProfilePhoto,
+} from "../../services/user.service";
 
 const menuNavigation = ["Turmas", "Sair"];
-const avatarMenuOptions = ["Perfil"];
+const avatarMenuOptions = ["Alterar Foto"];
 
 interface NavbarProps {
   token: string | null;
@@ -24,12 +35,26 @@ interface NavbarProps {
 }
 
 function Navbar({ token, logout }: NavbarProps) {
+  const user = localStorage.getItem("user");
+
+  let parsedUser = null;
+
+  if (user) {
+    parsedUser = JSON.parse(user);
+  }
+
   const location = useLocation();
   const navigate = useNavigate();
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
     null
   );
+  const [openProfileModal, setOpenProfileModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
+  const [profilePhoto, setProfilePhoto] = useState<string | null>();
+  const [imageError, setImageError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
@@ -43,6 +68,20 @@ function Navbar({ token, logout }: NavbarProps) {
       navigate("/login");
     }
   }, [token, logout, navigate]);
+
+  useEffect(() => {
+    if (!openProfileModal) {
+      setSelectedPhoto(null);
+    }
+  }, [openProfileModal]);
+
+  useEffect(() => {
+    if (parsedUser && parsedUser.profilePicture) {
+      setProfilePhoto(parsedUser.profilePicture);
+    } else {
+      setProfilePhoto(null);
+    }
+  }, [parsedUser, loading]);
 
   const handleMenuToggle =
     (setter: React.Dispatch<React.SetStateAction<null | HTMLElement>>) =>
@@ -61,10 +100,111 @@ function Navbar({ token, logout }: NavbarProps) {
       return;
     }
     if (page === "Turmas") navigate("/classes");
-    if (page === "Perfil") navigate("/perfil");
+    if (page === "Alterar Foto") setOpenProfileModal(true);
     if (page === "Sair") {
       logout();
       navigate("/login");
+    }
+  };
+
+  const handleNavigate = () => {
+    if (isClassPage) {
+      navigate("/classes");
+    } else if (isLessonPage) {
+      navigate(
+        location.pathname.replace(
+          /\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/,
+          "/classes/" + location.pathname.split("/")[2]
+        )
+      );
+    }
+  };
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+
+      if (!file.type.startsWith("image/")) {
+        alert("Por favor, selecione um arquivo de imagem válido.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) return;
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const jpegFile = new File(
+                  [blob],
+                  file.name.replace(/\.\w+$/, ".jpeg"),
+                  {
+                    type: "image/jpeg",
+                  }
+                );
+                setSelectedPhoto(jpegFile);
+              }
+            },
+            "image/jpeg",
+            0.9
+          );
+        };
+      };
+    }
+  };
+
+  const handleSave = async () => {
+    if (parsedUser?.id && selectedPhoto) {
+      const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
+      console.log("response updated", res.updatedStudent?.profilePicture);
+      setProfilePhoto(res.updatedStudent?.profilePicture);
+
+      if (parsedUser) {
+        parsedUser.profilePicture = res.updatedStudent?.profilePicture;
+        localStorage.setItem("user", JSON.stringify(parsedUser));
+      }
+    }
+
+    setOpenProfileModal(false);
+    setLoading(true);
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!parsedUser?.id) return;
+
+    try {
+      const res = await deleteProfilePhoto(parsedUser.id);
+
+      if (res?.studentData) {
+        setProfilePhoto(res.studentData.profilePicture ?? null);
+        if (parsedUser) {
+          parsedUser.profilePicture = res.studentData.profilePicture ?? null;
+          localStorage.setItem("user", JSON.stringify(parsedUser));
+        }
+        setLoading(true);
+        setOpenProfileModal(false);
+      }
+    } catch (error) {
+      console.error("Erro ao deletar foto de perfil:", error);
+      alert("Ocorreu um erro ao excluir a foto. Tente novamente.");
     }
   };
 
@@ -83,8 +223,31 @@ function Navbar({ token, logout }: NavbarProps) {
           {isClassesPage ? (
             <>
               <Tooltip title="Abrir menu do usuário">
-                <IconButton onClick={handleMenuToggle(setAnchorElAvatar)}>
-                  <Box component="img" src={avatar} sx={{ width: "1.36em" }} />
+                <IconButton
+                  onClick={handleMenuToggle(setAnchorElAvatar)}
+                  sx={{
+                    borderRadius: "50%",
+                    border: "2px solid #FFFFFF",
+                    width: "40px",
+                    height: "40px",
+                    padding: 0,
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={imageError ? avatar : profilePhoto || avatar}
+                    onError={(e) => {
+                      setImageError(true);
+                      e.currentTarget.src = avatar;
+                    }}
+                    sx={{
+                      width: "38px",
+                      height: "38px",
+                      objectFit: "cover",
+                      borderRadius: "50%",
+                      padding: imageError || !profilePhoto ? 0.8 : 0,
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -119,7 +282,7 @@ function Navbar({ token, logout }: NavbarProps) {
                   backgroundColor: "#E5E5E550",
                   "&:hover": { backgroundColor: "#C0515B" },
                 }}
-                onClick={() => navigate(-1)}
+                onClick={handleNavigate}
               >
                 <ChevronLeftIcon />
               </IconButton>
@@ -158,6 +321,143 @@ function Navbar({ token, logout }: NavbarProps) {
           ))}
         </Menu>
       </Toolbar>
+
+      <Dialog
+        open={openProfileModal}
+        onClose={() => setOpenProfileModal(false)}
+        sx={{ backgroundClip: "whitesmoke" }}
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          Alterar Foto de Perfil
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            gap: 2.4,
+          }}
+        >
+          {selectedPhoto ? (
+            <Box sx={{ cursor: "pointer", m: 0, p: 0 }} onClick={handleClick}>
+              <Box
+                component="img"
+                src={URL.createObjectURL(selectedPhoto)}
+                sx={{
+                  width: "110px",
+                  height: "110px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "45%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "#BB162670",
+                  borderRadius: "50%",
+                  padding: "7px 8px",
+                  opacity: "90%",
+                }}
+              >
+                <AddAPhotoIcon sx={{ color: "whitesmoke", fontSize: "18px" }} />
+              </Box>
+            </Box>
+          ) : profilePhoto && !imageError ? (
+            <Box>
+              <Box
+                component="img"
+                src={imageError ? avatar : profilePhoto || avatar}
+                onError={(e) => {
+                  setImageError(true);
+                  e.currentTarget.src = avatar;
+                }}
+                sx={{
+                  width: "124px",
+                  height: "124px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+              />{" "}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "45%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "#BB162670",
+                  borderRadius: "50%",
+                  padding: "8px",
+                  opacity: "90%",
+                  ":hover": { cursor: "pointer" },
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <DeleteForeverIcon
+                  onClick={() => handleDeletePhoto()}
+                  sx={{
+                    color: "whitesmoke",
+                    fontSize: "22px",
+                  }}
+                />
+              </Box>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                backgroundColor: "#EAEAEA",
+                padding: "2.6em",
+                cursor: "pointer",
+                borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={handleClick}
+            >
+              {" "}
+              <AddAPhotoIcon sx={{ fontSize: "22px" }} />
+            </Box>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+          <DialogActions sx={{ width: "100%" }}>
+            <Button
+              sx={{
+                backgroundColor: "#BB1626",
+                color: "white",
+                fontWeight: 600,
+                width: "100%",
+              }}
+              onClick={() => {
+                if (selectedPhoto) {
+                  if (selectedPhoto.type.startsWith("image/")) {
+                    handleSave();
+                  } else {
+                    alert("O arquivo selecionado não é uma imagem válida.");
+                  }
+                } else {
+                  setOpenProfileModal(false);
+                }
+              }}
+            >
+              {selectedPhoto && selectedPhoto.type.startsWith("image/")
+                ? "Salvar"
+                : "Fechar"}
+            </Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
     </AppBar>
   );
 }

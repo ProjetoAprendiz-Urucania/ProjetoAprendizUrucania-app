@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse, AxiosRequestConfig } from "axios";
 import { axiosInstance } from "./axios.service";
 
 function handleAuthError() {
@@ -13,21 +13,30 @@ export async function apiRequest(
   token?: string
 ) {
   try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
+    const headers: Record<string, string> = {};
 
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
 
-    const response: AxiosResponse = await axiosInstance({
+    if (body instanceof FormData) {
+      headers["Content-Type"] = "multipart/form-data; boundary";
+
+    } else {
+      headers["Content-Type"] = "application/json";
+    }
+
+    const config: AxiosRequestConfig = {
       url: endpoint,
       method,
-      data: body,
       headers,
-    });
+      data: body, 
+    };
 
+    const response: AxiosResponse = await axiosInstance(config);
     return response.data;
   } catch (error) {
+    console.log("Erro na requisição:", error);
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
         handleAuthError();
