@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
-import { IClass } from "../interfaces/class/IClass";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { getStudentClasses } from "../services/studentClass.service";
@@ -10,10 +9,11 @@ import { getStudents } from "../services/user.service";
 import { IStudent } from "../interfaces/student/IStudent";
 import { StudentTable } from "../components/StudentTable/StudentTable";
 import { getAdminClasses } from "../services/class.service";
+import { useClass } from "../hooks/useClass";
 
 export function ClassesPage() {
   const { user } = useAuth();
-  const [classes, setClasses] = useState<IClass[]>([]);
+  const { classes, setClasses } = useClass();
   const [students, setStudents] = useState<IStudent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -102,10 +102,10 @@ export function ClassesPage() {
           </Box>
 
           {filteredClasses.length > 0 ? (
-            filteredClasses.map((classItem) => (
+            filteredClasses.map((classItem, index) => (
               <ContentCard
                 key={classItem.id}
-                id={classItem.id || ""}
+                index={index}
                 name={classItem.name || ""}
                 teacherInfo={classItem.teachers}
                 coverImage={classItem.coverImage || ""}

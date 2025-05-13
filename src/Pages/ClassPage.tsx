@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
-import { ILesson } from "../interfaces/lesson/ILesson";
-import { getLessonsByClassId } from "../services/lesson.service";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { useParams } from "react-router-dom";
@@ -13,11 +11,12 @@ import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
 import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
 import { useAuth } from "../hooks/useAuth";
+import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const [lessons, setLessons] = useState<ILesson[]>([]);
+  const { lessons } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
@@ -25,22 +24,6 @@ export function ClassPage() {
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchLessons = async () => {
-      if (id) {
-        if (!tk) {
-          console.log("err get classes() token inexistente");
-        } else {
-          const response = await getLessonsByClassId(id, tk);
-          setLessons(response);
-        }
-      } else {
-        console.log("ID não informado");
-      }
-    };
-    fetchLessons();
-  }, [id, tk, loading]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -82,11 +65,11 @@ export function ClassPage() {
       </Box>
       {!lessonsDrop &&
         (lessons.length > 0 && !searchTerm
-          ? lessons.map((lessonItem) => {
+          ? lessons.map((lessonItem, index) => {
               return (
                 <ContentCard
                   key={lessonItem.id}
-                  id={lessonItem.id ? lessonItem.id : ""}
+                  index={index}
                   name={lessonItem.name}
                   teacherInfo={lessonItem.teacher}
                   coverImage={
@@ -100,11 +83,11 @@ export function ClassPage() {
               .filter((lessonItem) =>
                 lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
-              .map((lessonItem) => {
+              .map((lessonItem, index) => {
                 return (
                   <ContentCard
                     key={lessonItem.id}
-                    id={lessonItem.id ? lessonItem.id : ""}
+                    index={index}
                     name={lessonItem.name}
                     teacherInfo={lessonItem.teacher}
                     coverImage={

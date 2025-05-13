@@ -17,18 +17,20 @@ import options from "../../assets/img/ContentCard/options.png";
 import { deleteClass } from "../../services/class.service";
 import { deleteLesson } from "../../services/lesson.service";
 import { CreateCard } from "../CreateCard/CreateCard";
+import { useClass } from "../../hooks/useClass";
 
 const adminMenu = ["Editar", "Excluir"];
 
 export function ContentCard({
-  id,
+  index,
   name,
   teacherInfo,
   coverImage,
   setLoading,
 }: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   const { user } = useAuth();
-  const { id: classId } = useParams();
+  const { lessons, classes, selectedClass, setSelectedClass } = useClass();
+  const { id: isClass } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -36,7 +38,7 @@ export function ContentCard({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
-  const isClassPage = Boolean(classId);
+  const isClassPage = Boolean(isClass);
 
   useEffect(() => {
     console.log(openProfileModal);
@@ -52,7 +54,8 @@ export function ContentCard({
   }, [coverImage]);
 
   const handleOpenLessons = () => {
-    navigate(`${location.pathname}/${id}`);
+    setSelectedClass(index);
+    navigate(`${location.pathname}/${selectedClass}`);
   };
 
   const handleOpenMenu = (e: React.MouseEvent<HTMLImageElement>) => {
@@ -66,16 +69,19 @@ export function ContentCard({
 
   const handleMenuClick = async (option: string) => {
     handleCloseMenu();
+    const lessonId = lessons[index]?.id;
+    const classId = classes[index]?.id;
 
     if (option === "Editar") {
       setOpenProfileModal(true);
     } else if (option === "Excluir" && token) {
       try {
         setLoading(true);
-        if (isClassPage) {
-          await deleteLesson(classId!, id, token);
-        } else {
-          await deleteClass(id, token);
+
+        if (isClassPage && lessonId) {
+          await deleteLesson(isClass!, lessonId, token);
+        } else if (!isClassPage && classId) {
+          await deleteClass(classId, token);
         }
         window.location.reload();
       } catch (error) {
@@ -220,7 +226,7 @@ export function ContentCard({
         onClose={() => setOpenProfileModal(false)}
       >
         <CreateCard
-          cardId={id}
+          cardId={selectedClass}
           setLoading={setLoading}
           setOpenProfileModal={setOpenProfileModal}
         />

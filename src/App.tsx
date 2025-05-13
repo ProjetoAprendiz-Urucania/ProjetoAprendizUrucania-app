@@ -18,6 +18,7 @@ import ProtectedRoute from "./hoc/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Footer } from "./components/Footer/Footer";
 import { useEffect } from "react";
+import { ClassProvider } from "./context/ClassContext";
 
 function App() {
   const location = useLocation();
@@ -76,7 +77,9 @@ function App() {
               path="/classes"
               element={
                 <ProtectedRoute>
-                  <ClassesPage />
+                  <ClassProvider>
+                    <ClassesPage />
+                  </ClassProvider>
                 </ProtectedRoute>
               }
             />
@@ -84,7 +87,9 @@ function App() {
               path="/classes/:id"
               element={
                 <ProtectedRoute>
-                  <ClassPage />
+                  <ClassProvider>
+                    <ClassPage />
+                  </ClassProvider>
                 </ProtectedRoute>
               }
             />

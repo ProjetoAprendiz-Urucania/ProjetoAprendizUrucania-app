@@ -15,18 +15,20 @@ import {
   uploadLessonPhoto,
 } from "../../services/lesson.service";
 import { useParams } from "react-router-dom";
+import { useClass } from "../../hooks/useClass";
 
 export function CreateCard({
   cardId,
   setLoading,
   setOpenProfileModal,
 }: {
-  cardId?: string | null;
+  cardId?: number | null;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
+  const { selectedClass, classes } = useClass();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -140,6 +142,10 @@ export function CreateCard({
   };
 
   const handleUpdateClassCard = async () => {
+    if (!selectedClass) {
+      console.error("selectedClass is undefined");
+      return null;
+    }
     try {
       if (!token || !cardId) {
         console.log("Token ou ID da classe não encontrados.");
@@ -151,7 +157,11 @@ export function CreateCard({
       if (teachers) payload.teacherInfo = teachers;
 
       if (Object.keys(payload).length > 0) {
-        const response = await updateClass(cardId, payload, token);
+        const response = await updateClass(
+          classes[selectedClass].id,
+          payload,
+          token
+        );
         if (response) {
           console.log("Dados da classe atualizados com sucesso!");
         }
