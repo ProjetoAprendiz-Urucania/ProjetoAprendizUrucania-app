@@ -1,8 +1,28 @@
+import { createContext } from "react";
+import { IUser } from "../interfaces/IUser";
 import { useState, ReactNode, useEffect } from "react";
-import { AuthContext } from "./AuthContext";
-import { IUser } from "../../interfaces/IUser";
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+interface AuthContextType {
+  user: IUser | null;
+  token: string | null;
+  setUserWithStorage: (user: IUser | null) => void;
+  setTokenWithStorage: (token: string | null) => void;
+  logout: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem("token");
+  });
+
   const [user, setUser] = useState<IUser | null>(() => {
     try {
       const storedUser = localStorage.getItem("user");
@@ -11,10 +31,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Erro ao recuperar usuário do localStorage:", error);
       return null;
     }
-  });
-
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("token");
   });
 
   const setUserWithStorage = (user: IUser | null) => {
@@ -75,8 +91,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         token,
-        setUser: setUserWithStorage,
-        setToken: setTokenWithStorage,
+        setUserWithStorage,
+        setTokenWithStorage,
         logout,
       }}
     >

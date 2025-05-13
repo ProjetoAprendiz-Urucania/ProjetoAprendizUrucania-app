@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { IStudent } from "../../interfaces/student/IStudent";
 import { updateStudent, forgotPassword } from "../../services/user.service";
 

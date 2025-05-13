@@ -6,7 +6,7 @@ import { ClassesPage } from "../Pages/ClassesPage";
 import { ClassPage } from "../Pages/ClassPage";
 import { ProtectedRoute } from "../hoc/ProtectedRoute";
 import { LessonPage } from "../Pages/LessonPage";
-import { AppLayout } from "../layout/layout";
+import { AppLayout } from "../layout/AppLayout";
 
 export const routes = createBrowserRouter([
   {
