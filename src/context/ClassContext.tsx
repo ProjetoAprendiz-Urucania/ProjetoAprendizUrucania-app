@@ -3,7 +3,6 @@ import { IClassContext } from "../interfaces/class/IClassContext";
 import { IClass } from "../interfaces/class/IClass";
 import { ILesson } from "../interfaces/lesson/ILesson";
 import { getLessonsByClassId } from "../services/lesson.service";
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -53,6 +52,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     if (!selectedClass) return;
 
     const selectedClassData = classes[selectedClass];
+
+    console.log(selectedClassData);
 
     if (selectedClassData.id) {
       const fetchLessons = async () => {

@@ -158,7 +158,7 @@ export function CreateCard({
 
       if (Object.keys(payload).length > 0) {
         const response = await updateClass(
-          classes[selectedClass].id,
+          classes[selectedClass].id!,
           payload,
           token
         );
@@ -169,7 +169,7 @@ export function CreateCard({
 
       if (selectedPhoto) {
         const photoResponse = await uploadClassPhoto(
-          cardId,
+          classes[selectedClass].id!,
           selectedPhoto,
           token
         );
@@ -186,6 +186,10 @@ export function CreateCard({
   };
 
   const handleUpdateLessonCard = async () => {
+    if (!selectedClass) {
+      console.error("selectedClass is undefined");
+      return null;
+    }
     try {
       if (!token || !id || !cardId) {
         console.log("Token, ID da aula ou ID do card não encontrados.");
@@ -203,7 +207,12 @@ export function CreateCard({
           teacher: payload.teacher || "",
           lessonLink: payload.lessonLink || "",
         };
-        const response = await updateLesson(id, cardId, completePayload, token);
+        const response = await updateLesson(
+          id,
+          classes[selectedClass].id!,
+          completePayload,
+          token
+        );
         if (response) {
           console.log("Dados da aula atualizados com sucesso!");
           setLoading(true);
@@ -213,7 +222,7 @@ export function CreateCard({
       if (selectedPhoto) {
         const photoResponse = await uploadLessonPhoto(
           id,
-          cardId,
+          classes[selectedClass].id!,
           token,
           selectedPhoto
         );

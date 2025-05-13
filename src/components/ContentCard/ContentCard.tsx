@@ -55,7 +55,10 @@ export function ContentCard({
 
   const handleOpenLessons = () => {
     setSelectedClass(index);
-    navigate(`${location.pathname}/${selectedClass}`);
+    const selectedClassId = classes[index]?.id;
+    if (selectedClassId) {
+      navigate(`${location.pathname}/${selectedClassId}`);
+    }
   };
 
   const handleOpenMenu = (e: React.MouseEvent<HTMLImageElement>) => {
