@@ -15,7 +15,7 @@ export function AuthPage() {
     if (path.includes("register")) return "register";
     if (path.includes("forgot")) return "forgot";
     if (path.includes("login")) return "login";
-    return "login";
+    return "login"; 
   };
 
   const mode = getMode();

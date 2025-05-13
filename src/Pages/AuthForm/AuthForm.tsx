@@ -20,7 +20,7 @@ import { IUser } from "../../interfaces/IUser";
 
 interface IAuthForm {
   mode: "login" | "register";
-  handleApiResponse: (
+  handleApiResponse?: (
     message: string,
     severity: "success" | "error" | "info" | "warning"
   ) => void;
@@ -48,16 +48,17 @@ export function AuthForm({ mode, handleApiResponse }: IAuthForm) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    console.log('handleSubimit');
+    
     try {
       let res: any;
 
       if (isLogin) {
         res = await login(email, password);
-        handleApiResponse("Login bem-sucedido!", "success");
+        handleApiResponse?.("Login bem-sucedido!", "success");
       } else {
         res = await createStudent(name, email, password, church);
-        handleApiResponse("Registro realizado com sucesso!", "success");
+        handleApiResponse?.("Registro realizado com sucesso!", "success");
       }
 
       if (res.studentWithoutPassword && res.token) {
@@ -70,7 +71,7 @@ export function AuthForm({ mode, handleApiResponse }: IAuthForm) {
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        handleApiResponse(
+        handleApiResponse?.(
           error.message === "Preencha todos os campos"
             ? "Preencha todos os campos"
             : error.message === "Login error: Invalid email or password."
@@ -81,7 +82,7 @@ export function AuthForm({ mode, handleApiResponse }: IAuthForm) {
           "error"
         );
       } else {
-        handleApiResponse("Ocorreu um erro desconhecido.", "error");
+        handleApiResponse?.("Ocorreu um erro desconhecido.", "error");
       }
     }
   };

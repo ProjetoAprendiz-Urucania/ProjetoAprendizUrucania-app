@@ -57,7 +57,7 @@ export function ClassesPage() {
     };
 
     fetchStudentClasses();
-  }, [tk, user?.role, loading]);
+  }, [tk, user?.role]);
 
   useEffect(() => {
     const fetchStudents = async () => {

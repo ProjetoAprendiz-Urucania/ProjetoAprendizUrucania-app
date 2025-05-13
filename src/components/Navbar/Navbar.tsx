@@ -34,7 +34,7 @@ interface NavbarProps {
   logout: () => void;
 }
 
-function Navbar({ token, logout }: NavbarProps) {
+export function Navbar({ token, logout }: NavbarProps) {
   const user = localStorage.getItem("user");
 
   let parsedUser = null;

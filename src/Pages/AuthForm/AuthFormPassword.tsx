@@ -28,7 +28,7 @@ interface ITokenPayload extends JwtPayload {
 
 interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
-  handleApiResponse: (
+  handleApiResponse?: (
     message: string,
     severity: "success" | "error" | "info" | "warning"
   ) => void;
