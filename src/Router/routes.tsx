@@ -30,7 +30,7 @@ export const routes = createBrowserRouter([
         element: <AuthFormPassword mode="forgot" />,
       },
       {
-        path: "/newPassword",
+        path: "/newPassword/:token",
         element: <AuthFormPassword mode="newPassword" />,
       },
     ],

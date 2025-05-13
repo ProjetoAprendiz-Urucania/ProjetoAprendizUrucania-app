@@ -39,10 +39,6 @@ export function ContentCard({
   const isClassPage = Boolean(classId);
 
   useEffect(() => {
-    console.log(openProfileModal);
-  }, [openProfileModal]);
-
-  useEffect(() => {
     if (coverImage) {
       const img = new Image();
       img.src = coverImage;
