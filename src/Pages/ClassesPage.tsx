@@ -105,6 +105,7 @@ export function ClassesPage() {
             filteredClasses.map((classItem, index) => (
               <ContentCard
                 key={classItem.id}
+                id={classItem.id}
                 index={index}
                 name={classItem.name || ""}
                 teacherInfo={classItem.teachers}

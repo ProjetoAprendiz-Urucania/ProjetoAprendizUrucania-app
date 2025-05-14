@@ -71,6 +71,7 @@ export function ClassPage() {
               return (
                 <ContentCard
                   key={lessonItem.id}
+                  id={lessonItem.id}
                   index={index}
                   name={lessonItem.name}
                   teacherInfo={lessonItem.teacher}
@@ -89,6 +90,7 @@ export function ClassPage() {
               .map((lessonItem, index) => (
                 <ContentCard
                   key={lessonItem.id}
+                  id={lessonItem.id}
                   index={index}
                   name={lessonItem.name}
                   teacherInfo={lessonItem.teacher}

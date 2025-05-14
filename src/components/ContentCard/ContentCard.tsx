@@ -22,6 +22,7 @@ import { useClass } from "../../hooks/useClass";
 const adminMenu = ["Editar", "Excluir"];
 
 export function ContentCard({
+  id,
   index,
   name,
   teacherInfo,
@@ -29,12 +30,8 @@ export function ContentCard({
   setLoading,
 }: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   const { user } = useAuth();
-  const {
-    handleSelectedClass,
-    handleSelectedLesson,
-    selectedClass,
-    selectedLesson,
-  } = useClass();
+  const { handleSelectedClass, handleSelectedLesson, selectedClass } =
+    useClass();
   const { id: isClass } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -61,13 +58,10 @@ export function ContentCard({
   const handleOpenLessons = () => {
     if (!isClassPage) {
       handleSelectedClass(index);
-      navigate(`/classes/${selectedClass?.id}`);
+      navigate(`/classes/${id}`);
     } else {
-      const lessonId = selectedClass?.lessons?.[index]?.id;
-      if (lessonId) {
-        handleSelectedLesson(index);
-        navigate(`/classes/${selectedClass.id}/${lessonId}`);
-      }
+      handleSelectedLesson(index);
+      navigate(`/classes/${selectedClass?.id}/${id}`);
     }
   };
 
@@ -82,8 +76,6 @@ export function ContentCard({
 
   const handleMenuClick = async (option: string) => {
     handleCloseMenu();
-    const lessonId = selectedLesson?.id;
-    const classId = selectedClass?.id;
 
     if (option === "Editar") {
       setOpenProfileModal(true);
@@ -91,10 +83,10 @@ export function ContentCard({
       try {
         setLoading(true);
 
-        if (isClassPage && lessonId) {
-          await deleteLesson(isClass!, lessonId, token);
-        } else if (!isClassPage && classId) {
-          await deleteClass(classId, token);
+        if (isClassPage) {
+          await deleteLesson(isClass!, id, token);
+        } else if (!isClassPage) {
+          await deleteClass(id, token);
         }
         window.location.reload();
       } catch (error) {
