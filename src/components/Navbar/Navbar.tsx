@@ -58,7 +58,7 @@ function Navbar({ token, logout }: NavbarProps) {
 
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
-  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/([a-f0-9]{24})?$/.test(
+  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
     location.pathname
   );
 
@@ -113,7 +113,7 @@ function Navbar({ token, logout }: NavbarProps) {
     } else if (isLessonPage) {
       navigate(
         location.pathname.replace(
-          /\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/,
+          /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
           "/classes/" + location.pathname.split("/")[2]
         )
       );

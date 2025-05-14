@@ -2,7 +2,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import addimage from "../../assets/img/CreateCard/addImage.svg";
 import { useState } from "react";
-import { updateClass, uploadClassPhoto } from "../../services/class.service";
+
 import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
 import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
 import {
@@ -24,7 +24,7 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const { selectedClass, addClass } = useClass();
+  const { selectedClass, addClass, updateClass } = useClass();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -83,14 +83,17 @@ export function CreateCard({
   };
 
   const handleCreateClassCard = async () => {
+    setLoading(true);
+
     try {
-      if (selectedPhoto && name && teachers && token) {
+      if (name && teachers && token) {
         const payload: ICreateClass = {
           name: name,
           teachers: teachers,
+          coverImage: selectedPhoto || undefined,
         };
 
-        addClass(payload, selectedPhoto);
+        addClass(payload);
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);
@@ -100,36 +103,32 @@ export function CreateCard({
         setOpenProfileModal(false);
       }
     }
+    setLoading(false);
   };
 
   const handleCreateLessonCard = async () => {
-    try {
-      console.log(id);
-      if (name && teachers && token && id) {
-        const payload: ICreateLesson = {
-          name: name,
-          teacher: teachers,
-          lessonLink: lessonLink,
-        };
+    if (name && teachers && token && id) {
+      const payload: ICreateLesson = {
+        name: name,
+        teacher: teachers,
+        lessonLink: lessonLink,
+      };
 
-        const response = await createLesson(id, payload, token);
+      const response = await createLesson(id, payload, token);
 
-        if (response) {
-          await uploadLessonPhoto(
-            id,
-            response.id,
-            token,
-            selectedPhoto ? selectedPhoto : undefined
-          );
-        }
+      if (response) {
+        await uploadLessonPhoto(
+          id,
+          response.id,
+          token,
+          selectedPhoto ? selectedPhoto : undefined
+        );
       }
-    } catch (error) {
-      console.error("Erro ao criar card:", error);
-    } finally {
-      if (name && teachers && token && id) {
-        setLoading(true);
-        setOpenProfileModal(false);
-      }
+    }
+
+    if (name && teachers && token && id) {
+      setLoading(true);
+      setOpenProfileModal(false);
     }
   };
 
@@ -138,39 +137,16 @@ export function CreateCard({
       console.error("selectedClass is undefined");
       return null;
     }
-    try {
-      if (!token || !index) {
-        console.log("Token ou ID da classe não encontrados.");
-        return;
-      }
+    const payload: Partial<IUpdateClass> = {};
+    if (name) payload.name = name;
+    if (teachers) payload.teacherInfo = teachers;
 
-      const payload: Partial<IUpdateClass> = {};
-      if (name) payload.name = name;
-      if (teachers) payload.teacherInfo = teachers;
-
-      if (Object.keys(payload).length > 0) {
-        const response = await updateClass(selectedClass.id, payload, token);
-        if (response) {
-          console.log("Dados da classe atualizados com sucesso!");
-        }
-      }
-
-      if (selectedPhoto) {
-        const photoResponse = await uploadClassPhoto(
-          selectedClass.id,
-          selectedPhoto,
-          token
-        );
-        if (photoResponse) {
-          console.log("Imagem da classe atualizada com sucesso!");
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar card:", error);
-    } finally {
-      setOpenProfileModal(false);
-      setLoading(true);
+    if (Object.keys(payload).length > 0) {
+      updateClass(payload);
     }
+
+    setOpenProfileModal(false);
+    setLoading(true);
   };
 
   const handleUpdateLessonCard = async () => {

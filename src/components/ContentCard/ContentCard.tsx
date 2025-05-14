@@ -8,13 +8,12 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
-import { deleteClass } from "../../services/class.service";
 import { deleteLesson } from "../../services/lesson.service";
 import { CreateCard } from "../CreateCard/CreateCard";
 import { useClass } from "../../hooks/useClass";
@@ -30,17 +29,16 @@ export function ContentCard({
   setLoading,
 }: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   const { user } = useAuth();
-  const { handleSelectedClass, handleSelectedLesson, selectedClass } =
-    useClass();
-  const { id: isClass } = useParams();
+  const { handleSelectedClass, selectedClass, removeClass } = useClass();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
-  const isClassPage = Boolean(isClass);
+  const isClassesPage = location.pathname === "/classes";
 
   useEffect(() => {
     console.log(openProfileModal);
@@ -56,12 +54,11 @@ export function ContentCard({
   }, [coverImage]);
 
   const handleOpenLessons = () => {
-    if (!isClassPage) {
+    if (isClassesPage) {
       handleSelectedClass(index);
       navigate(`/classes/${id}`);
     } else {
-      handleSelectedLesson(index);
-      navigate(`/classes/${selectedClass?.id}/${id}`);
+      navigate(`/classes/${selectedClass?.id}/lessons/${id}`);
     }
   };
 
@@ -83,12 +80,11 @@ export function ContentCard({
       try {
         setLoading(true);
 
-        if (isClassPage) {
-          await deleteLesson(isClass!, id, token);
-        } else if (!isClassPage) {
-          await deleteClass(id, token);
+        if (!selectedClass) {
+          await deleteLesson(id, id, token);
+        } else {
+          removeClass(id);
         }
-        window.location.reload();
       } catch (error) {
         console.error("Erro ao excluir:", error);
       } finally {
@@ -220,7 +216,13 @@ export function ContentCard({
         onClose={handleCloseMenu}
       >
         {adminMenu.map((option) => (
-          <MenuItem key={option} onClick={() => handleMenuClick(option)}>
+          <MenuItem
+            key={option}
+            onClick={() => {
+              handleSelectedClass(index);
+              handleMenuClick(option);
+            }}
+          >
             {option}
           </MenuItem>
         ))}

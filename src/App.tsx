@@ -94,7 +94,7 @@ function App() {
               }
             />
             <Route
-              path="/classes/:classId/:lessonId"
+              path="/classes/:classId/lessons/:lessonId"
               element={
                 <ProtectedRoute>
                   <LessonPage />

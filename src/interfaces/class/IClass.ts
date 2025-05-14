@@ -11,12 +11,12 @@ export interface IClass {
 export interface ICreateClass {
   name: string;
   teachers: string;
-  coverImage?: string;
+  coverImage?: File;
 }
 
 export interface IUpdateClass{
   name?: string;
   teacherInfo?: string;
   teachers?: string;
-  coverImage?: string;
+  coverImage?: File;
 }

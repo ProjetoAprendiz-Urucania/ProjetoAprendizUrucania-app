@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import { getStudentClasses } from "../services/studentClass.service";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
@@ -21,26 +21,23 @@ export function ClassesPage() {
 
   useEffect(() => {
     const fetchStudentClasses = async () => {
-      if (!tk) return console.error("Erro: Token inexistente.");
+      if (!tk || !user) {
+        console.error("Erro: Token ou usuário inexistente.");
+        return;
+      }
 
-      const studentString = localStorage.getItem("user");
-      if (!studentString)
-        return console.error("Erro: Usuário não encontrado no localStorage.");
-
-      const student = JSON.parse(studentString);
+      const role = user?.role;
 
       try {
         const response =
-          user?.role === "admin"
+          role === "admin"
             ? await getAdminClasses(tk)
-            : await getStudentClasses(student.id, tk);
+            : await getStudentClasses(user?.id, tk);
 
-        console.log("Resposta da API:", response);
-
-        if (!response) return console.error("Erro: Resposta inesperada da API");
+        if (!response) return;
 
         const fetchedClasses =
-          user?.role === "admin"
+          role === "admin"
             ? Array.isArray(response)
               ? response
               : []
@@ -80,70 +77,55 @@ export function ClassesPage() {
 
   return (
     <>
-      {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
-          <CircularProgress sx={{ color: "#BB1626" }} />
+      <>
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+        <Box sx={{ textAlign: "left", marginBottom: 1 }}>
+          <Typography variant="h5" sx={{ fontWeight: "600" }}>
+            Turmas
+          </Typography>
         </Box>
-      ) : (
-        <>
-          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-          <Box sx={{ textAlign: "left", marginBottom: 1 }}>
-            <Typography variant="h5" sx={{ fontWeight: "600" }}>
-              Turmas
-            </Typography>
-          </Box>
+        {filteredClasses.length > 0 ? (
+          filteredClasses.map((classItem, index) => (
+            <ContentCard
+              key={classItem.id}
+              id={classItem.id}
+              index={index}
+              name={classItem.name || ""}
+              teacherInfo={classItem.teachers}
+              coverImage={classItem.coverImage || ""}
+              setLoading={setLoading}
+            />
+          ))
+        ) : (
+          <Typography variant="body1" sx={{ mb: 2, mt: 4 }}>
+            Nenhuma turma encontrada.
+          </Typography>
+        )}
 
-          {filteredClasses.length > 0 ? (
-            filteredClasses.map((classItem, index) => (
-              <ContentCard
-                key={classItem.id}
-                id={classItem.id}
-                index={index}
-                name={classItem.name || ""}
-                teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage || ""}
-                setLoading={setLoading}
-              />
-            ))
-          ) : (
-            <Typography variant="body1" sx={{ mb: 2, mt: 4 }}>
-              Nenhuma turma encontrada.
-            </Typography>
-          )}
+        {user?.role === "admin" && <CreateCardButton setLoading={setLoading} />}
 
-          {user?.role === "admin" && (
-            <CreateCardButton setLoading={setLoading} />
-          )}
-
-          {user?.role === "admin" && (
-            <>
-              <Box
-                sx={{
-                  textAlign: "left",
-                  my: 2,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="h5" sx={{ fontWeight: "600" }}>
-                  Alunos
-                </Typography>
-              </Box>
-              <Box sx={{ textAlign: "left", mb: 4 }}>
-                <StudentTable students={students} classes={classes} />
-              </Box>
-            </>
-          )}
-        </>
-      )}
+        {user?.role === "admin" && (
+          <>
+            <Box
+              sx={{
+                textAlign: "left",
+                my: 2,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: "600" }}>
+                Alunos
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: "left", mb: 4 }}>
+              <StudentTable students={students} classes={classes} />
+            </Box>
+          </>
+        )}
+      </>
     </>
   );
 }

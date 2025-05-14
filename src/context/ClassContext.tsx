@@ -1,9 +1,14 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { IClassContext } from "../interfaces/class/IClassContext";
-import { IClass, ICreateClass } from "../interfaces/class/IClass";
-import { ILesson } from "../interfaces/lesson/ILesson";
+import { IClass, ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
 import { getLessonsByClassId } from "../services/lesson.service";
-import { createClass, uploadClassPhoto } from "../services/class.service";
+import {
+  createClass,
+  deleteClass,
+  updateClassService,
+  uploadClassPhoto,
+} from "../services/class.service";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -14,36 +19,43 @@ interface ClassProviderProps {
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const [classes, setClasses] = useState<IClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
-  const [selectedLesson, setSelectedLesson] = useState<ILesson | null>(null);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
-  const addClass = async (newClass: ICreateClass, selectedPhoto: File) => {
+  const addClass = async (newClass: ICreateClass) => {
     if (!tk) return;
     try {
       const response = await createClass(newClass, tk);
 
       if (response) {
-        await uploadClassPhoto(response.id, selectedPhoto, tk);
+        await uploadClassPhoto(response.id, tk, newClass.coverImage);
       }
 
       setClasses((prev) => [
         ...prev,
-        { ...newClass, id: response.id, lessons: [] } as IClass,
+        {
+          ...newClass,
+          id: response.id,
+          lessons: [],
+          coverImage: newClass.coverImage
+            ? URL.createObjectURL(newClass.coverImage)
+            : "",
+        } as IClass,
       ]);
     } catch (error) {
       console.error("Erro ao criar classe:", error);
     }
   };
 
-  const updateClass = (updatedClass: IClass) => {
-    setClasses((prev) =>
-      prev.map((item) => (item.id === updatedClass.id ? updatedClass : item))
-    );
-  };
+  const removeClass = async (classId: string) => {
+    if (!tk) return;
+    try {
+      await deleteClass(classId, tk);
 
-  const removeClass = (classIndex: number) => {
-    const updatedClasses = classes.filter((_, index) => index !== classIndex);
-    setClasses(updatedClasses);
+      const updatedClasses = classes.filter((item) => item.id !== classId);
+      setClasses(updatedClasses);
+    } catch (error) {
+      console.error("Erro ao remover classe:", error);
+    }
   };
 
   const handleSelectedClass = async (classIndex: number) => {
@@ -57,12 +69,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         prev ? { ...prev, lessons: response || [] } : null
       );
     }
-  };
-
-  const handleSelectedLesson = (lessonIndex: number) => {
-    if (!selectedClass) return;
-    const selectedLesson = selectedClass.lessons[lessonIndex];
-    setSelectedLesson(selectedLesson);
   };
 
   const loadSelectedClassFromStorage = async () => {
@@ -89,6 +95,39 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
+  const updateClass = async (updatedClass: Partial<IUpdateClass>) => {
+    if (!tk || !selectedClass) return;
+
+    const response = await updateClassService(
+      selectedClass.id,
+      updatedClass,
+      tk
+    );
+
+    if (response && updatedClass.coverImage) {
+      await uploadClassPhoto(
+        selectedClass.id,
+        tk,
+        updatedClass.coverImage as File
+      );
+    }
+
+    setClasses((prevClasses) =>
+      prevClasses.map((c) =>
+        c.id === selectedClass.id
+          ? {
+              ...c,
+              ...updatedClass,
+              coverImage: updatedClass.coverImage
+                ? URL.createObjectURL(updatedClass.coverImage as File)
+                : c.coverImage,
+              lessons: selectedClass.lessons || [],
+            }
+          : c
+      )
+    );
+  };
+
   useEffect(() => {
     loadSelectedClassFromStorage();
   }, []);
@@ -100,12 +139,10 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         setSelectedClass,
         classes,
         setClasses,
-        selectedLesson,
         addClass,
         updateClass,
         removeClass,
         handleSelectedClass,
-        handleSelectedLesson,
         loadSelectedClassFromStorage,
       }}
     >
