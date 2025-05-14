@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
-import { useParams } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { getAllMaterials } from "../services/theoryMaterials.service";
@@ -14,9 +13,8 @@ import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
-  const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const { lessons } = useClass();
+  const { selectedClass } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
@@ -27,15 +25,19 @@ export function ClassPage() {
 
   useEffect(() => {
     const fetchMaterials = async () => {
-      if (lessons.length > 0 && id && tk) {
-        const materials = await getAllMaterials(id, tk);
+      if (
+        (selectedClass?.lessons?.length ?? 0) > 0 &&
+        selectedClass?.id &&
+        tk
+      ) {
+        const materials = await getAllMaterials(selectedClass?.id, tk);
         setMaterials(materials);
       }
     };
 
     fetchMaterials();
     setLoading(false);
-  }, [id, lessons, tk, loading]);
+  }, [selectedClass, tk, loading]);
 
   return (
     <>
@@ -64,8 +66,8 @@ export function ClassPage() {
         </Typography>
       </Box>
       {!lessonsDrop &&
-        (lessons.length > 0 && !searchTerm
-          ? lessons.map((lessonItem, index) => {
+        ((selectedClass?.lessons?.length ?? 0) > 0 && !searchTerm
+          ? selectedClass?.lessons?.map((lessonItem, index) => {
               return (
                 <ContentCard
                   key={lessonItem.id}
@@ -79,24 +81,22 @@ export function ClassPage() {
                 />
               );
             })
-          : lessons
+          : Array.isArray(selectedClass?.lessons)
+          ? selectedClass.lessons
               .filter((lessonItem) =>
                 lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
-              .map((lessonItem, index) => {
-                return (
-                  <ContentCard
-                    key={lessonItem.id}
-                    index={index}
-                    name={lessonItem.name}
-                    teacherInfo={lessonItem.teacher}
-                    coverImage={
-                      lessonItem.coverImage ? lessonItem.coverImage : ""
-                    }
-                    setLoading={setLoading}
-                  />
-                );
-              }))}
+              .map((lessonItem, index) => (
+                <ContentCard
+                  key={lessonItem.id}
+                  index={index}
+                  name={lessonItem.name}
+                  teacherInfo={lessonItem.teacher}
+                  coverImage={lessonItem.coverImage ?? ""}
+                  setLoading={setLoading}
+                />
+              ))
+          : null)}
       <CreateCardButton setLoading={setLoading} />
       <Box
         sx={{
@@ -131,7 +131,7 @@ export function ClassPage() {
                     key={materialItem.id}
                     {...materialItem}
                     lessonId={materialItem.lessonId || ""}
-                    classId={id || ""}
+                    classId={selectedClass?.id || ""}
                     materialId={materialItem.id}
                   />
                 ) : null;
@@ -149,13 +149,16 @@ export function ClassPage() {
                       key={materialItem.id}
                       {...materialItem}
                       lessonId={materialItem.lessonId || ""}
-                      classId={id || ""}
+                      classId={selectedClass?.id || ""}
                       materialId={materialItem.id}
                     />
                   ) : null;
                 }))}
         {user?.role === "admin" ? (
-          <CreateMaterialButton lessons={lessons} setLoading={setLoading} />
+          <CreateMaterialButton
+            lessons={selectedClass?.lessons || []}
+            setLoading={setLoading}
+          />
         ) : null}
       </Box>
     </>

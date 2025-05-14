@@ -7,8 +7,8 @@ import {
   updateClass,
   uploadClassPhoto,
 } from "../../services/class.service";
-import { IClass } from "../../interfaces/class/IClass";
-import { ILesson } from "../../interfaces/lesson/ILesson";
+import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
+import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
 import {
   createLesson,
   updateLesson,
@@ -18,17 +18,17 @@ import { useParams } from "react-router-dom";
 import { useClass } from "../../hooks/useClass";
 
 export function CreateCard({
-  cardId,
+  index,
   setLoading,
   setOpenProfileModal,
 }: {
-  cardId?: number | null;
+  index?: number | null;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const { selectedClass, classes } = useClass();
+  const { selectedClass } = useClass();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -89,7 +89,7 @@ export function CreateCard({
   const handleCreateClassCard = async () => {
     try {
       if (selectedPhoto && name && teachers && token) {
-        const payload: IClass = {
+        const payload: ICreateClass = {
           name: name,
           teachers: teachers,
         };
@@ -114,7 +114,7 @@ export function CreateCard({
     try {
       console.log(id);
       if (name && teachers && token && id) {
-        const payload: ILesson = {
+        const payload: ICreateLesson = {
           name: name,
           teacher: teachers,
           lessonLink: lessonLink,
@@ -147,21 +147,17 @@ export function CreateCard({
       return null;
     }
     try {
-      if (!token || !cardId) {
+      if (!token || !index) {
         console.log("Token ou ID da classe não encontrados.");
         return;
       }
 
-      const payload: Partial<IClass> = {};
+      const payload: Partial<IUpdateClass> = {};
       if (name) payload.name = name;
       if (teachers) payload.teacherInfo = teachers;
 
       if (Object.keys(payload).length > 0) {
-        const response = await updateClass(
-          classes[selectedClass].id!,
-          payload,
-          token
-        );
+        const response = await updateClass(selectedClass.id, payload, token);
         if (response) {
           console.log("Dados da classe atualizados com sucesso!");
         }
@@ -169,7 +165,7 @@ export function CreateCard({
 
       if (selectedPhoto) {
         const photoResponse = await uploadClassPhoto(
-          classes[selectedClass].id!,
+          selectedClass.id,
           selectedPhoto,
           token
         );
@@ -191,25 +187,25 @@ export function CreateCard({
       return null;
     }
     try {
-      if (!token || !id || !cardId) {
+      if (!token || !id || !index) {
         console.log("Token, ID da aula ou ID do card não encontrados.");
         return;
       }
 
-      const payload: Partial<ILesson> = {};
+      const payload: Partial<IUpdateLesson> = {};
       if (name) payload.name = name;
       if (teachers) payload.teacher = teachers;
       if (lessonLink) payload.lessonLink = lessonLink;
 
       if (Object.keys(payload).length > 0) {
-        const completePayload: ILesson = {
+        const completePayload: Partial<IUpdateLesson> = {
           name: payload.name || "",
           teacher: payload.teacher || "",
           lessonLink: payload.lessonLink || "",
         };
         const response = await updateLesson(
           id,
-          classes[selectedClass].id!,
+          selectedClass.id,
           completePayload,
           token
         );
@@ -222,7 +218,7 @@ export function CreateCard({
       if (selectedPhoto) {
         const photoResponse = await uploadLessonPhoto(
           id,
-          classes[selectedClass].id!,
+          selectedClass.id,
           token,
           selectedPhoto
         );
@@ -241,13 +237,13 @@ export function CreateCard({
     e.preventDefault();
 
     if (isClassPage) {
-      if (cardId) {
+      if (index) {
         await handleUpdateLessonCard();
       } else {
         await handleCreateLessonCard();
       }
     } else {
-      if (cardId) {
+      if (index) {
         await handleUpdateClassCard();
       } else {
         await handleCreateClassCard();
@@ -337,7 +333,7 @@ export function CreateCard({
           {isClassPage && (
             <>
               <TextField
-                required={!cardId}
+                required={!index}
                 id="lessonLink"
                 label="Link da Aula"
                 variant="outlined"
@@ -347,7 +343,7 @@ export function CreateCard({
                 onChange={(e) => setLessonLink(e.target.value)}
               />
               <TextField
-                required={!cardId}
+                required={!index}
                 id="lessonName"
                 label="Nome da Aula"
                 variant="outlined"
@@ -361,7 +357,7 @@ export function CreateCard({
 
           {!isClassPage && (
             <TextField
-              required={!cardId}
+              required={!index}
               id="className"
               label="Nome da Turma"
               variant="outlined"
@@ -373,7 +369,7 @@ export function CreateCard({
           )}
 
           <TextField
-            required={!cardId}
+            required={!index}
             id="teachers"
             label={
               isClassPage ? "Professor" : "Professores (separados por vírgula)"
@@ -394,7 +390,7 @@ export function CreateCard({
               mt: 2,
             }}
           >
-            {cardId ? "Atualizar" : "Confirmar"}
+            {index ? "Atualizar" : "Confirmar"}
           </Button>
         </Box>
       )}

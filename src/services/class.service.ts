@@ -1,7 +1,7 @@
-import { IClass } from "../interfaces/class/IClass";
+import { ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
 import { apiRequest } from "./apiRequest.service";
 
-export  function createClass(classData: IClass, token: string) {
+export  function createClass(classData: ICreateClass, token: string) {
   return apiRequest(`/classes`, "POST", classData, token || undefined);
 }
 
@@ -15,7 +15,6 @@ export  function uploadClassPhoto(classId: string,coverImage: File ,token: strin
 export async function getAdminClasses(token: string) {
   try {
     const res = await apiRequest("/classes", "GET", undefined, token);
-
     console.log(res); 
     return res;
   } catch (error) {
@@ -36,6 +35,6 @@ export function getClassById(id: string, token?: string) {
   return apiRequest(`classes/${id}`, "GET", undefined, token);
 }
 
-export function updateClass(id: string, classData: IClass, token?: string) {
+export function updateClass(id: string, classData: Partial<IUpdateClass>, token?: string) {
   return apiRequest(`classes/${id}`, "PUT", classData, token);
 }

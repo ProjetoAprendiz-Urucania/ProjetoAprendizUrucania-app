@@ -1,4 +1,4 @@
-import { ILesson } from "../interfaces/lesson/ILesson";
+import { ICreateLesson, IUpdateLesson } from "../interfaces/lesson/ILesson";
 import { apiRequest } from "./apiRequest.service";
 
 export function getLessonsByClassId(classId: string, token: string) {
@@ -11,7 +11,7 @@ export function getLesson(classId: string, lessonId: string, token: string) {
 
 export function createLesson(
   classId: string,
-  classData: ILesson,
+  classData: ICreateLesson,
   token: string
 ) {
   return apiRequest(`classes/${classId}/lesson`, "POST", classData, token);
@@ -47,7 +47,7 @@ export function uploadLessonPhoto(
 export function updateLesson(
   classId: string,
   lessonId: string,
-  classData: ILesson,
+  classData: Partial<IUpdateLesson>,
   token?: string
 ) {
   return apiRequest(`classes/${classId}/${lessonId}`, "PUT", classData, token);

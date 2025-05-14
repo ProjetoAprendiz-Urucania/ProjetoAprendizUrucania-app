@@ -2,16 +2,17 @@ import { ILesson } from "../lesson/ILesson";
 import { IClass } from "./IClass";
 
 export interface IClassContext {
-  selectedClass: number | undefined;
-  setSelectedClass: (classIndex: number) => void;
+  selectedClass: IClass | null;
+  setSelectedClass: (selectedClass: IClass | null) => void;
   classes: IClass[];
   setClasses: (classes: IClass[]) => void;
-  addClassToList: (data: IClass) => void;
-  updateClassInList: (data: IClass) => void;
-  removeClassToList: (id: number) => void;
-  lessons: ILesson[];
-  setLessons: (lessons: ILesson[]) => void;
-  addLessonToList: (data: ILesson) => void;
-  updateLessonInList: (data: ILesson) => void;
-  removeLessonToList: (id: number) => void;
+  addClass: (data: IClass) => void;
+  updateClass: (data: IClass) => void;
+  removeClass: (id: number) => void;
+  // addLesson: (data: ILesson) => void;
+  // updateLesson: (data: ILesson) => void;
+  // removeLesson: (id: number) => void;
+  handleSelectedClass: (classIndex: number) => void;
+  handleSelectedLesson: (lessonIndex: number) => void;
+  selectedLesson: ILesson | null;
 }

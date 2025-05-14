@@ -12,62 +12,88 @@ interface ClassProviderProps {
 
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const [classes, setClasses] = useState<IClass[]>([]);
-  const [selectedClass, setSelectedClass] = useState<number | undefined>(
-    undefined
-  );
-  const [lessons, setLessons] = useState<ILesson[]>([]);
+  const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<ILesson | null>(null);
+
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
-  const addClassToList = (newClass: IClass) => {
+  const addClass = (newClass: IClass) => {
     setClasses((prev) => [...prev, newClass]);
   };
 
-  const updateClassInList = (updatedClass: IClass) => {
+  const updateClass = (updatedClass: IClass) => {
     setClasses((prev) =>
       prev.map((item) => (item.id === updatedClass.id ? updatedClass : item))
     );
   };
 
-  const removeClassToList = (classIndex: number) => {
+  const removeClass = (classIndex: number) => {
     const updatedClasses = classes.filter((_, index) => index !== classIndex);
     setClasses(updatedClasses);
   };
 
-  const addLessonToList = (newlesson: ILesson) => {
-    setLessons((prev) => [...prev, newlesson]);
+  const handleSelectedClass = (classIndex: number) => {
+    const selectedClass = classes[classIndex];
+    setSelectedClass(selectedClass);
+    localStorage.setItem("selectedClass", JSON.stringify(selectedClass));
   };
 
-  const updateLessonInList = (updatedlesson: ILesson) => {
-    setLessons((prev) =>
-      prev.map((item) => (item.id === updatedlesson.id ? updatedlesson : item))
-    );
+  const handleSelectedLesson = (lessonIndex: number) => {
+    if (!selectedClass) return;
+
+    const selectedLesson = selectedClass.lessons[lessonIndex];
+
+    setSelectedLesson(selectedLesson);
   };
 
-  const removeLessonToList = (lessonIndex: number) => {
-    const updatedLessons = lessons.filter((_, index) => index !== lessonIndex);
-    setLessons(updatedLessons);
-  };
+  // const addLesson = (newlesson: ILesson) => {
+  //   setLessons((prev) => [...prev, newlesson]);
+  // };
+
+  // const updateLesson = (updatedlesson: ILesson) => {
+  //   setLessons((prev) =>
+  //     prev.map((item) => (item.id === updatedlesson.id ? updatedlesson : item))
+  //   );
+  // };
+
+  // const removeLesson = (lessonIndex: number) => {
+  //   const updatedLessons = lessons.filter((_, index) => index !== lessonIndex);
+  //   setLessons(updatedLessons);
+  // };
 
   useEffect(() => {
     if (!selectedClass) return;
 
-    const selectedClassData = classes[selectedClass];
+    console.log("classe selecionada:", selectedClass);
 
-    console.log(selectedClassData);
-
-    if (selectedClassData.id) {
+    if (selectedClass.id) {
       const fetchLessons = async () => {
         if (!tk) {
           console.log("err get classes() token inexistente");
         } else {
-          const response = await getLessonsByClassId(selectedClassData.id!, tk);
-          setLessons(response);
+          const response = await getLessonsByClassId(selectedClass.id!, tk);
+          setSelectedClass({
+            ...selectedClass,
+            lessons: response,
+          });
         }
       };
 
       fetchLessons();
     }
-  }, [tk, classes, selectedClass]);
+  }, [selectedClass]);
+
+  useEffect(() => {
+    const storedClass = localStorage.getItem("selectedClass");
+    try {
+      const recoverClassData = storedClass ? JSON.parse(storedClass) : null;
+      setSelectedClass(recoverClassData);
+    } catch (error) {
+      console.error("Erro ao fazer parse do selectedClass:", error);
+      localStorage.removeItem("selectedClass");
+      setSelectedClass(null);
+    }
+  }, [classes]);
 
   return (
     <ClassContext.Provider
@@ -76,14 +102,15 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         setSelectedClass,
         classes,
         setClasses,
-        lessons,
-        setLessons,
-        addLessonToList,
-        updateLessonInList,
-        removeLessonToList,
-        addClassToList,
-        updateClassInList,
-        removeClassToList,
+        selectedLesson,
+        // addLesson,
+        // updateLesson,
+        // removeLesson,
+        addClass,
+        updateClass,
+        removeClass,
+        handleSelectedClass,
+        handleSelectedLesson,
       }}
     >
       {children}

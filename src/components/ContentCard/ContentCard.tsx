@@ -29,7 +29,12 @@ export function ContentCard({
   setLoading,
 }: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   const { user } = useAuth();
-  const { lessons, classes, selectedClass, setSelectedClass } = useClass();
+  const {
+    handleSelectedClass,
+    handleSelectedLesson,
+    selectedClass,
+    selectedLesson,
+  } = useClass();
   const { id: isClass } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -54,10 +59,15 @@ export function ContentCard({
   }, [coverImage]);
 
   const handleOpenLessons = () => {
-    setSelectedClass(index);
-    const selectedClassId = classes[index]?.id;
-    if (selectedClassId) {
-      navigate(`${location.pathname}/${selectedClassId}`);
+    if (!isClassPage) {
+      handleSelectedClass(index);
+      navigate(`/classes/${selectedClass?.id}`);
+    } else {
+      const lessonId = selectedClass?.lessons?.[index]?.id;
+      if (lessonId) {
+        handleSelectedLesson(index);
+        navigate(`/classes/${selectedClass.id}/${lessonId}`);
+      }
     }
   };
 
@@ -72,8 +82,8 @@ export function ContentCard({
 
   const handleMenuClick = async (option: string) => {
     handleCloseMenu();
-    const lessonId = lessons[index]?.id;
-    const classId = classes[index]?.id;
+    const lessonId = selectedLesson?.id;
+    const classId = selectedClass?.id;
 
     if (option === "Editar") {
       setOpenProfileModal(true);
@@ -229,7 +239,7 @@ export function ContentCard({
         onClose={() => setOpenProfileModal(false)}
       >
         <CreateCard
-          cardId={selectedClass}
+          index={index}
           setLoading={setLoading}
           setOpenProfileModal={setOpenProfileModal}
         />
