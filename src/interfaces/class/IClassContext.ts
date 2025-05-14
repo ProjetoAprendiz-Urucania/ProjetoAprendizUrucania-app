@@ -1,12 +1,12 @@
 import { ILesson } from "../lesson/ILesson";
-import { IClass } from "./IClass";
+import { IClass, ICreateClass } from "./IClass";
 
 export interface IClassContext {
   selectedClass: IClass | null;
   setSelectedClass: (selectedClass: IClass | null) => void;
   classes: IClass[];
   setClasses: (classes: IClass[]) => void;
-  addClass: (data: IClass) => void;
+  addClass: (data: ICreateClass,selectedPhoto: File) => void;
   updateClass: (data: IClass) => void;
   removeClass: (id: number) => void;
   // addLesson: (data: ILesson) => void;
@@ -15,4 +15,5 @@ export interface IClassContext {
   handleSelectedClass: (classIndex: number) => void;
   handleSelectedLesson: (lessonIndex: number) => void;
   selectedLesson: ILesson | null;
+  loadSelectedClassFromStorage: () => void;
 }

@@ -1,9 +1,10 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { IClassContext } from "../interfaces/class/IClassContext";
-import { IClass } from "../interfaces/class/IClass";
+import { IClass, ICreateClass } from "../interfaces/class/IClass";
 import { ILesson } from "../interfaces/lesson/ILesson";
 import { getLessonsByClassId } from "../services/lesson.service";
-// eslint-disable-next-line react-refresh/only-export-components
+import { createClass, uploadClassPhoto } from "../services/class.service";
+
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
 interface ClassProviderProps {
@@ -14,11 +15,24 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   const [classes, setClasses] = useState<IClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<ILesson | null>(null);
-
   const [tk] = useState<string | null>(localStorage.getItem("token"));
 
-  const addClass = (newClass: IClass) => {
-    setClasses((prev) => [...prev, newClass]);
+  const addClass = async (newClass: ICreateClass, selectedPhoto: File) => {
+    if (!tk) return;
+    try {
+      const response = await createClass(newClass, tk);
+
+      if (response) {
+        await uploadClassPhoto(response.id, selectedPhoto, tk);
+      }
+
+      setClasses((prev) => [
+        ...prev,
+        { ...newClass, id: response.id, lessons: [] } as IClass,
+      ]);
+    } catch (error) {
+      console.error("Erro ao criar classe:", error);
+    }
   };
 
   const updateClass = (updatedClass: IClass) => {
@@ -32,68 +46,52 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     setClasses(updatedClasses);
   };
 
-  const handleSelectedClass = (classIndex: number) => {
-    const selectedClass = classes[classIndex];
-    setSelectedClass(selectedClass);
-    localStorage.setItem("selectedClass", JSON.stringify(selectedClass));
+  const handleSelectedClass = async (classIndex: number) => {
+    const selected = { ...classes[classIndex], lessons: [] };
+    setSelectedClass(selected);
+    localStorage.setItem("selectedClass", JSON.stringify(selected));
+
+    if (tk && selected.id) {
+      const response = await getLessonsByClassId(selected.id, tk);
+      setSelectedClass((prev) =>
+        prev ? { ...prev, lessons: response || [] } : null
+      );
+    }
   };
 
   const handleSelectedLesson = (lessonIndex: number) => {
     if (!selectedClass) return;
-
     const selectedLesson = selectedClass.lessons[lessonIndex];
-
     setSelectedLesson(selectedLesson);
   };
 
-  // const addLesson = (newlesson: ILesson) => {
-  //   setLessons((prev) => [...prev, newlesson]);
-  // };
-
-  // const updateLesson = (updatedlesson: ILesson) => {
-  //   setLessons((prev) =>
-  //     prev.map((item) => (item.id === updatedlesson.id ? updatedlesson : item))
-  //   );
-  // };
-
-  // const removeLesson = (lessonIndex: number) => {
-  //   const updatedLessons = lessons.filter((_, index) => index !== lessonIndex);
-  //   setLessons(updatedLessons);
-  // };
-
-  useEffect(() => {
-    if (!selectedClass) return;
-
-    console.log("classe selecionada:", selectedClass);
-
-    if (selectedClass.id) {
-      const fetchLessons = async () => {
-        if (!tk) {
-          console.log("err get classes() token inexistente");
-        } else {
-          const response = await getLessonsByClassId(selectedClass.id!, tk);
-          setSelectedClass({
-            ...selectedClass,
-            lessons: response,
-          });
-        }
-      };
-
-      fetchLessons();
-    }
-  }, [selectedClass]);
-
-  useEffect(() => {
+  const loadSelectedClassFromStorage = async () => {
     const storedClass = localStorage.getItem("selectedClass");
+    if (!storedClass) {
+      setSelectedClass(null);
+      return;
+    }
+
     try {
-      const recoverClassData = storedClass ? JSON.parse(storedClass) : null;
-      setSelectedClass(recoverClassData);
+      const recoverClassData: IClass = JSON.parse(storedClass);
+      setSelectedClass({ ...recoverClassData, lessons: [] });
+
+      if (tk && recoverClassData.id) {
+        const response = await getLessonsByClassId(recoverClassData.id, tk);
+        setSelectedClass((prev) =>
+          prev ? { ...prev, lessons: response || [] } : null
+        );
+      }
     } catch (error) {
       console.error("Erro ao fazer parse do selectedClass:", error);
       localStorage.removeItem("selectedClass");
       setSelectedClass(null);
     }
-  }, [classes]);
+  };
+
+  useEffect(() => {
+    loadSelectedClassFromStorage();
+  }, []);
 
   return (
     <ClassContext.Provider
@@ -103,14 +101,12 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         classes,
         setClasses,
         selectedLesson,
-        // addLesson,
-        // updateLesson,
-        // removeLesson,
         addClass,
         updateClass,
         removeClass,
         handleSelectedClass,
         handleSelectedLesson,
+        loadSelectedClassFromStorage,
       }}
     >
       {children}

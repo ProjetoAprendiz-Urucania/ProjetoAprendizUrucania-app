@@ -2,11 +2,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import addimage from "../../assets/img/CreateCard/addImage.svg";
 import { useState } from "react";
-import {
-  createClass,
-  updateClass,
-  uploadClassPhoto,
-} from "../../services/class.service";
+import { updateClass, uploadClassPhoto } from "../../services/class.service";
 import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
 import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
 import {
@@ -28,7 +24,7 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const { selectedClass } = useClass();
+  const { selectedClass, addClass } = useClass();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -94,11 +90,7 @@ export function CreateCard({
           teachers: teachers,
         };
 
-        const response = await createClass(payload, token);
-
-        if (response) {
-          await uploadClassPhoto(response.id, selectedPhoto, token);
-        }
+        addClass(payload, selectedPhoto);
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);
