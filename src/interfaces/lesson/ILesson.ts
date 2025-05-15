@@ -6,7 +6,7 @@ export interface ILesson {
   teacher: string;
   coverImage: string;
   lessonLink: string;
-  theoryMaterials: ITheoryMaterial[];
+  TheoryMaterial: ITheoryMaterial[];
 }
 
 export interface ICreateLesson {

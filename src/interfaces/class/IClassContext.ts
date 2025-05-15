@@ -1,3 +1,5 @@
+import { ILesson } from "../lesson/ILesson";
+import { ITheoryMaterial } from "../TheoryMaterial/ITheoryMaterial";
 import { IClass, ICreateClass, IUpdateClass } from "./IClass";
 
 export interface IClassContext {
@@ -13,4 +15,6 @@ export interface IClassContext {
   // removeLesson: (id: number) => void;
   handleSelectedClass: (classIndex: number) => void;
   loadSelectedClassFromStorage: () => void;
+  getClassLessons: () => ILesson[] | undefined;
+  getClassMaterials: () => ITheoryMaterial[] | undefined;
 }

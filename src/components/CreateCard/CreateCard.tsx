@@ -358,7 +358,7 @@ export function CreateCard({
               mt: 2,
             }}
           >
-            {index ? "Atualizar" : "Confirmar"}
+            {index !== null && index !== undefined ? "Atualizar" : "Confirmar"}
           </Button>
         </Box>
       )}

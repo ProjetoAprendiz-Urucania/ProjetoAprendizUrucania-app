@@ -97,7 +97,9 @@ function App() {
               path="/classes/:classId/lessons/:lessonId"
               element={
                 <ProtectedRoute>
-                  <LessonPage />
+                  <ClassProvider>
+                    <LessonPage />
+                  </ClassProvider>
                 </ProtectedRoute>
               }
             />

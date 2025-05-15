@@ -1,43 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { getAllMaterials } from "../services/theoryMaterials.service";
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
-import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
 import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
 import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
+import { get } from "http";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass } = useClass();
-  const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
-  const [tk] = useState<string | null>(localStorage.getItem("token"));
+  const { selectedClass, getClassLessons, getClassMaterials } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchMaterials = async () => {
-      if (
-        (selectedClass?.lessons?.length ?? 0) > 0 &&
-        selectedClass?.id &&
-        tk
-      ) {
-        const materials = await getAllMaterials(selectedClass?.id, tk);
-        setMaterials(materials);
-      }
-    };
-
-    fetchMaterials();
-    setLoading(false);
-  }, [selectedClass, tk, loading]);
 
   return (
     <>
@@ -66,8 +47,8 @@ export function ClassPage() {
         </Typography>
       </Box>
       {!lessonsDrop &&
-        ((selectedClass?.lessons?.length ?? 0) > 0 && !searchTerm
-          ? selectedClass?.lessons?.map((lessonItem, index) => {
+        ((getClassLessons() ?? 0) && !searchTerm
+          ? getClassLessons().map((lessonItem, index) => {
               return (
                 <ContentCard
                   key={lessonItem.id}
@@ -82,8 +63,8 @@ export function ClassPage() {
                 />
               );
             })
-          : Array.isArray(selectedClass?.lessons)
-          ? selectedClass.lessons
+          : Array.isArray(getClassLessons())
+          ? getClassLessons()
               .filter((lessonItem) =>
                 lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
@@ -125,8 +106,8 @@ export function ClassPage() {
       </Box>
       <Box sx={{ textAlign: "left", mb: 4 }}>
         {!materialDrop &&
-          (materials.length > 0 && !searchTerm
-            ? materials.map((materialItem) => {
+          ((getClassMaterials() ?? 0) && !searchTerm
+            ? getClassMaterials().map((materialItem) => {
                 return materialItem ? (
                   <TheoryMaterialItem
                     setLoading={setLoading}
@@ -138,7 +119,7 @@ export function ClassPage() {
                   />
                 ) : null;
               })
-            : materials
+            : (getClassMaterials() ?? [])
                 .filter((materialItem) =>
                   materialItem.name
                     .toLowerCase()
@@ -158,7 +139,7 @@ export function ClassPage() {
                 }))}
         {user?.role === "admin" ? (
           <CreateMaterialButton
-            lessons={selectedClass?.lessons || []}
+            lessons={getClassLessons() || []}
             setLoading={setLoading}
           />
         ) : null}

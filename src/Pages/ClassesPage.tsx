@@ -44,7 +44,7 @@ export function ClassesPage() {
             : Array.isArray(response.classes)
             ? response.classes
             : [];
-
+        console.log("classes", fetchedClasses);
         setClasses(fetchedClasses);
       } catch (error) {
         console.error("Erro ao buscar turmas:", error);

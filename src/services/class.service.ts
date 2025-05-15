@@ -17,7 +17,6 @@ export  function uploadClassPhoto(classId: string,token: string,coverImage?: Fil
 export async function getAdminClasses(token: string) {
   try {
     const res = await apiRequest("/classes", "GET", undefined, token);
-    console.log(res); 
     return res;
   } catch (error) {
     console.error("Erro ao buscar classes:", error);

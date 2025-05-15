@@ -72,9 +72,12 @@ export function ContentCard({
   };
 
   const handleMenuClick = async (option: string) => {
+    if (isClassesPage) handleSelectedClass(index);
+
     handleCloseMenu();
 
     if (option === "Editar") {
+      console.log("Editar");
       setOpenProfileModal(true);
     } else if (option === "Excluir" && token) {
       try {
@@ -92,6 +95,7 @@ export function ContentCard({
       }
     }
   };
+
   return (
     <>
       <Card
@@ -219,7 +223,6 @@ export function ContentCard({
           <MenuItem
             key={option}
             onClick={() => {
-              handleSelectedClass(index);
               handleMenuClick(option);
             }}
           >

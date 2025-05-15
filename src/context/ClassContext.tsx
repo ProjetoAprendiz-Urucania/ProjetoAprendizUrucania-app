@@ -2,7 +2,6 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { IClassContext } from "../interfaces/class/IClassContext";
 import { IClass, ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
-import { getLessonsByClassId } from "../services/lesson.service";
 import {
   createClass,
   deleteClass,
@@ -59,16 +58,12 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   const handleSelectedClass = async (classIndex: number) => {
-    const selected = { ...classes[classIndex], lessons: [] };
+    const selected = {
+      ...classes[classIndex],
+      lessons: classes[classIndex].lessons || [],
+    };
     setSelectedClass(selected);
     localStorage.setItem("selectedClass", JSON.stringify(selected));
-
-    if (tk && selected.id) {
-      const response = await getLessonsByClassId(selected.id, tk);
-      setSelectedClass((prev) =>
-        prev ? { ...prev, lessons: response || [] } : null
-      );
-    }
   };
 
   const loadSelectedClassFromStorage = async () => {
@@ -80,14 +75,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
     try {
       const recoverClassData: IClass = JSON.parse(storedClass);
-      setSelectedClass({ ...recoverClassData, lessons: [] });
-
-      if (tk && recoverClassData.id) {
-        const response = await getLessonsByClassId(recoverClassData.id, tk);
-        setSelectedClass((prev) =>
-          prev ? { ...prev, lessons: response || [] } : null
-        );
-      }
+      console.log(recoverClassData);
+      setSelectedClass(recoverClassData);
     } catch (error) {
       console.error("Erro ao fazer parse do selectedClass:", error);
       localStorage.removeItem("selectedClass");
@@ -128,6 +117,20 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     );
   };
 
+  const getClassLessons = () => {
+    if (!selectedClass) return;
+    return selectedClass.lessons;
+  };
+
+  const getClassMaterials = () => {
+    if (!selectedClass) return;
+    const lessons = selectedClass.lessons;
+    const materials = lessons.flatMap((lesson) => lesson.TheoryMaterial);
+    console.log("materials", materials);
+
+    return materials;
+  };
+
   useEffect(() => {
     loadSelectedClassFromStorage();
   }, []);
@@ -144,6 +147,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         removeClass,
         handleSelectedClass,
         loadSelectedClassFromStorage,
+        getClassLessons,
+        getClassMaterials,
       }}
     >
       {children}
