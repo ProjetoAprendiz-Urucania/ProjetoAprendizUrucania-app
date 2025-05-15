@@ -17,11 +17,9 @@ import { uploadMaterial } from "../../services/theoryMaterials.service";
 
 export function UploadFile({
   lessons,
-  setLoading,
   setOpenProfileModal,
 }: {
   lessons: ILesson[];
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
@@ -58,11 +56,9 @@ export function UploadFile({
         setOpenProfileModal(false);
         setSelectedFile(null);
         setSelectedLesson("");
-        setLoading(true);
       }
     } catch (error) {
       console.error("An error occurred during file upload:", error);
-      setLoading(false);
     }
   };
 

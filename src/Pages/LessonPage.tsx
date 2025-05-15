@@ -19,11 +19,10 @@ export function LessonPage() {
     classId: string;
     lessonId: string;
   }>();
-  const { selectedClass } = useClass();
+  const { selectedClass, loading } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
-  const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
 
@@ -172,7 +171,6 @@ export function LessonPage() {
             classId={classId || ""}
             materialId={materialItem.id}
             key={materialItem.id}
-            setLoading={setLoading}
           />
         ))}
     </Box>

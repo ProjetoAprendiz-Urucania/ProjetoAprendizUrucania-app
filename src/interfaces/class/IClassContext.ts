@@ -3,6 +3,7 @@ import { ITheoryMaterial } from "../TheoryMaterial/ITheoryMaterial";
 import { IClass, ICreateClass, IUpdateClass } from "./IClass";
 
 export interface IClassContext {
+  loading: boolean,
   selectedClass: IClass | null;
   setSelectedClass: (selectedClass: IClass | null) => void;
   classes: IClass[];

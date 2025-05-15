@@ -9,7 +9,6 @@ import { CreateCardButton } from "../components/CreateCardButton/CreateCardButto
 import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
 import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
-import { get } from "http";
 
 export function ClassPage() {
   const { user } = useAuth();
@@ -18,7 +17,6 @@ export function ClassPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   return (
     <>
@@ -48,7 +46,7 @@ export function ClassPage() {
       </Box>
       {!lessonsDrop &&
         ((getClassLessons() ?? 0) && !searchTerm
-          ? getClassLessons().map((lessonItem, index) => {
+          ? (getClassLessons() || []).map((lessonItem, index) => {
               return (
                 <ContentCard
                   key={lessonItem.id}
@@ -59,12 +57,11 @@ export function ClassPage() {
                   coverImage={
                     lessonItem.coverImage ? lessonItem.coverImage : ""
                   }
-                  setLoading={setLoading}
                 />
               );
             })
           : Array.isArray(getClassLessons())
-          ? getClassLessons()
+          ? (getClassLessons() ?? [])
               .filter((lessonItem) =>
                 lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
@@ -76,11 +73,10 @@ export function ClassPage() {
                   name={lessonItem.name}
                   teacherInfo={lessonItem.teacher}
                   coverImage={lessonItem.coverImage ?? ""}
-                  setLoading={setLoading}
                 />
               ))
           : null)}
-      <CreateCardButton setLoading={setLoading} />
+      <CreateCardButton />
       <Box
         sx={{
           textAlign: "left",
@@ -107,10 +103,9 @@ export function ClassPage() {
       <Box sx={{ textAlign: "left", mb: 4 }}>
         {!materialDrop &&
           ((getClassMaterials() ?? 0) && !searchTerm
-            ? getClassMaterials().map((materialItem) => {
+            ? (getClassMaterials() ?? []).map((materialItem) => {
                 return materialItem ? (
                   <TheoryMaterialItem
-                    setLoading={setLoading}
                     key={materialItem.id}
                     {...materialItem}
                     lessonId={materialItem.lessonId || ""}
@@ -128,7 +123,6 @@ export function ClassPage() {
                 .map((materialItem) => {
                   return materialItem ? (
                     <TheoryMaterialItem
-                      setLoading={setLoading}
                       key={materialItem.id}
                       {...materialItem}
                       lessonId={materialItem.lessonId || ""}
@@ -138,10 +132,7 @@ export function ClassPage() {
                   ) : null;
                 }))}
         {user?.role === "admin" ? (
-          <CreateMaterialButton
-            lessons={getClassLessons() || []}
-            setLoading={setLoading}
-          />
+          <CreateMaterialButton lessons={getClassLessons() || []} />
         ) : null}
       </Box>
     </>

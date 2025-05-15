@@ -26,8 +26,7 @@ export function ContentCard({
   name,
   teacherInfo,
   coverImage,
-  setLoading,
-}: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
+}: ICardData) {
   const { user } = useAuth();
   const { handleSelectedClass, selectedClass, removeClass } = useClass();
   const token = localStorage.getItem("token");
@@ -73,12 +72,9 @@ export function ContentCard({
     handleCloseMenu();
 
     if (option === "Editar") {
-      console.log("Editar");
       setOpenProfileModal(true);
     } else if (option === "Excluir" && token) {
       try {
-        setLoading(true);
-
         if (!selectedClass) {
           await deleteLesson(id, id, token);
         } else {
@@ -86,8 +82,6 @@ export function ContentCard({
         }
       } catch (error) {
         console.error("Erro ao excluir:", error);
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -231,11 +225,7 @@ export function ContentCard({
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
       >
-        <CreateCard
-          index={index}
-          setLoading={setLoading}
-          setOpenProfileModal={setOpenProfileModal}
-        />
+        <CreateCard index={index} setOpenProfileModal={setOpenProfileModal} />
       </Dialog>
     </>
   );

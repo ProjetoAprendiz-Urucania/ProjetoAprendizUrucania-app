@@ -4,11 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { CreateCard } from "../CreateCard/CreateCard";
 
-export function CreateCardButton({
-  setLoading,
-}: {
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+export function CreateCardButton() {
   const { user } = useAuth();
 
   const [openProfileModal, setOpenProfileModal] = useState(false);
@@ -50,10 +46,7 @@ export function CreateCardButton({
             open={openProfileModal}
             onClose={() => setOpenProfileModal(false)}
           >
-            <CreateCard
-              setLoading={setLoading}
-              setOpenProfileModal={setOpenProfileModal}
-            />
+            <CreateCard setOpenProfileModal={setOpenProfileModal} />
           </Dialog>
         </>
       )}

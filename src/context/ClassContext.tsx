@@ -5,9 +5,13 @@ import { IClass, ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
 import {
   createClass,
   deleteClass,
+  getAdminClasses,
+  getClassById,
   updateClassService,
   uploadClassPhoto,
 } from "../services/class.service";
+import { useAuth } from "../hooks/useAuth";
+import { getStudentClasses } from "../services/studentClass.service";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -16,12 +20,16 @@ interface ClassProviderProps {
 }
 
 export const ClassProvider = ({ children }: ClassProviderProps) => {
+  const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
-  const [tk] = useState<string | null>(localStorage.getItem("token"));
+  const [loading, setLoading] = useState(false);
+
+  const tk = localStorage.getItem("token");
 
   const addClass = async (newClass: ICreateClass) => {
     if (!tk) return;
+    setLoading(true);
     try {
       const response = await createClass(newClass, tk);
 
@@ -42,11 +50,15 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       ]);
     } catch (error) {
       console.error("Erro ao criar classe:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const removeClass = async (classId: string) => {
     if (!tk) return;
+    setLoading(true);
+
     try {
       await deleteClass(classId, tk);
 
@@ -54,67 +66,82 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       setClasses(updatedClasses);
     } catch (error) {
       console.error("Erro ao remover classe:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSelectedClass = async (classIndex: number) => {
+  const handleSelectedClass = (classIndex: number) => {
     const selected = {
       ...classes[classIndex],
       lessons: classes[classIndex].lessons || [],
     };
     setSelectedClass(selected);
-    localStorage.setItem("selectedClass", JSON.stringify(selected));
+    localStorage.setItem("selectedClassId", selected.id);
   };
 
   const loadSelectedClassFromStorage = async () => {
-    const storedClass = localStorage.getItem("selectedClass");
-    if (!storedClass) {
+    if (!tk) return;
+
+    const storedClassId = localStorage.getItem("selectedClassId");
+    if (!storedClassId) {
       setSelectedClass(null);
       return;
     }
 
+    setLoading(true);
+
     try {
-      const recoverClassData: IClass = JSON.parse(storedClass);
+      const recoverClassData: IClass = await getClassById(storedClassId, tk);
       console.log(recoverClassData);
       setSelectedClass(recoverClassData);
     } catch (error) {
-      console.error("Erro ao fazer parse do selectedClass:", error);
-      localStorage.removeItem("selectedClass");
+      console.error("Erro ao buscar classe por ID:", error);
+      localStorage.removeItem("selectedClassId");
       setSelectedClass(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateClass = async (updatedClass: Partial<IUpdateClass>) => {
     if (!tk || !selectedClass) return;
+    setLoading(true);
 
-    const response = await updateClassService(
-      selectedClass.id,
-      updatedClass,
-      tk
-    );
-
-    if (response && updatedClass.coverImage) {
-      await uploadClassPhoto(
+    try {
+      const response = await updateClassService(
         selectedClass.id,
-        tk,
-        updatedClass.coverImage as File
+        updatedClass,
+        tk
       );
-    }
 
-    setClasses((prevClasses) =>
-      prevClasses.map((c) =>
-        c.id === selectedClass.id
-          ? {
-              ...c,
-              ...updatedClass,
-              coverImage: updatedClass.coverImage
-                ? URL.createObjectURL(updatedClass.coverImage as File)
-                : c.coverImage,
-              lessons: selectedClass.lessons || [],
-            }
-          : c
-      )
-    );
+      if (response && updatedClass.coverImage) {
+        await uploadClassPhoto(
+          selectedClass.id,
+          tk,
+          updatedClass.coverImage as File
+        );
+      }
+
+      setClasses((prevClasses) =>
+        prevClasses.map((c) =>
+          c.id === selectedClass.id
+            ? {
+                ...c,
+                ...updatedClass,
+                coverImage: updatedClass.coverImage
+                  ? URL.createObjectURL(updatedClass.coverImage as File)
+                  : c.coverImage,
+                lessons: selectedClass.lessons || [],
+              }
+            : c
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getClassLessons = () => {
@@ -126,10 +153,43 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     if (!selectedClass) return;
     const lessons = selectedClass.lessons;
     const materials = lessons.flatMap((lesson) => lesson.TheoryMaterial);
-    console.log("materials", materials);
 
     return materials;
   };
+
+  useEffect(() => {
+    const fetchStudentClasses = async () => {
+      if (!tk || !user) {
+        console.error("Erro: Token ou usuário inexistente.");
+        return;
+      }
+
+      const role = user?.role;
+
+      try {
+        const response =
+          role === "admin"
+            ? await getAdminClasses(tk)
+            : await getStudentClasses(user?.id, tk);
+
+        if (!response) return;
+
+        const fetchedClasses =
+          role === "admin"
+            ? Array.isArray(response)
+              ? response
+              : []
+            : Array.isArray(response.classes)
+            ? response.classes
+            : [];
+        setClasses(fetchedClasses);
+      } catch (error) {
+        console.error("Erro ao buscar turmas:", error);
+      }
+    };
+
+    fetchStudentClasses();
+  }, [tk, user?.role, loading]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
@@ -138,6 +198,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   return (
     <ClassContext.Provider
       value={{
+        loading,
         selectedClass,
         setSelectedClass,
         classes,

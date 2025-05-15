@@ -15,11 +15,9 @@ import { useClass } from "../../hooks/useClass";
 
 export function CreateCard({
   index,
-  setLoading,
   setOpenProfileModal,
 }: {
   index?: number | null;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
@@ -83,27 +81,19 @@ export function CreateCard({
   };
 
   const handleCreateClassCard = async () => {
-    setLoading(true);
+    if (name && teachers && token) {
+      const payload: ICreateClass = {
+        name: name,
+        teachers: teachers,
+        coverImage: selectedPhoto || undefined,
+      };
 
-    try {
-      if (name && teachers && token) {
-        const payload: ICreateClass = {
-          name: name,
-          teachers: teachers,
-          coverImage: selectedPhoto || undefined,
-        };
-
-        addClass(payload);
-      }
-    } catch (error) {
-      console.error("Erro ao criar card:", error);
-    } finally {
-      if (name && teachers && token) {
-        setLoading(true);
-        setOpenProfileModal(false);
-      }
+      addClass(payload);
     }
-    setLoading(false);
+
+    if (name && teachers && token) {
+      setOpenProfileModal(false);
+    }
   };
 
   const handleCreateLessonCard = async () => {
@@ -127,7 +117,6 @@ export function CreateCard({
     }
 
     if (name && teachers && token && id) {
-      setLoading(true);
       setOpenProfileModal(false);
     }
   };
@@ -146,7 +135,6 @@ export function CreateCard({
     }
 
     setOpenProfileModal(false);
-    setLoading(true);
   };
 
   const handleUpdateLessonCard = async () => {
@@ -171,28 +159,11 @@ export function CreateCard({
           teacher: payload.teacher || "",
           lessonLink: payload.lessonLink || "",
         };
-        const response = await updateLesson(
-          id,
-          selectedClass.id,
-          completePayload,
-          token
-        );
-        if (response) {
-          console.log("Dados da aula atualizados com sucesso!");
-          setLoading(true);
-        }
+        await updateLesson(id, selectedClass.id, completePayload, token);
       }
 
       if (selectedPhoto) {
-        const photoResponse = await uploadLessonPhoto(
-          id,
-          selectedClass.id,
-          token,
-          selectedPhoto
-        );
-        if (photoResponse) {
-          setLoading(true);
-        }
+        await uploadLessonPhoto(id, selectedClass.id, token, selectedPhoto);
       }
     } catch (error) {
       console.error("Erro ao atualizar card:", error);

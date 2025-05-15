@@ -2,59 +2,18 @@ import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
-import { getStudentClasses } from "../services/studentClass.service";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
-import { useAuth } from "../hooks/useAuth";
 import { getStudents } from "../services/user.service";
 import { IStudent } from "../interfaces/student/IStudent";
 import { StudentTable } from "../components/StudentTable/StudentTable";
-import { getAdminClasses } from "../services/class.service";
 import { useClass } from "../hooks/useClass";
+import { useAuth } from "../hooks/useAuth";
 
 export function ClassesPage() {
   const { user } = useAuth();
-  const { classes, setClasses } = useClass();
+  const { classes } = useClass();
   const [students, setStudents] = useState<IStudent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [tk] = useState<string | null>(localStorage.getItem("token"));
-
-  useEffect(() => {
-    const fetchStudentClasses = async () => {
-      if (!tk || !user) {
-        console.error("Erro: Token ou usuário inexistente.");
-        return;
-      }
-
-      const role = user?.role;
-
-      try {
-        const response =
-          role === "admin"
-            ? await getAdminClasses(tk)
-            : await getStudentClasses(user?.id, tk);
-
-        if (!response) return;
-
-        const fetchedClasses =
-          role === "admin"
-            ? Array.isArray(response)
-              ? response
-              : []
-            : Array.isArray(response.classes)
-            ? response.classes
-            : [];
-        console.log("classes", fetchedClasses);
-        setClasses(fetchedClasses);
-      } catch (error) {
-        console.error("Erro ao buscar turmas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudentClasses();
-  }, [tk, user?.role, loading]);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -95,7 +54,6 @@ export function ClassesPage() {
               name={classItem.name || ""}
               teacherInfo={classItem.teachers}
               coverImage={classItem.coverImage || ""}
-              setLoading={setLoading}
             />
           ))
         ) : (
@@ -104,7 +62,7 @@ export function ClassesPage() {
           </Typography>
         )}
 
-        {user?.role === "admin" && <CreateCardButton setLoading={setLoading} />}
+        {user?.role === "admin" && <CreateCardButton />}
 
         {user?.role === "admin" && (
           <>
