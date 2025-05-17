@@ -8,10 +8,14 @@ import { IStudent } from "../interfaces/student/IStudent";
 import { StudentTable } from "../components/StudentTable/StudentTable";
 import { useClass } from "../hooks/useClass";
 import { useAuth } from "../hooks/useAuth";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export function ClassesPage() {
   const { user } = useAuth();
   const { classes } = useClass();
+  const [classesDrop, setClassesDrop] = useState(false);
+
   const [students, setStudents] = useState<IStudent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -39,26 +43,46 @@ export function ClassesPage() {
       <>
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-        <Box sx={{ textAlign: "left", marginBottom: 1 }}>
+        <Box
+          sx={{
+            textAlign: "left",
+            marginBottom: 1,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {!classesDrop ? (
+            <KeyboardArrowUpIcon
+              sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+              onClick={() => setClassesDrop(true)}
+            />
+          ) : (
+            <KeyboardArrowDownIcon
+              sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+              onClick={() => setClassesDrop(false)}
+            />
+          )}
           <Typography variant="h5" sx={{ fontWeight: "600" }}>
             Turmas
           </Typography>
         </Box>
 
-        {filteredClasses.length > 0 ? (
-          filteredClasses.map((classItem, index) => (
-            <ContentCard
-              key={classItem.id}
-              id={classItem.id}
-              index={index}
-              name={classItem.name || ""}
-              teacherInfo={classItem.teachers}
-              coverImage={classItem.coverImage || ""}
-            />
-          ))
-        ) : (
-          <Typography variant="body1" sx={{ mb: 2, mt: 4 }}>
-            Nenhuma turma encontrada.
+        {!classesDrop && filteredClasses.length > 0
+          ? filteredClasses.map((classItem, index) => (
+              <ContentCard
+                key={classItem.id}
+                id={classItem.id}
+                index={index}
+                name={classItem.name || ""}
+                teacherInfo={classItem.teachers}
+                coverImage={classItem.coverImage || ""}
+              />
+            ))
+          : null}
+
+        {filteredClasses.length === 0 && (
+          <Typography variant="h6" sx={{ mb: 2, mt: 4 }}>
+            Nenhuma turma encontrada
           </Typography>
         )}
 

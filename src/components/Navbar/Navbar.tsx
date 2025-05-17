@@ -172,19 +172,26 @@ function Navbar({ token, logout }: NavbarProps) {
   };
 
   const handleSave = async () => {
-    if (parsedUser?.id && selectedPhoto) {
-      const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
-      console.log("response updated", res.updatedStudent?.profilePicture);
-      setProfilePhoto(res.updatedStudent?.profilePicture);
+    try {
+      if (parsedUser?.id && selectedPhoto) {
+        const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
+        console.log("response updated", res.updatedStudent?.profilePicture);
+        setProfilePhoto(res.updatedStudent?.profilePicture);
 
-      if (parsedUser) {
-        parsedUser.profilePicture = res.updatedStudent?.profilePicture;
-        localStorage.setItem("user", JSON.stringify(parsedUser));
+        if (parsedUser) {
+          parsedUser.profilePicture = res.updatedStudent?.profilePicture;
+          localStorage.setItem("user", JSON.stringify(parsedUser));
+        }
       }
-    }
 
-    setOpenProfileModal(false);
-    setLoading(true);
+      setOpenProfileModal(false);
+      setLoading(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAnchorElMenu(null);
+      setAnchorElAvatar(null);
+    }
   };
 
   const handleDeletePhoto = async () => {
@@ -205,6 +212,9 @@ function Navbar({ token, logout }: NavbarProps) {
     } catch (error) {
       console.error("Erro ao deletar foto de perfil:", error);
       alert("Ocorreu um erro ao excluir a foto. Tente novamente.");
+    } finally {
+      setAnchorElMenu(null);
+      setAnchorElAvatar(null);
     }
   };
 
@@ -448,6 +458,7 @@ function Navbar({ token, logout }: NavbarProps) {
                   }
                 } else {
                   setOpenProfileModal(false);
+                  setAnchorElMenu(null);
                 }
               }}
             >
