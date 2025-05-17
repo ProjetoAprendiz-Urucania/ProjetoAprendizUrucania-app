@@ -15,6 +15,7 @@ import {
   uploadLessonPhoto,
 } from "../../services/lesson.service";
 import { useParams } from "react-router-dom";
+import { log } from "console";
 
 export function CreateCard({
   cardId,
@@ -97,6 +98,8 @@ export function CreateCard({
         if (response) {
           await uploadClassPhoto(response.id, selectedPhoto, token);
         }
+
+       console.log("Card criado com sucesso!", response);
       }
     } catch (error) {
       console.error("Erro ao criar card:", error);

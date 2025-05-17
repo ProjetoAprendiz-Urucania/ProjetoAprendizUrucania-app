@@ -35,8 +35,6 @@ export function ClassesPage() {
             ? await getAdminClasses(tk)
             : await getStudentClasses(student.id, tk);
 
-        console.log("Resposta da API:", response);
-
         if (!response) return console.error("Erro: Resposta inesperada da API");
 
         const fetchedClasses =
