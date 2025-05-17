@@ -334,38 +334,39 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   useEffect(() => {
-    const fetchStudentClasses = async () => {
-      if (!tk || !user) {
-        console.error("Erro: Token ou usuário inexistente.");
-        return;
-      }
+    if (!loading) {
+      const fetchStudentClasses = async () => {
+        if (!tk || !user) {
+          console.error("Erro: Token ou usuário inexistente.");
+          return;
+        }
 
-      try {
-        const role = user.role;
-        const response =
-          role === "admin"
-            ? await getAdminClasses(tk)
-            : await getStudentClasses(user.id, tk);
+        try {
+          const role = user.role;
+          const response =
+            role === "admin"
+              ? await getAdminClasses(tk)
+              : await getStudentClasses(user.id, tk);
 
-        if (!response) return;
+          if (!response) return;
 
-        const fetchedClasses =
-          role === "admin"
-            ? Array.isArray(response)
-              ? response
-              : []
-            : Array.isArray(response.classes)
-            ? response.classes
-            : [];
+          const fetchedClasses =
+            role === "admin"
+              ? Array.isArray(response)
+                ? response
+                : []
+              : Array.isArray(response.classes)
+              ? response.classes
+              : [];
 
-        setClasses(fetchedClasses);
-      } catch (error) {
-        console.error("Erro ao buscar turmas:", error);
-      }
-    };
-
-    fetchStudentClasses();
-  }, [tk, user]);
+          setClasses(fetchedClasses);
+        } catch (error) {
+          console.error("Erro ao buscar turmas:", error);
+        }
+      };
+      fetchStudentClasses();
+    }
+  }, [tk, user, loading]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
