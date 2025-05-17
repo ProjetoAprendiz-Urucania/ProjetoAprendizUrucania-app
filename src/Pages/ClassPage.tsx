@@ -20,7 +20,7 @@ export function ClassPage() {
 
   useEffect(() => {
     getMaterials();
-  }, []);
+  }, [selectedClass]);
 
   return (
     <>
