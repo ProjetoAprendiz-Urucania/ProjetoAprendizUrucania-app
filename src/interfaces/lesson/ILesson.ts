@@ -12,13 +12,13 @@ export interface ILesson {
 export interface ICreateLesson {
   name: string;
   teacher: string;
-  coverImage?: string;
+  coverImage?: File;
   lessonLink: string;
 }
 
 export interface IUpdateLesson {
   name: string;
   teacher: string;
-  coverImage: string;
+  coverImage: File;
   lessonLink: string;
 }

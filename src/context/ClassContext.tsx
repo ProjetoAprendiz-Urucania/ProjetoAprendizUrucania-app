@@ -12,6 +12,14 @@ import {
 } from "../services/class.service";
 import { useAuth } from "../hooks/useAuth";
 import { getStudentClasses } from "../services/studentClass.service";
+import { ICreateLesson, IUpdateLesson } from "../interfaces/lesson/ILesson";
+import {
+  createLesson,
+  deleteLesson,
+  updateLessonService,
+  uploadLessonPhoto,
+} from "../services/lesson.service";
+import { getAllMaterials } from "../services/theoryMaterials.service";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -22,6 +30,7 @@ interface ClassProviderProps {
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
+  const [selectedClassIndex, setSelectedClassIndex] = useState(-1);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +41,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     setLoading(true);
     try {
       const response = await createClass(newClass, tk);
-
       if (response) {
         await uploadClassPhoto(response.id, tk, newClass.coverImage);
       }
@@ -58,10 +66,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   const removeClass = async (classId: string) => {
     if (!tk) return;
     setLoading(true);
-
     try {
       await deleteClass(classId, tk);
-
       const updatedClasses = classes.filter((item) => item.id !== classId);
       setClasses(updatedClasses);
     } catch (error) {
@@ -76,6 +82,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       ...classes[classIndex],
       lessons: classes[classIndex].lessons || [],
     };
+    setSelectedClassIndex(classIndex);
     setSelectedClass(selected);
     localStorage.setItem("selectedClassId", selected.id);
   };
@@ -90,10 +97,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
 
     setLoading(true);
-
     try {
       const recoverClassData: IClass = await getClassById(storedClassId, tk);
-      console.log(recoverClassData);
       setSelectedClass(recoverClassData);
     } catch (error) {
       console.error("Erro ao buscar classe por ID:", error);
@@ -104,10 +109,12 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
-  const updateClass = async (updatedClass: Partial<IUpdateClass>) => {
+  const updateClass = async (
+    classId: string,
+    updatedClass: Partial<IUpdateClass>
+  ) => {
     if (!tk || !selectedClass) return;
     setLoading(true);
-
     try {
       const response = await updateClassService(
         selectedClass.id,
@@ -123,20 +130,22 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         );
       }
 
-      setClasses((prevClasses) =>
-        prevClasses.map((c) =>
-          c.id === selectedClass.id
-            ? {
-                ...c,
-                ...updatedClass,
-                coverImage: updatedClass.coverImage
-                  ? URL.createObjectURL(updatedClass.coverImage as File)
-                  : c.coverImage,
-                lessons: selectedClass.lessons || [],
-              }
-            : c
+      const updatedCoverImage = updatedClass.coverImage
+        ? URL.createObjectURL(updatedClass.coverImage as File)
+        : selectedClass.coverImage;
+
+      const filteredUpdate = Object.fromEntries(
+        Object.entries(updatedClass).filter(
+          ([, value]) => value !== undefined && value !== ""
         )
       );
+
+      updateClassInState({
+        ...selectedClass,
+        ...filteredUpdate,
+        id: classId,
+        coverImage: updatedCoverImage,
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -144,17 +153,137 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
+  const addLesson = async (newLesson: ICreateLesson) => {
+    if (!tk || !selectedClass) return;
+    setLoading(true);
+    try {
+      const response = await createLesson(selectedClass.id, newLesson, tk);
+
+      if (response && newLesson.coverImage) {
+        await uploadLessonPhoto(
+          selectedClass.id,
+          response.id,
+          tk,
+          newLesson.coverImage
+        );
+      }
+
+      const updatedLessons = [
+        ...(selectedClass?.lessons || []),
+        {
+          ...response,
+          coverImage: newLesson.coverImage
+            ? URL.createObjectURL(newLesson.coverImage)
+            : "",
+        },
+      ];
+
+      updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
+    } catch (error) {
+      console.error("Erro ao criar aula:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeLesson = async (lessonId: string) => {
+    if (!tk || !selectedClass) return;
+    setLoading(true);
+    try {
+      await deleteLesson(selectedClass.id, lessonId, tk);
+
+      const updatedLessons = selectedClass?.lessons
+        ? selectedClass.lessons.filter((item) => item.id !== lessonId)
+        : [];
+
+      updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
+    } catch (error) {
+      console.error("Erro ao remover aula:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateLesson = async (
+    lessonId: string,
+    updatedLesson: Partial<IUpdateLesson>
+  ) => {
+    if (!tk || !selectedClass) return;
+    setLoading(true);
+    try {
+      const response = await updateLessonService(
+        selectedClass.id,
+        lessonId,
+        updatedLesson,
+        tk
+      );
+
+      if (response && updatedLesson.coverImage) {
+        await uploadLessonPhoto(
+          selectedClass.id,
+          lessonId,
+          tk,
+          updatedLesson.coverImage as File
+        );
+      }
+
+      const updatedCoverImage = updatedLesson.coverImage
+        ? URL.createObjectURL(updatedLesson.coverImage as File)
+        : response.coverImage;
+
+      const validUpdates = Object.fromEntries(
+        Object.entries(updatedLesson).filter(
+          ([, value]) => value !== undefined && value !== ""
+        )
+      );
+
+      const updatedLessons = selectedClass.lessons.map((lesson) =>
+        lesson.id === lessonId
+          ? {
+              ...lesson,
+              ...validUpdates,
+              coverImage: updatedCoverImage,
+            }
+          : lesson
+      );
+
+      updateClassInState({
+        id: selectedClass.id,
+        lessons: updatedLessons,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateClassInState = (
+    updatedClassData: Partial<IClass> & { id: string }
+  ) => {
+    setClasses((prevClasses) =>
+      prevClasses.map((c) =>
+        c.id === updatedClassData.id
+          ? {
+              ...c,
+              ...updatedClassData,
+            }
+          : c
+      )
+    );
+
+    setSelectedClass((prev) => {
+      if (!prev) return null;
+      if (prev.id === updatedClassData.id) {
+        return { ...prev, ...updatedClassData };
+      }
+      return prev;
+    });
+  };
+
   const getClassLessons = () => {
     if (!selectedClass) return;
     return selectedClass.lessons;
-  };
-
-  const getClassMaterials = () => {
-    if (!selectedClass) return;
-    const lessons = selectedClass.lessons;
-    const materials = lessons.flatMap((lesson) => lesson.TheoryMaterial);
-
-    return materials;
   };
 
   useEffect(() => {
@@ -164,13 +293,12 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         return;
       }
 
-      const role = user?.role;
-
       try {
+        const role = user.role;
         const response =
           role === "admin"
             ? await getAdminClasses(tk)
-            : await getStudentClasses(user?.id, tk);
+            : await getStudentClasses(user.id, tk);
 
         if (!response) return;
 
@@ -182,6 +310,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
             : Array.isArray(response.classes)
             ? response.classes
             : [];
+
         setClasses(fetchedClasses);
       } catch (error) {
         console.error("Erro ao buscar turmas:", error);
@@ -189,7 +318,25 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     };
 
     fetchStudentClasses();
-  }, [tk, user?.role, loading]);
+  }, [loading]);
+
+  const getMaterials = async () => {
+    if (!tk || !selectedClass) return;
+    setLoading(true);
+
+    try {
+      const materials = await getAllMaterials(selectedClass.id, tk);
+
+      updateClassInState({
+        id: selectedClass.id,
+        theoryMaterials: materials,
+      });
+    } catch (error) {
+      console.error("Erro ao buscar materiais:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     loadSelectedClassFromStorage();
@@ -209,7 +356,11 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         handleSelectedClass,
         loadSelectedClassFromStorage,
         getClassLessons,
-        getClassMaterials,
+        addLesson,
+        selectedClassIndex,
+        removeLesson,
+        updateLesson,
+        getMaterials,
       }}
     >
       {children}

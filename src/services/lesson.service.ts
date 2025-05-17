@@ -11,10 +11,10 @@ export function getLesson(classId: string, lessonId: string, token: string) {
 
 export function createLesson(
   classId: string,
-  classData: ICreateLesson,
+  lessonData: ICreateLesson,
   token: string
 ) {
-  return apiRequest(`classes/${classId}/lesson`, "POST", classData, token);
+  return apiRequest(`classes/${classId}/lesson`, "POST", lessonData, token);
 }
 
 export async function deleteLesson(classId: string, lessonId: string, token: string) {
@@ -44,7 +44,7 @@ export function uploadLessonPhoto(
   );
 }
 
-export function updateLesson(
+export function updateLessonService(
   classId: string,
   lessonId: string,
   classData: Partial<IUpdateLesson>,

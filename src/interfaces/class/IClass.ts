@@ -1,4 +1,5 @@
 import { ILesson } from "../lesson/ILesson";
+import { ITheoryMaterial } from "../TheoryMaterial/ITheoryMaterial";
 
 export interface IClass {
   id: string;
@@ -6,6 +7,7 @@ export interface IClass {
   teachers: string;
   coverImage: string;
   lessons: ILesson[]
+  theoryMaterials?: ITheoryMaterial[];
 }
 
 export interface ICreateClass {

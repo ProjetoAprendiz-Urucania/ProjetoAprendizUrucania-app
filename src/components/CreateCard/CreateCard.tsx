@@ -5,11 +5,6 @@ import { useState } from "react";
 
 import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
 import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
-import {
-  createLesson,
-  updateLesson,
-  uploadLessonPhoto,
-} from "../../services/lesson.service";
 import { useParams } from "react-router-dom";
 import { useClass } from "../../hooks/useClass";
 
@@ -22,7 +17,14 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const { selectedClass, addClass, updateClass } = useClass();
+  const {
+    selectedClass,
+    addClass,
+    updateClass,
+    updateLesson,
+    addLesson,
+    classes,
+  } = useClass();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -96,7 +98,7 @@ export function CreateCard({
     }
   };
 
-  const handleCreateLessonCard = async () => {
+  const handleCreateLessonCard = () => {
     if (name && teachers && token && id) {
       const payload: ICreateLesson = {
         name: name,
@@ -104,16 +106,7 @@ export function CreateCard({
         lessonLink: lessonLink,
       };
 
-      const response = await createLesson(id, payload, token);
-
-      if (response) {
-        await uploadLessonPhoto(
-          id,
-          response.id,
-          token,
-          selectedPhoto ? selectedPhoto : undefined
-        );
-      }
+      addLesson(payload);
     }
 
     if (name && teachers && token && id) {
@@ -122,16 +115,18 @@ export function CreateCard({
   };
 
   const handleUpdateClassCard = async () => {
-    if (!selectedClass) {
-      console.error("selectedClass is undefined");
-      return null;
-    }
     const payload: Partial<IUpdateClass> = {};
     if (name) payload.name = name;
     if (teachers) payload.teacherInfo = teachers;
 
-    if (Object.keys(payload).length > 0) {
-      updateClass(payload);
+    if (
+      Object.keys(payload).length > 0 &&
+      typeof index === "number" &&
+      index >= 0 &&
+      index < classes.length
+    ) {
+      console.log("asdasd");
+      updateClass(classes[index].id, payload);
     }
 
     setOpenProfileModal(false);
@@ -142,34 +137,26 @@ export function CreateCard({
       console.error("selectedClass is undefined");
       return null;
     }
-    try {
-      if (!token || !id || !index) {
-        console.log("Token, ID da aula ou ID do card não encontrados.");
-        return;
-      }
-
-      const payload: Partial<IUpdateLesson> = {};
-      if (name) payload.name = name;
-      if (teachers) payload.teacher = teachers;
-      if (lessonLink) payload.lessonLink = lessonLink;
-
-      if (Object.keys(payload).length > 0) {
-        const completePayload: Partial<IUpdateLesson> = {
-          name: payload.name || "",
-          teacher: payload.teacher || "",
-          lessonLink: payload.lessonLink || "",
-        };
-        await updateLesson(id, selectedClass.id, completePayload, token);
-      }
-
-      if (selectedPhoto) {
-        await uploadLessonPhoto(id, selectedClass.id, token, selectedPhoto);
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar card:", error);
-    } finally {
-      setOpenProfileModal(false);
+    if (!token || !id || !index) {
+      console.log("Token, ID da aula ou ID do card não encontrados.");
+      return;
     }
+
+    const payload: Partial<IUpdateLesson> = {};
+    payload.name = name;
+    payload.teacher = teachers;
+    payload.lessonLink = lessonLink;
+
+    if (Object.keys(payload).length > 0) {
+      const completePayload: Partial<IUpdateLesson> = {
+        name: payload.name,
+        teacher: payload.teacher,
+        lessonLink: payload.lessonLink,
+      };
+      updateLesson(selectedClass.lessons[index].id, completePayload);
+    }
+
+    setOpenProfileModal(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -177,15 +164,17 @@ export function CreateCard({
 
     if (isClassPage) {
       if (index) {
-        await handleUpdateLessonCard();
+        handleUpdateLessonCard();
       } else {
-        await handleCreateLessonCard();
+        handleCreateLessonCard();
       }
     } else {
-      if (index) {
-        await handleUpdateClassCard();
+      if (index !== undefined) {
+        console.log("a1");
+        handleUpdateClassCard();
       } else {
-        await handleCreateClassCard();
+        console.log("a2");
+        handleCreateClassCard();
       }
     }
   };

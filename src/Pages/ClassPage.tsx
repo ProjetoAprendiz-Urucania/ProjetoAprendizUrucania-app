@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ContentCard } from "../components/ContentCard/ContentCard";
 import { Box, Typography } from "@mui/material";
 import { SearchBar } from "../components/SearchBar/SearchBar";
@@ -12,11 +12,15 @@ import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass, getClassLessons, getClassMaterials } = useClass();
+  const { selectedClass, getClassLessons, getMaterials } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
+
+  useEffect(() => {
+    getMaterials();
+  }, []);
 
   return (
     <>
@@ -102,8 +106,8 @@ export function ClassPage() {
       </Box>
       <Box sx={{ textAlign: "left", mb: 4 }}>
         {!materialDrop &&
-          ((getClassMaterials() ?? 0) && !searchTerm
-            ? (getClassMaterials() ?? []).map((materialItem) => {
+          ((selectedClass?.theoryMaterials ?? 0) && !searchTerm
+            ? (selectedClass?.theoryMaterials ?? []).map((materialItem) => {
                 return materialItem ? (
                   <TheoryMaterialItem
                     key={materialItem.id}
@@ -114,7 +118,7 @@ export function ClassPage() {
                   />
                 ) : null;
               })
-            : (getClassMaterials() ?? [])
+            : (selectedClass?.theoryMaterials ?? [])
                 .filter((materialItem) =>
                   materialItem.name
                     .toLowerCase()

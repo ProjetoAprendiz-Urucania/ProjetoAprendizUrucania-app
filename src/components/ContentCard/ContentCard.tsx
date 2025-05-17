@@ -9,12 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
-import { deleteLesson } from "../../services/lesson.service";
 import { CreateCard } from "../CreateCard/CreateCard";
 import { useClass } from "../../hooks/useClass";
 
@@ -28,7 +27,8 @@ export function ContentCard({
   coverImage,
 }: ICardData) {
   const { user } = useAuth();
-  const { handleSelectedClass, selectedClass, removeClass } = useClass();
+  const { handleSelectedClass, selectedClass, removeClass, removeLesson } =
+    useClass();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,43 +48,60 @@ export function ContentCard({
     }
   }, [coverImage]);
 
-  const handleOpenLessons = () => {
+  const handleOpenLessons = useCallback(() => {
     if (isClassesPage) {
       handleSelectedClass(index);
       navigate(`/classes/${id}`);
     } else {
       navigate(`/classes/${selectedClass?.id}/lessons/${id}`);
     }
-  };
+  }, [isClassesPage, handleSelectedClass, index, id, navigate, selectedClass]);
 
-  const handleOpenMenu = (e: React.MouseEvent<HTMLImageElement>) => {
-    e.stopPropagation();
-    setAnchorEl(e.currentTarget);
-  };
+  const handleOpenMenu = useCallback(
+    (e: React.MouseEvent<HTMLImageElement>) => {
+      e.stopPropagation();
+      setAnchorEl(e.currentTarget);
+    },
+    []
+  );
 
-  const handleCloseMenu = () => {
+  const handleCloseMenu = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const handleMenuClick = async (option: string) => {
-    if (isClassesPage) handleSelectedClass(index);
+  const handleMenuClick = useCallback(
+    async (option: string) => {
+      if (isClassesPage) handleSelectedClass(index);
 
-    handleCloseMenu();
+      handleCloseMenu();
 
-    if (option === "Editar") {
-      setOpenProfileModal(true);
-    } else if (option === "Excluir" && token) {
-      try {
-        if (!selectedClass) {
-          await deleteLesson(id, id, token);
-        } else {
-          removeClass(id);
+      if (option === "Editar") {
+        setOpenProfileModal(true);
+      } else if (option === "Excluir" && token) {
+        try {
+          if (!isClassesPage) {
+            removeLesson(id);
+          } else {
+            console.log("class");
+            removeClass(id);
+          }
+        } catch (error) {
+          console.error("Erro ao excluir:", error);
         }
-      } catch (error) {
-        console.error("Erro ao excluir:", error);
       }
-    }
-  };
+    },
+    [
+      handleCloseMenu,
+      handleSelectedClass,
+      index,
+      isClassesPage,
+      token,
+      selectedClass,
+      removeLesson,
+      removeClass,
+      id,
+    ]
+  );
 
   return (
     <>
@@ -210,12 +227,7 @@ export function ContentCard({
         onClose={handleCloseMenu}
       >
         {adminMenu.map((option) => (
-          <MenuItem
-            key={option}
-            onClick={() => {
-              handleMenuClick(option);
-            }}
-          >
+          <MenuItem key={option} onClick={() => handleMenuClick(option)}>
             {option}
           </MenuItem>
         ))}
