@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import addfile from "../../assets/img/UploadFile/addfile.svg";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ILesson } from "../../interfaces/lesson/ILesson";
 import { uploadMaterial } from "../../services/theoryMaterials.service";
@@ -26,17 +26,9 @@ export function UploadFile({
   const { id } = useParams<{ id: string }>();
   const token = localStorage.getItem("token");
 
-  const loading = useRef(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string>("");
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      loading.current = false;
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, []);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -50,7 +42,10 @@ export function UploadFile({
   };
 
   const handleConfirm = async () => {
+    if (isUploading) return;
+
     try {
+      setIsUploading(true);
       if (selectedFile && selectedLesson && id && token) {
         await uploadMaterial(id, selectedLesson, selectedFile, token);
         setOpenProfileModal(false);
@@ -58,7 +53,9 @@ export function UploadFile({
         setSelectedLesson("");
       }
     } catch (error) {
-      console.error("An error occurred during file upload:", error);
+      console.error("Erro ao enviar o arquivo:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -157,21 +154,28 @@ export function UploadFile({
 
           <Button
             type="button"
-            disabled={!selectedFile || !selectedLesson}
+            disabled={!selectedFile || !selectedLesson || isUploading}
             sx={{
               backgroundColor:
-                selectedFile && selectedLesson ? "#BB1626" : "#ccc",
+                selectedFile && selectedLesson && !isUploading
+                  ? "#BB1626"
+                  : "#ccc",
               fontWeight: "bold",
-              color: selectedFile && selectedLesson ? "white" : "#666",
+              color:
+                selectedFile && selectedLesson && !isUploading
+                  ? "white"
+                  : "#666",
               mt: 2,
               ":hover": {
                 backgroundColor:
-                  selectedFile && selectedLesson ? "#A11420" : "#ccc",
+                  selectedFile && selectedLesson && !isUploading
+                    ? "#A11420"
+                    : "#ccc",
               },
             }}
             onClick={handleConfirm}
           >
-            Confirmar
+            {isUploading ? "Enviando..." : "Confirmar"}
           </Button>
         </Box>
       )}
