@@ -15,11 +15,10 @@ import { confirmPresence } from "../services/frequencyList";
 import { useClass } from "../hooks/useClass";
 
 export function LessonPage() {
-  const { classId, lessonId } = useParams<{
-    classId: string;
+  const { lessonId } = useParams<{
     lessonId: string;
   }>();
-  const { selectedClass, loading } = useClass();
+  const { selectedClass } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
@@ -28,7 +27,7 @@ export function LessonPage() {
 
   useEffect(() => {
     const fetchMaterials = async () => {
-      if (!classId || !lessonId) return;
+      if (!selectedClass?.id || !lessonId) return;
 
       if (!tk) {
         console.log("err get classes() token inexistente");
@@ -36,7 +35,11 @@ export function LessonPage() {
       }
 
       try {
-        const materials = await getMaterialsByLesson(classId, lessonId, tk);
+        const materials = await getMaterialsByLesson(
+          selectedClass.id,
+          lessonId,
+          tk
+        );
         setMaterials(materials);
       } catch (error) {
         console.error("Erro ao buscar materiais:", error);
@@ -44,7 +47,7 @@ export function LessonPage() {
     };
 
     fetchMaterials();
-  }, [classId, lessonId, tk, loading]);
+  }, [selectedClass?.id, lessonId, tk]);
 
   const handleConfirmPresence = async () => {
     try {
@@ -55,12 +58,12 @@ export function LessonPage() {
       }
 
       const user = JSON.parse(userData);
-      if (!user.id || !lessonId || !classId) {
+      if (!user.id || !lessonId || !selectedClass?.id) {
         console.warn("classId, lessonId ou user.id não informados.");
         return;
       }
 
-      const res = await confirmPresence(classId, lessonId, user.id);
+      const res = await confirmPresence(selectedClass.id, lessonId, user.id);
 
       if (!res.success) {
         console.error("Erro ao confirmar presença:", res.message || res);
@@ -168,7 +171,7 @@ export function LessonPage() {
             fileType={materialItem.fileType}
             lessonId={lessonId || ""}
             fileUrl={materialItem.fileUrl}
-            classId={classId || ""}
+            classId={selectedClass?.id || ""}
             materialId={materialItem.id}
             key={materialItem.id}
           />

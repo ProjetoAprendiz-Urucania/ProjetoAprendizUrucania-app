@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
 import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
-import { useParams } from "react-router-dom";
 import { useClass } from "../../hooks/useClass";
 
 export function CreateCard({
@@ -16,7 +15,6 @@ export function CreateCard({
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
-  const { id } = useParams<{ id: string }>();
   const {
     selectedClass,
     addClass,
@@ -99,7 +97,7 @@ export function CreateCard({
   };
 
   const handleCreateLessonCard = () => {
-    if (name && teachers && token && id) {
+    if (name && teachers && token && selectedClass && selectedClass.id) {
       const payload: ICreateLesson = {
         name: name,
         teacher: teachers,
@@ -109,7 +107,7 @@ export function CreateCard({
       addLesson(payload);
     }
 
-    if (name && teachers && token && id) {
+    if (name && teachers && token && selectedClass && selectedClass.id) {
       setOpenProfileModal(false);
     }
   };
@@ -137,7 +135,8 @@ export function CreateCard({
       console.error("selectedClass is undefined");
       return null;
     }
-    if (!token || !id || !index) {
+    console.log(token, selectedClass.id, index);
+    if (!token || !selectedClass.id || index === undefined || index === null) {
       console.log("Token, ID da aula ou ID do card não encontrados.");
       return;
     }
@@ -161,19 +160,17 @@ export function CreateCard({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log(isClassPage);
     if (isClassPage) {
-      if (index) {
+      if (index !== null && index !== undefined) {
         handleUpdateLessonCard();
       } else {
         handleCreateLessonCard();
       }
     } else {
-      if (index !== undefined) {
-        console.log("a1");
+      if (index !== null && index !== undefined) {
         handleUpdateClassCard();
       } else {
-        console.log("a2");
         handleCreateClassCard();
       }
     }
@@ -261,7 +258,7 @@ export function CreateCard({
           {isClassPage && (
             <>
               <TextField
-                required={!index}
+                required={index === undefined}
                 id="lessonLink"
                 label="Link da Aula"
                 variant="outlined"
@@ -271,7 +268,7 @@ export function CreateCard({
                 onChange={(e) => setLessonLink(e.target.value)}
               />
               <TextField
-                required={!index}
+                required={index === undefined}
                 id="lessonName"
                 label="Nome da Aula"
                 variant="outlined"
@@ -285,7 +282,7 @@ export function CreateCard({
 
           {!isClassPage && (
             <TextField
-              required={!index}
+              required={index === undefined}
               id="className"
               label="Nome da Turma"
               variant="outlined"
@@ -297,7 +294,7 @@ export function CreateCard({
           )}
 
           <TextField
-            required={!index}
+            required={index === undefined}
             id="teachers"
             label={
               isClassPage ? "Professor" : "Professores (separados por vírgula)"

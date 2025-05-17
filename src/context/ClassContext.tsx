@@ -286,6 +286,24 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     return selectedClass.lessons;
   };
 
+  const getMaterials = async () => {
+    if (!tk || !selectedClass) return;
+    setLoading(true);
+
+    try {
+      const materials = await getAllMaterials(selectedClass.id, tk);
+
+      updateClassInState({
+        id: selectedClass.id,
+        theoryMaterials: materials,
+      });
+    } catch (error) {
+      console.error("Erro ao buscar materiais:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchStudentClasses = async () => {
       if (!tk || !user) {
@@ -318,25 +336,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     };
 
     fetchStudentClasses();
-  }, [loading]);
-
-  const getMaterials = async () => {
-    if (!tk || !selectedClass) return;
-    setLoading(true);
-
-    try {
-      const materials = await getAllMaterials(selectedClass.id, tk);
-
-      updateClassInState({
-        id: selectedClass.id,
-        theoryMaterials: materials,
-      });
-    } catch (error) {
-      console.error("Erro ao buscar materiais:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [tk, user]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
