@@ -11,7 +11,6 @@ export interface TheoryMaterialProps {
   fileUrl: string;
   classId: string;
   materialId: string;
-  setLoading: (loading: boolean) => void;
 }
 
 export function TheoryMaterialItem({
@@ -20,7 +19,6 @@ export function TheoryMaterialItem({
   materialId,
   classId,
   lessonId,
-  setLoading,
 }: TheoryMaterialProps) {
   const handleOpenFile = () => {
     window.open(fileUrl, "_blank", "noopener,noreferrer");
@@ -29,10 +27,8 @@ export function TheoryMaterialItem({
   const handleDeleteFile = async () => {
     try {
       await deleteMaterial(classId, lessonId, materialId);
-      setLoading(true);
     } catch (error) {
       console.error("Failed to delete material:", error);
-      setLoading(false);
     }
   };
 

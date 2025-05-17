@@ -39,22 +39,16 @@ export function StudentTable({ students, classes }: StudentTableProps) {
   }, [students]);
 
   const fetchStudentClasses = async () => {
-    const token = localStorage.getItem("token") || "";
-
     const loadedClasses = await Promise.all(
       students.map(async (student) => {
         try {
           if (!student.id) throw new Error("Student ID is undefined");
 
-          const response = await getStudentClasses(student.id, token);
-          const classNames = response.classes
-            ? response.classes.map((cls: IClass) => cls.name).join(", ")
-            : "";
-
+          const classNames = classes.map((c) => c.name).join(", ");
           return { ...student, classes: classNames };
         } catch (error) {
           console.error("Erro ao buscar classes do aluno:", error);
-          return { ...student, classes: [] };
+          return { ...student, classes: "" };
         }
       })
     );

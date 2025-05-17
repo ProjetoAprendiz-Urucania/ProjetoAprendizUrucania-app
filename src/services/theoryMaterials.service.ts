@@ -7,10 +7,11 @@ export async function getMaterialsByLesson(classId: string,lessonId: string,toke
 }
 
 export async function getAllMaterials(classId: string,token:string){
-  return apiRequest(`classes/${classId}/theoryMaterials`,"GET", undefined,token);
+  const res = await apiRequest(`classes/${classId}/theoryMaterials`,"GET", undefined,token);
+  return res;
 }
 
-export async function uploadMaterial(classId: string,lessonId: string,file: File,token:string){
+export async function uploadMaterialService(classId: string,lessonId: string,file: File,token:string){
   const formData = new FormData();
   formData.append("TheoryMaterial", file);
 

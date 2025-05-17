@@ -2,32 +2,27 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import addimage from "../../assets/img/CreateCard/addImage.svg";
 import { useState } from "react";
-import {
-  createClass,
-  updateClass,
-  uploadClassPhoto,
-} from "../../services/class.service";
-import { IClass } from "../../interfaces/class/IClass";
-import { ILesson } from "../../interfaces/lesson/ILesson";
-import {
-  createLesson,
-  updateLesson,
-  uploadLessonPhoto,
-} from "../../services/lesson.service";
-import { useParams } from "react-router-dom";
-import { log } from "console";
+
+import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
+import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
+import { useClass } from "../../hooks/useClass";
 
 export function CreateCard({
-  cardId,
-  setLoading,
+  index,
   setOpenProfileModal,
 }: {
-  cardId?: string | null;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  index?: number | null;
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
-  const { id } = useParams<{ id: string }>();
+  const {
+    selectedClass,
+    addClass,
+    updateClass,
+    updateLesson,
+    addLesson,
+    classes,
+  } = useClass();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -86,155 +81,97 @@ export function CreateCard({
   };
 
   const handleCreateClassCard = async () => {
-    try {
-      if (selectedPhoto && name && teachers && token) {
-        const payload: IClass = {
-          name: name,
-          teachers: teachers,
-        };
+    if (name && teachers && token) {
+      const payload: ICreateClass = {
+        name: name,
+        teachers: teachers,
+        coverImage: selectedPhoto || undefined,
+      };
 
-        const response = await createClass(payload, token);
+      addClass(payload);
+    }
 
-        if (response) {
-          await uploadClassPhoto(response.id, selectedPhoto, token);
-        }
-
-       console.log("Card criado com sucesso!", response);
-      }
-    } catch (error) {
-      console.error("Erro ao criar card:", error);
-    } finally {
-      if (name && teachers && token) {
-        setLoading(true);
-        setOpenProfileModal(false);
-      }
+    if (name && teachers && token) {
+      setOpenProfileModal(false);
     }
   };
 
-  const handleCreateLessonCard = async () => {
-    try {
-      console.log(id);
-      if (name && teachers && token && id) {
-        const payload: ILesson = {
-          name: name,
-          teacher: teachers,
-          lessonLink: lessonLink,
-        };
+  const handleCreateLessonCard = () => {
+    if (name && teachers && token && selectedClass && selectedClass.id) {
+      const payload: ICreateLesson = {
+        name: name,
+        teacher: teachers,
+        lessonLink: lessonLink,
+      };
 
-        const response = await createLesson(id, payload, token);
+      addLesson(payload);
+    }
 
-        if (response) {
-          await uploadLessonPhoto(
-            id,
-            response.id,
-            token,
-            selectedPhoto ? selectedPhoto : undefined
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao criar card:", error);
-    } finally {
-      if (name && teachers && token && id) {
-        setLoading(true);
-        setOpenProfileModal(false);
-      }
+    if (name && teachers && token && selectedClass && selectedClass.id) {
+      setOpenProfileModal(false);
     }
   };
 
   const handleUpdateClassCard = async () => {
-    try {
-      if (!token || !cardId) {
-        console.log("Token ou ID da classe não encontrados.");
-        return;
-      }
+    const payload: Partial<IUpdateClass> = {};
+    if (name) payload.name = name;
+    if (teachers) payload.teacherInfo = teachers;
 
-      const payload: Partial<IClass> = {};
-      if (name) payload.name = name;
-      if (teachers) payload.teacherInfo = teachers;
-
-      if (Object.keys(payload).length > 0) {
-        const response = await updateClass(cardId, payload, token);
-        if (response) {
-          console.log("Dados da classe atualizados com sucesso!");
-        }
-      }
-
-      if (selectedPhoto) {
-        const photoResponse = await uploadClassPhoto(
-          cardId,
-          selectedPhoto,
-          token
-        );
-        if (photoResponse) {
-          console.log("Imagem da classe atualizada com sucesso!");
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar card:", error);
-    } finally {
-      setOpenProfileModal(false);
-      setLoading(true);
+    if (
+      Object.keys(payload).length > 0 &&
+      typeof index === "number" &&
+      index >= 0 &&
+      index < classes.length
+    ) {
+      console.log("asdasd");
+      updateClass(classes[index].id, payload);
     }
+
+    setOpenProfileModal(false);
   };
 
   const handleUpdateLessonCard = async () => {
-    try {
-      if (!token || !id || !cardId) {
-        console.log("Token, ID da aula ou ID do card não encontrados.");
-        return;
-      }
-
-      const payload: Partial<ILesson> = {};
-      if (name) payload.name = name;
-      if (teachers) payload.teacher = teachers;
-      if (lessonLink) payload.lessonLink = lessonLink;
-
-      if (Object.keys(payload).length > 0) {
-        const completePayload: ILesson = {
-          name: payload.name || "",
-          teacher: payload.teacher || "",
-          lessonLink: payload.lessonLink || "",
-        };
-        const response = await updateLesson(id, cardId, completePayload, token);
-        if (response) {
-          console.log("Dados da aula atualizados com sucesso!");
-          setLoading(true);
-        }
-      }
-
-      if (selectedPhoto) {
-        const photoResponse = await uploadLessonPhoto(
-          id,
-          cardId,
-          token,
-          selectedPhoto
-        );
-        if (photoResponse) {
-          setLoading(true);
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar card:", error);
-    } finally {
-      setOpenProfileModal(false);
+    if (!selectedClass) {
+      console.error("selectedClass is undefined");
+      return null;
     }
+    console.log(token, selectedClass.id, index);
+    if (!token || !selectedClass.id || index === undefined || index === null) {
+      console.log("Token, ID da aula ou ID do card não encontrados.");
+      return;
+    }
+
+    const payload: Partial<IUpdateLesson> = {};
+    payload.name = name;
+    payload.teacher = teachers;
+    payload.lessonLink = lessonLink;
+
+    if (Object.keys(payload).length > 0) {
+      const completePayload: Partial<IUpdateLesson> = {
+        name: payload.name,
+        teacher: payload.teacher,
+        lessonLink: payload.lessonLink,
+      };
+      updateLesson(selectedClass.lessons[index].id, completePayload);
+    }
+
+    setOpenProfileModal(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log(isClassPage);
     if (isClassPage) {
-      if (cardId) {
-        await handleUpdateLessonCard();
+      if (index !== null && index !== undefined) {
+        handleUpdateLessonCard();
       } else {
-        await handleCreateLessonCard();
+        handleCreateLessonCard();
       }
     } else {
-      if (cardId) {
-        await handleUpdateClassCard();
+      if (index !== null && index !== undefined) {
+        handleUpdateClassCard();
       } else {
-        await handleCreateClassCard();
+        handleCreateClassCard();
       }
     }
   };
@@ -321,7 +258,7 @@ export function CreateCard({
           {isClassPage && (
             <>
               <TextField
-                required={!cardId}
+                required={index === undefined}
                 id="lessonLink"
                 label="Link da Aula"
                 variant="outlined"
@@ -331,7 +268,7 @@ export function CreateCard({
                 onChange={(e) => setLessonLink(e.target.value)}
               />
               <TextField
-                required={!cardId}
+                required={index === undefined}
                 id="lessonName"
                 label="Nome da Aula"
                 variant="outlined"
@@ -345,7 +282,7 @@ export function CreateCard({
 
           {!isClassPage && (
             <TextField
-              required={!cardId}
+              required={index === undefined}
               id="className"
               label="Nome da Turma"
               variant="outlined"
@@ -357,7 +294,7 @@ export function CreateCard({
           )}
 
           <TextField
-            required={!cardId}
+            required={index === undefined}
             id="teachers"
             label={
               isClassPage ? "Professor" : "Professores (separados por vírgula)"
@@ -378,7 +315,7 @@ export function CreateCard({
               mt: 2,
             }}
           >
-            {cardId ? "Atualizar" : "Confirmar"}
+            {index !== null && index !== undefined ? "Atualizar" : "Confirmar"}
           </Button>
         </Box>
       )}

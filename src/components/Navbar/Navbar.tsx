@@ -58,7 +58,7 @@ export function Navbar({ token, logout }: NavbarProps) {
 
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
-  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/([a-f0-9]{24})?$/.test(
+  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
     location.pathname
   );
 
@@ -113,7 +113,7 @@ export function Navbar({ token, logout }: NavbarProps) {
     } else if (isLessonPage) {
       navigate(
         location.pathname.replace(
-          /\/classes\/[a-f0-9]{24}\/[a-f0-9]{24}$/,
+          /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
           "/classes/" + location.pathname.split("/")[2]
         )
       );
@@ -172,19 +172,26 @@ export function Navbar({ token, logout }: NavbarProps) {
   };
 
   const handleSave = async () => {
-    if (parsedUser?.id && selectedPhoto) {
-      const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
-      console.log("response updated", res.updatedStudent?.profilePicture);
-      setProfilePhoto(res.updatedStudent?.profilePicture);
+    try {
+      if (parsedUser?.id && selectedPhoto) {
+        const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
+        console.log("response updated", res.updatedStudent?.profilePicture);
+        setProfilePhoto(res.updatedStudent?.profilePicture);
 
-      if (parsedUser) {
-        parsedUser.profilePicture = res.updatedStudent?.profilePicture;
-        localStorage.setItem("user", JSON.stringify(parsedUser));
+        if (parsedUser) {
+          parsedUser.profilePicture = res.updatedStudent?.profilePicture;
+          localStorage.setItem("user", JSON.stringify(parsedUser));
+        }
       }
-    }
 
-    setOpenProfileModal(false);
-    setLoading(true);
+      setOpenProfileModal(false);
+      setLoading(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAnchorElMenu(null);
+      setAnchorElAvatar(null);
+    }
   };
 
   const handleDeletePhoto = async () => {
@@ -205,6 +212,9 @@ export function Navbar({ token, logout }: NavbarProps) {
     } catch (error) {
       console.error("Erro ao deletar foto de perfil:", error);
       alert("Ocorreu um erro ao excluir a foto. Tente novamente.");
+    } finally {
+      setAnchorElMenu(null);
+      setAnchorElAvatar(null);
     }
   };
 
@@ -448,6 +458,7 @@ export function Navbar({ token, logout }: NavbarProps) {
                   }
                 } else {
                   setOpenProfileModal(false);
+                  setAnchorElMenu(null);
                 }
               }}
             >

@@ -8,35 +8,36 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
-import { deleteClass } from "../../services/class.service";
-import { deleteLesson } from "../../services/lesson.service";
 import { CreateCard } from "../CreateCard/CreateCard";
+import { useClass } from "../../hooks/useClass";
 
 const adminMenu = ["Editar", "Excluir"];
 
 export function ContentCard({
   id,
+  index,
   name,
   teacherInfo,
   coverImage,
-  setLoading,
-}: ICardData & { setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
+}: ICardData) {
   const { user } = useAuth();
-  const { id: classId } = useParams();
+  const { handleSelectedClass, selectedClass, removeClass, removeLesson } =
+    useClass();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
-  const isClassPage = Boolean(classId);
+  const isClassesPage = location.pathname === "/classes";
 
   useEffect(() => {
     if (coverImage) {
@@ -47,40 +48,61 @@ export function ContentCard({
     }
   }, [coverImage]);
 
-  const handleOpenLessons = () => {
-    navigate(`${location.pathname}/${id}`);
-  };
-
-  const handleOpenMenu = (e: React.MouseEvent<HTMLImageElement>) => {
-    e.stopPropagation();
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMenuClick = async (option: string) => {
-    handleCloseMenu();
-
-    if (option === "Editar") {
-      setOpenProfileModal(true);
-    } else if (option === "Excluir" && token) {
-      try {
-        setLoading(true);
-        if (isClassPage) {
-          await deleteLesson(classId!, id, token);
-        } else {
-          await deleteClass(id, token);
-        }
-        window.location.reload();
-      } catch (error) {
-        console.error("Erro ao excluir:", error);
-      } finally {
-        setLoading(false);
-      }
+  const handleOpenLessons = useCallback(() => {
+    if (isClassesPage) {
+      handleSelectedClass(index);
+      navigate(`/classes/${id}`);
+    } else {
+      navigate(`/classes/${selectedClass?.id}/lessons/${id}`);
     }
-  };
+  }, [isClassesPage, handleSelectedClass, index, id, navigate, selectedClass]);
+
+  const handleOpenMenu = useCallback(
+    (e: React.MouseEvent<HTMLImageElement>) => {
+      e.stopPropagation();
+      setAnchorEl(e.currentTarget);
+    },
+    []
+  );
+
+  const handleCloseMenu = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  const handleMenuClick = useCallback(
+    async (option: string) => {
+      if (isClassesPage) handleSelectedClass(index);
+
+      handleCloseMenu();
+
+      if (option === "Editar") {
+        setOpenProfileModal(true);
+      } else if (option === "Excluir" && token) {
+        try {
+          if (!isClassesPage) {
+            removeLesson(id);
+          } else {
+            console.log("class");
+            removeClass(id);
+          }
+        } catch (error) {
+          console.error("Erro ao excluir:", error);
+        }
+      }
+    },
+    [
+      handleCloseMenu,
+      handleSelectedClass,
+      index,
+      isClassesPage,
+      token,
+      selectedClass,
+      removeLesson,
+      removeClass,
+      id,
+    ]
+  );
+
   return (
     <>
       <Card
@@ -215,11 +237,7 @@ export function ContentCard({
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
       >
-        <CreateCard
-          cardId={id}
-          setLoading={setLoading}
-          setOpenProfileModal={setOpenProfileModal}
-        />
+        <CreateCard index={index} setOpenProfileModal={setOpenProfileModal} />
       </Dialog>
     </>
   );

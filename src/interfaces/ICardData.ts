@@ -1,6 +1,7 @@
 export interface ICardData {
-    id: string;
-    name: string;
-    teacherInfo?: string;
-    coverImage: string;
+  id: string;
+  index: number;
+  name: string;
+  teacherInfo?: string;
+  coverImage: string;
 }

@@ -7,53 +7,27 @@ import {
   KeyboardArrowUp as KeyboardArrowUpIcon,
 } from "@mui/icons-material";
 
-import { ILesson } from "../interfaces/lesson/ILesson";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-import { getLesson } from "../services/lesson.service";
 import { getMaterialsByLesson } from "../services/theoryMaterials.service";
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
 import { confirmPresence } from "../services/frequencyList";
+import { useClass } from "../hooks/useClass";
 
 export function LessonPage() {
-  const { classId, lessonId } = useParams<{
-    classId: string;
+  const { lessonId } = useParams<{
     lessonId: string;
   }>();
-  const [lesson, setLesson] = useState<ILesson | null>(null);
+  const { selectedClass } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
-  const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchLessons = async () => {
-      if (!classId || !lessonId) {
-        console.log("classId ou lessonId não informados");
-        return;
-      }
-
-      if (!tk) {
-        console.log("err get classes() token inexistente");
-        return;
-      }
-
-      try {
-        const response = await getLesson(classId, lessonId, tk);
-        setLesson(response);
-      } catch (error) {
-        console.error("Erro ao buscar a lição:", error);
-      }
-    };
-
-    fetchLessons();
-  }, [classId, lessonId, tk, loading]);
-
-  useEffect(() => {
     const fetchMaterials = async () => {
-      if (!classId || !lessonId) return;
+      if (!selectedClass?.id || !lessonId) return;
 
       if (!tk) {
         console.log("err get classes() token inexistente");
@@ -61,7 +35,11 @@ export function LessonPage() {
       }
 
       try {
-        const materials = await getMaterialsByLesson(classId, lessonId, tk);
+        const materials = await getMaterialsByLesson(
+          selectedClass.id,
+          lessonId,
+          tk
+        );
         setMaterials(materials);
       } catch (error) {
         console.error("Erro ao buscar materiais:", error);
@@ -69,7 +47,7 @@ export function LessonPage() {
     };
 
     fetchMaterials();
-  }, [classId, lessonId, tk, loading]);
+  }, [selectedClass?.id, lessonId, tk]);
 
   const handleConfirmPresence = async () => {
     try {
@@ -80,12 +58,12 @@ export function LessonPage() {
       }
 
       const user = JSON.parse(userData);
-      if (!user.id || !lessonId || !classId) {
+      if (!user.id || !lessonId || !selectedClass?.id) {
         console.warn("classId, lessonId ou user.id não informados.");
         return;
       }
 
-      const res = await confirmPresence(classId, lessonId, user.id);
+      const res = await confirmPresence(selectedClass.id, lessonId, user.id);
 
       if (!res.success) {
         console.error("Erro ao confirmar presença:", res.message || res);
@@ -101,7 +79,10 @@ export function LessonPage() {
   return (
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
       <VideoPlayer
-        url={lesson?.lessonLink || ""}
+        url={
+          selectedClass?.lessons.find((lesson) => lesson.id === lessonId)
+            ?.lessonLink || ""
+        }
         onProgress={(progress) => setProgress(progress)}
       />
 
@@ -190,10 +171,9 @@ export function LessonPage() {
             fileType={materialItem.fileType}
             lessonId={lessonId || ""}
             fileUrl={materialItem.fileUrl}
-            classId={classId || ""}
+            classId={selectedClass?.id || ""}
             materialId={materialItem.id}
             key={materialItem.id}
-            setLoading={setLoading}
           />
         ))}
     </Box>

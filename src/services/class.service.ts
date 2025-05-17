@@ -1,12 +1,14 @@
-import { IClass } from "../interfaces/class/IClass";
+import { ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
 import { apiRequest } from "./apiRequest.service";
 
-export  function createClass(classData: IClass, token: string) {
+export  function createClass(classData: ICreateClass, token: string) {
   return apiRequest(`/classes`, "POST", classData, token || undefined);
 }
 
-export  function uploadClassPhoto(classId: string,coverImage: File ,token: string) {
+export  function uploadClassPhoto(classId: string,token: string,coverImage?: File ) {
   const formData = new FormData();
+
+  if(coverImage)
   formData.append('coverImage', coverImage);
 
   return apiRequest(`/classes/${classId}/uploadPhoto`, "POST", formData, token || undefined);
@@ -34,6 +36,6 @@ export function getClassById(id: string, token?: string) {
   return apiRequest(`classes/${id}`, "GET", undefined, token);
 }
 
-export function updateClass(id: string, classData: IClass, token?: string) {
+export function updateClassService(id: string, classData: Partial<IUpdateClass>, token?: string) {
   return apiRequest(`classes/${id}`, "PUT", classData, token);
 }
