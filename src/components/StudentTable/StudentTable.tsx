@@ -26,77 +26,67 @@ interface StudentTableProps {
 }
 
 export function StudentTable({ students, classes }: StudentTableProps) {
-  const [openProfileModal, setOpenProfileModal] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
-  const [studentClasses, setStudentClasses] = useState<IStudent[]>([]);
+  const [studentsWithClasses, setStudentsWithClasses] = useState<IStudent[]>(
+    []
+  );
   const [actionType, setActionType] = useState<"add" | "remove" | null>(null);
+  const token = localStorage.getItem("token") || "";
 
   useEffect(() => {
-    if (students.length > 0) {
-      fetchStudentClasses();
-    }
-  }, [students]);
+    const fetchAllStudentClasses = async () => {
+      const updatedStudents = await Promise.all(
+        students.map(async (student) => {
+          try {
+            const response = await getStudentClasses(student.id ?? "", token);
 
-  const fetchStudentClasses = async () => {
-    const loadedClasses = await Promise.all(
-      students.map(async (student) => {
-        try {
-          if (!student.id) throw new Error("Student ID is undefined");
+            const classList = Array.isArray(response.classes)
+              ? response.classes
+              : [];
+            console.log(`Classes for ${student.name}:`, classList);
+            return {
+              ...student,
+              classes: classList,
+            };
+          } catch (error) {
+            console.error(
+              `Erro ao buscar turmas do aluno ${student.name}:`,
+              error
+            );
+            return { ...student, classes: [] };
+          }
+        })
+      );
 
-          const classNames = classes.map((c) => c.name).join(", ");
-          return { ...student, classes: classNames };
-        } catch (error) {
-          console.error("Erro ao buscar classes do aluno:", error);
-          return { ...student, classes: "" };
-        }
-      })
-    );
+      setStudentsWithClasses(updatedStudents);
+    };
 
-    setStudentClasses(loadedClasses);
+    fetchAllStudentClasses();
+  }, [students, selectedClassId]);
+
+  const openClassModal = (student: IStudent, type: "add" | "remove") => {
+    setSelectedStudent(student);
+    setActionType(type);
+    setSelectedClassId("");
+    setOpenModal(true);
   };
 
-  const handleAddToClass = async () => {
+  const handleSubmit = async () => {
     if (!selectedStudent?.id || !selectedClassId) return;
 
-    const token = localStorage.getItem("token") || "";
-
     try {
-      await addStudentToClass(selectedStudent.id, selectedClassId, token);
-
-      const response = await getStudentClasses(selectedStudent.id, token);
-
-      const classesArray = Array.isArray(response)
-        ? response
-        : Array.isArray(response?.data)
-        ? response.data
-        : [];
-
-      const classNames = classesArray.map((c: IClass) => c.name);
-
-      setStudentClasses(classNames);
-      await fetchStudentClasses();
+      if (actionType === "add") {
+        await addStudentToClass(selectedStudent.id, selectedClassId, token);
+      } else if (actionType === "remove") {
+        await removeStudentToClass(selectedStudent.id, selectedClassId, token);
+      }
     } catch (error) {
-      console.error("Erro ao adicionar aluno à turma:", error);
+      console.error("Erro ao atualizar turma:", error);
     } finally {
+      setOpenModal(false);
       setSelectedClassId("");
-      setOpenProfileModal(false);
-    }
-  };
-
-  const handleRemoveToClass = async () => {
-    if (!selectedStudent?.id || !selectedClassId) return;
-
-    const token = localStorage.getItem("token") || "";
-
-    try {
-      await removeStudentToClass(selectedStudent.id, selectedClassId, token);
-      await fetchStudentClasses();
-    } catch (error) {
-      console.error("Erro ao remover aluno à turma:", error);
-    } finally {
-      setSelectedClassId("");
-      setOpenProfileModal(false);
     }
   };
 
@@ -104,112 +94,68 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     {
       field: "profilePicture",
       headerName: "Foto",
-      width: 100,
+      flex: 0.25,
       sortable: false,
       renderCell: (params) =>
         params.value ? (
-          <Box
-            component="img"
-            src={params.value}
-            alt="Foto do aluno"
-            sx={{
-              width: 42,
-              height: 42,
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
+          <Avatar src={params.value} />
         ) : (
           <Avatar src="/broken-image.jpg" />
         ),
     },
-    { field: "name", headerName: "Nome", width: 200, sortable: false },
-    { field: "email", headerName: "Email", width: 250, sortable: false },
-    { field: "church", headerName: "Igreja", width: 200, sortable: false },
+    { field: "name", headerName: "Nome", width: 200 },
+    { field: "email", headerName: "Email", width: 250 },
+    { field: "church", headerName: "Igreja", width: 200 },
     {
       field: "classes",
-      headerName: "Turmas do usuário",
-      width: 200,
-      sortable: false,
+      headerName: "Turmas",
+      flex: 0.5,
       renderCell: (params) => {
-        const classList = (params.row.classes || " Não há turmas")
-          .split(",")
-          .map((name: string) => name.trim())
-          .filter(Boolean);
+        const classList: IClass[] = Array.isArray(params.row.classes)
+          ? params.row.classes
+          : [];
 
         return (
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              mt: 1,
-              gap: "4px",
-              maxHeight: "100%",
-              overflow: "auto",
-            }}
-          >
-            {classList.map((name: string, index: number) => (
-              <Box
-                key={index}
-                sx={{
-                  fontSize: "0.7rem",
-                  whiteSpace: "normal",
-                  wordBreak: "break-word",
-                  color: "#BB1626",
-                  p: "3px 6px",
-                  borderRadius: "4px",
-                  backgroundColor: "#BB162610",
-                }}
-              >
-                {name}
-              </Box>
-            ))}
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+            {classList.length > 0 ? (
+              classList.map((classItem, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    fontSize: "0.7rem",
+                    backgroundColor: "#BB162610",
+                    color: "#BB1626",
+                    px: 2,
+                    borderRadius: "4px",
+                  }}
+                >
+                  {classItem.name}
+                </Box>
+              ))
+            ) : (
+              <Box sx={{ fontSize: "0.8rem", color: "#999" }}>Sem turmas</Box>
+            )}
           </Box>
         );
       },
     },
     {
       field: "actions",
-      headerName: "Ações das turmas",
-      width: 300,
+      headerName: "Ações",
+      flex: 0.5,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", gap: "12px" }}>
-          {" "}
+        <Box sx={{ display: "flex", gap: 1 }}>
           <Button
             variant="outlined"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedStudent(params.row as IStudent);
-              setActionType("add");
-              setOpenProfileModal(true);
-            }}
-            sx={{
-              color: "#BB1626",
-              borderColor: "#BB1626",
-              "&:hover": {
-                backgroundColor: "#BB1626",
-                color: "#fff",
-              },
-            }}
+            onClick={() => openClassModal(params.row, "add")}
+            sx={btnStyle}
           >
             Adicionar
           </Button>
           <Button
             variant="outlined"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedStudent(params.row as IStudent);
-              setActionType("remove");
-              setOpenProfileModal(true);
-            }}
-            sx={{
-              color: "#BB1626",
-              borderColor: "#BB1626",
-              "&:hover": {
-                backgroundColor: "#BB1626",
-                color: "#fff",
-              },
-            }}
+            onClick={() => openClassModal(params.row, "remove")}
+            sx={btnStyle}
           >
             Remover
           </Button>
@@ -218,78 +164,65 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     },
   ];
 
+  const btnStyle = {
+    color: "#BB1626",
+    borderColor: "#BB1626",
+    "&:hover": {
+      backgroundColor: "#BB1626",
+      color: "#fff",
+    },
+  };
+
   return (
     <>
-      <Box sx={{ height: 500, width: "100%" }}>
+      <Box sx={{ width: "100%" }}>
         <DataGrid
-          rows={studentClasses}
+          rows={studentsWithClasses}
           columns={columns}
-          getRowId={(row: IStudent) => row.id ?? ""}
-          pageSizeOptions={[5, 10, 20]}
-          disableColumnResize
+          getRowId={(row) => row.id ?? ""}
           disableRowSelectionOnClick
-          getRowHeight={() => "auto"}
+          getRowHeight={() => 50}
+          pageSizeOptions={[5, 10, 20]}
           sx={{
-            "& .MuiCheckbox-root": {
-              color: "#BB1626",
-              "&.Mui-checked": {
-                color: "#BB1626",
-              },
-            },
-            "& .MuiDataGrid-row.Mui-selected": {
-              backgroundColor: "#BB162610",
-              "&:hover": {
-                backgroundColor: "#BB162620",
-              },
-            },
-            "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-            "& .MuiDataGrid-cell:focus-within": {
-              outline: "none",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: "bold",
-            },
-            "& .MuiDataGrid-footerContainer": {
-              borderTop: "1px solid #BB1626",
-            },
-
             "& .MuiDataGrid-cell": {
               display: "flex",
               alignItems: "center",
+              paddingTop: "16px",
+              paddingBottom: "16px",
             },
             "& .MuiDataGrid-row": {
-              minHeight: "60px !important",
+              minHeight: "80px !important",
+            },
+            "& .MuiDataGrid-columnHeader": {
+              minHeight: "72px !important",
+            },
+            "& .MuiDataGrid-virtualScrollerRenderZone": {
+              rowGap: "8px",
             },
           }}
+          autoHeight
         />
       </Box>
 
-      <Dialog
-        open={openProfileModal}
-        onClose={() => setOpenProfileModal(false)}
-      >
+      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel id="class-select-label">Turma</InputLabel>
+            <InputLabel>Turma</InputLabel>
             <Select
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
-              fullWidth
             >
               {classes
                 .filter((classItem) => {
-                  const studentClassNames =
-                    selectedStudent?.classes?.split(",").map((c) => c.trim()) ||
-                    [];
+                  const currentClassNames =
+                    selectedStudent?.classes?.map((c) => c.name) || [];
 
-                  const isInStudentClass = studentClassNames.includes(
+                  const isInClass = currentClassNames.includes(
                     classItem.name ?? ""
                   );
 
-                  if (actionType === "add") return !isInStudentClass;
-                  if (actionType === "remove") return isInStudentClass;
+                  if (actionType === "add") return !isInClass;
+                  if (actionType === "remove") return isInClass;
                   return false;
                 })
                 .map((classItem) => (
@@ -303,19 +236,11 @@ export function StudentTable({ students, classes }: StudentTableProps) {
         <DialogActions>
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#BB1626", color: "#fff" }}
-            onClick={handleAddToClass}
+            sx={{ backgroundColor: "#BB1626" }}
+            onClick={handleSubmit}
             disabled={!selectedClassId}
           >
-            Adicionar
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#BB1626", color: "#fff" }}
-            onClick={handleRemoveToClass}
-            disabled={!selectedClassId}
-          >
-            Remover
+            {actionType === "add" ? "Adicionar" : "Remover"}
           </Button>
         </DialogActions>
       </Dialog>

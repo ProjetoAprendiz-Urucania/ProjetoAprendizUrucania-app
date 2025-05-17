@@ -1,3 +1,5 @@
+import { IClass } from "../class/IClass";
+
 export interface IStudent {
     id?: string;
     name?: string;
@@ -6,5 +8,5 @@ export interface IStudent {
     role?: string,
     church?: string;
     profilePicture?: string;
-    classes?: string;
+    classes?: IClass[];
 }
