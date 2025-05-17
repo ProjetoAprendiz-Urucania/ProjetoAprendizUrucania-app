@@ -61,7 +61,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/classes/:classId/:lessonId",
+    path: "/classes/:classId/lessons/:lessonId",
     element: (
       <ClassProvider>
         <AppLayout>
