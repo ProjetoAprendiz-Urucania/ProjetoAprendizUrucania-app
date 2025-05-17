@@ -19,7 +19,10 @@ import {
   updateLessonService,
   uploadLessonPhoto,
 } from "../services/lesson.service";
-import { getAllMaterials } from "../services/theoryMaterials.service";
+import {
+  getAllMaterials,
+  uploadMaterialService,
+} from "../services/theoryMaterials.service";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -38,8 +41,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const addClass = async (newClass: ICreateClass) => {
     if (!tk) return;
-    setLoading(true);
     try {
+      setLoading(true);
       const response = await createClass(newClass, tk);
       if (response) {
         await uploadClassPhoto(response.id, tk, newClass.coverImage);
@@ -65,8 +68,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const removeClass = async (classId: string) => {
     if (!tk) return;
-    setLoading(true);
     try {
+      setLoading(true);
       await deleteClass(classId, tk);
       const updatedClasses = classes.filter((item) => item.id !== classId);
       setClasses(updatedClasses);
@@ -96,8 +99,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       return;
     }
 
-    setLoading(true);
     try {
+      setLoading(true);
       const recoverClassData: IClass = await getClassById(storedClassId, tk);
       setSelectedClass(recoverClassData);
     } catch (error) {
@@ -114,8 +117,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     updatedClass: Partial<IUpdateClass>
   ) => {
     if (!tk || !selectedClass) return;
-    setLoading(true);
     try {
+      setLoading(true);
       const response = await updateClassService(
         selectedClass.id,
         updatedClass,
@@ -155,8 +158,9 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const addLesson = async (newLesson: ICreateLesson) => {
     if (!tk || !selectedClass) return;
-    setLoading(true);
     try {
+      setLoading(true);
+
       const response = await createLesson(selectedClass.id, newLesson, tk);
 
       if (response && newLesson.coverImage) {
@@ -188,8 +192,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const removeLesson = async (lessonId: string) => {
     if (!tk || !selectedClass) return;
-    setLoading(true);
     try {
+      setLoading(true);
       await deleteLesson(selectedClass.id, lessonId, tk);
 
       const updatedLessons = selectedClass?.lessons
@@ -288,7 +292,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const getMaterials = async () => {
     if (!tk || !selectedClass) return;
-    setLoading(true);
 
     try {
       const materials = await getAllMaterials(selectedClass.id, tk);
@@ -299,6 +302,32 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       });
     } catch (error) {
       console.error("Erro ao buscar materiais:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadMaterial = async (selectedFile: File, selectedLesson: string) => {
+    if (!selectedClass || !tk) return;
+    try {
+      setLoading(true);
+
+      const updatedClassData = await uploadMaterialService(
+        selectedClass.id,
+        selectedLesson,
+        selectedFile,
+        tk
+      );
+
+      setSelectedClass((prev) => {
+        if (!prev) return null;
+        if (prev.id === selectedClass.id) {
+          return { ...prev, ...updatedClassData };
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error("Erro ao enviar o arquivo:", error);
     } finally {
       setLoading(false);
     }
@@ -361,6 +390,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         removeLesson,
         updateLesson,
         getMaterials,
+        uploadMaterial,
       }}
     >
       {children}

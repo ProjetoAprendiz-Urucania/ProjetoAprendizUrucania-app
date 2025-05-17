@@ -18,4 +18,5 @@ export interface IClassContext {
   getClassLessons: () => ILesson[] | undefined;
   selectedClassIndex: number;
   getMaterials: () => void;
+  uploadMaterial: (selectedFile: File, selectedLesson: string) => void
 }

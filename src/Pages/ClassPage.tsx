@@ -19,7 +19,9 @@ export function ClassPage() {
   const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
-    getMaterials();
+    if (!loading) {
+      getMaterials();
+    }
   }, [loading]);
 
   return (

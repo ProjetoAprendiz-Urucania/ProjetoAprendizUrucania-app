@@ -11,9 +11,8 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import addfile from "../../assets/img/UploadFile/addfile.svg";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { ILesson } from "../../interfaces/lesson/ILesson";
-import { uploadMaterial } from "../../services/theoryMaterials.service";
+import { useClass } from "../../hooks/useClass";
 
 export function UploadFile({
   lessons,
@@ -23,8 +22,7 @@ export function UploadFile({
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
-  const { id } = useParams<{ id: string }>();
-  const token = localStorage.getItem("token");
+  const { uploadMaterial } = useClass();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string>("");
@@ -42,21 +40,12 @@ export function UploadFile({
   };
 
   const handleConfirm = async () => {
-    if (isUploading) return;
-
-    try {
-      setIsUploading(true);
-      if (selectedFile && selectedLesson && id && token) {
-        await uploadMaterial(id, selectedLesson, selectedFile, token);
-        setOpenProfileModal(false);
-        setSelectedFile(null);
-        setSelectedLesson("");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar o arquivo:", error);
-    } finally {
-      setIsUploading(false);
-    }
+    if (isUploading || !selectedFile) return;
+    uploadMaterial(selectedFile, selectedLesson);
+    setOpenProfileModal(false);
+    setSelectedFile(null);
+    setSelectedLesson("");
+    setIsUploading(false);
   };
 
   return (

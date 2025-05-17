@@ -11,7 +11,7 @@ export async function getAllMaterials(classId: string,token:string){
   return res;
 }
 
-export async function uploadMaterial(classId: string,lessonId: string,file: File,token:string){
+export async function uploadMaterialService(classId: string,lessonId: string,file: File,token:string){
   const formData = new FormData();
   formData.append("TheoryMaterial", file);
 
