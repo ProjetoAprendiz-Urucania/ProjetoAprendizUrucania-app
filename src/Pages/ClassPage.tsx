@@ -12,7 +12,7 @@ import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass, getClassLessons, getMaterials } = useClass();
+  const { selectedClass, getClassLessons, getMaterials, loading } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
@@ -20,7 +20,7 @@ export function ClassPage() {
 
   useEffect(() => {
     getMaterials();
-  }, [selectedClass?.theoryMaterials?.length]);
+  }, [loading]);
 
   return (
     <>
