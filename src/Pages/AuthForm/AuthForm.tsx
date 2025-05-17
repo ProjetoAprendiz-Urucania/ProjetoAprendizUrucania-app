@@ -48,8 +48,6 @@ export function AuthForm({ mode, handleApiResponse }: IAuthForm) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('handleSubimit');
-    
     try {
       let res: any;
 

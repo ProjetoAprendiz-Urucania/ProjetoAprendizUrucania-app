@@ -123,7 +123,6 @@ export function CreateCard({
       index >= 0 &&
       index < classes.length
     ) {
-      console.log("asdasd");
       updateClass(classes[index].id, payload);
     }
 
@@ -135,7 +134,6 @@ export function CreateCard({
       console.error("selectedClass is undefined");
       return null;
     }
-    console.log(token, selectedClass.id, index);
     if (!token || !selectedClass.id || index === undefined || index === null) {
       console.log("Token, ID da aula ou ID do card não encontrados.");
       return;
@@ -160,7 +158,6 @@ export function CreateCard({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(isClassPage);
     if (isClassPage) {
       if (index !== null && index !== undefined) {
         handleUpdateLessonCard();

@@ -7,6 +7,7 @@ import { ClassPage } from "../Pages/ClassPage";
 import { ProtectedRoute } from "../hoc/ProtectedRoute";
 import { LessonPage } from "../Pages/LessonPage";
 import { AppLayout } from "../layout/AppLayout";
+import { ClassProvider } from "../context/ClassContext";
 
 export const routes = createBrowserRouter([
   {
@@ -38,31 +39,37 @@ export const routes = createBrowserRouter([
   {
     path: "/classes",
     element: (
-      <AppLayout>
-        <ProtectedRoute>
-          <ClassesPage />
-        </ProtectedRoute>
-      </AppLayout>
+      <ClassProvider>
+        <AppLayout>
+          <ProtectedRoute>
+            <ClassesPage />
+          </ProtectedRoute>
+        </AppLayout>
+      </ClassProvider>
     ),
   },
   {
     path: "/classes/:id",
     element: (
-      <AppLayout>
-        <ProtectedRoute>
-          <ClassPage />
-        </ProtectedRoute>
-      </AppLayout>
+      <ClassProvider>
+        <AppLayout>
+          <ProtectedRoute>
+            <ClassPage />
+          </ProtectedRoute>
+        </AppLayout>
+      </ClassProvider>
     ),
   },
   {
     path: "/classes/:classId/:lessonId",
     element: (
-      <AppLayout>
-        <ProtectedRoute>
-          <LessonPage />
-        </ProtectedRoute>
-      </AppLayout>
+      <ClassProvider>
+        <AppLayout>
+          <ProtectedRoute>
+            <LessonPage />
+          </ProtectedRoute>
+        </AppLayout>
+      </ClassProvider>
     ),
   },
 ]);
