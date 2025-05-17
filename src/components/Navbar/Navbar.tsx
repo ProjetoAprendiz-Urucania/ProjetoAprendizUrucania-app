@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -13,21 +13,21 @@ import {
   DialogContent,
   DialogActions,
   Button,
-} from "@mui/material";
-import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useLocation, useNavigate } from "react-router-dom";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import imLogo from "../../assets/img/Navbar/im_logo.svg";
-import avatar from "../../assets/img/Navbar/avatar.png";
-import menuIcon from "../../assets/img/Navbar/menu.png";
+} from '@mui/material';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useLocation, useNavigate } from 'react-router-dom';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import imLogo from '../../assets/img/Navbar/im_logo.svg';
+import avatar from '../../assets/img/Navbar/avatar.png';
+import menuIcon from '../../assets/img/Navbar/menu.png';
 import {
   uploadProfilePhoto,
   deleteProfilePhoto,
-} from "../../services/user.service";
+} from '../../services/user.service';
 
-const menuNavigation = ["Turmas", "Sair"];
-const avatarMenuOptions = ["Alterar Foto"];
+const menuNavigation = ['Turmas', 'Sair'];
+const avatarMenuOptions = ['Alterar Foto'];
 
 interface NavbarProps {
   token: string | null;
@@ -35,7 +35,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ token, logout }: NavbarProps) {
-  const user = localStorage.getItem("user");
+  const user = localStorage.getItem('user');
 
   let parsedUser = null;
 
@@ -56,7 +56,7 @@ export function Navbar({ token, logout }: NavbarProps) {
   const [imageError, setImageError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const isClassesPage = location.pathname === "/classes";
+  const isClassesPage = location.pathname === '/classes';
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
   const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
     location.pathname
@@ -65,7 +65,7 @@ export function Navbar({ token, logout }: NavbarProps) {
   useEffect(() => {
     if (!token) {
       logout();
-      navigate("/login");
+      navigate('/login');
     }
   }, [token, logout, navigate]);
 
@@ -96,25 +96,25 @@ export function Navbar({ token, logout }: NavbarProps) {
     setAnchorElMenu(null);
     if (!token) {
       logout();
-      navigate("/login");
+      navigate('/login');
       return;
     }
-    if (page === "Turmas") navigate("/classes");
-    if (page === "Alterar Foto") setOpenProfileModal(true);
-    if (page === "Sair") {
+    if (page === 'Turmas') navigate('/classes');
+    if (page === 'Alterar Foto') setOpenProfileModal(true);
+    if (page === 'Sair') {
       logout();
-      navigate("/login");
+      navigate('/login');
     }
   };
 
   const handleNavigate = () => {
     if (isClassPage) {
-      navigate("/classes");
+      navigate('/classes');
     } else if (isLessonPage) {
       navigate(
         location.pathname.replace(
           /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
-          "/classes/" + location.pathname.split("/")[2]
+          '/classes/' + location.pathname.split('/')[2]
         )
       );
     }
@@ -128,8 +128,8 @@ export function Navbar({ token, logout }: NavbarProps) {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
 
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecione um arquivo de imagem válido.");
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione um arquivo de imagem válido.');
         return;
       }
 
@@ -140,8 +140,8 @@ export function Navbar({ token, logout }: NavbarProps) {
         const img = new Image();
         img.src = e.target?.result as string;
         img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
 
           if (!ctx) return;
 
@@ -155,15 +155,15 @@ export function Navbar({ token, logout }: NavbarProps) {
               if (blob) {
                 const jpegFile = new File(
                   [blob],
-                  file.name.replace(/\.\w+$/, ".jpeg"),
+                  file.name.replace(/\.\w+$/, '.jpeg'),
                   {
-                    type: "image/jpeg",
+                    type: 'image/jpeg',
                   }
                 );
                 setSelectedPhoto(jpegFile);
               }
             },
-            "image/jpeg",
+            'image/jpeg',
             0.9
           );
         };
@@ -179,7 +179,7 @@ export function Navbar({ token, logout }: NavbarProps) {
 
         if (parsedUser) {
           parsedUser.profilePicture = res.updatedStudent?.profilePicture;
-          localStorage.setItem("user", JSON.stringify(parsedUser));
+          localStorage.setItem('user', JSON.stringify(parsedUser));
         }
       }
 
@@ -203,14 +203,14 @@ export function Navbar({ token, logout }: NavbarProps) {
         setProfilePhoto(res.studentData.profilePicture ?? null);
         if (parsedUser) {
           parsedUser.profilePicture = res.studentData.profilePicture ?? null;
-          localStorage.setItem("user", JSON.stringify(parsedUser));
+          localStorage.setItem('user', JSON.stringify(parsedUser));
         }
         setLoading(true);
         setOpenProfileModal(false);
       }
     } catch (error) {
-      console.error("Erro ao deletar foto de perfil:", error);
-      alert("Ocorreu um erro ao excluir a foto. Tente novamente.");
+      console.error('Erro ao deletar foto de perfil:', error);
+      alert('Ocorreu um erro ao excluir a foto. Tente novamente.');
     } finally {
       setAnchorElMenu(null);
       setAnchorElAvatar(null);
@@ -221,24 +221,24 @@ export function Navbar({ token, logout }: NavbarProps) {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: "#BB1626",
+        backgroundColor: '#BB1626',
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
         padding: 0.2,
       }}
     >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {isClassesPage ? (
             <>
               <Tooltip title="Abrir menu do usuário">
                 <IconButton
                   onClick={handleMenuToggle(setAnchorElAvatar)}
                   sx={{
-                    borderRadius: "50%",
-                    border: "2px solid #FFFFFF",
-                    width: "40px",
-                    height: "40px",
+                    borderRadius: '50%',
+                    border: '2px solid #FFFFFF',
+                    width: '40px',
+                    height: '40px',
                     padding: 0,
                   }}
                 >
@@ -250,10 +250,10 @@ export function Navbar({ token, logout }: NavbarProps) {
                       e.currentTarget.src = avatar;
                     }}
                     sx={{
-                      width: "38px",
-                      height: "38px",
-                      objectFit: "cover",
-                      borderRadius: "50%",
+                      width: '38px',
+                      height: '38px',
+                      objectFit: 'cover',
+                      borderRadius: '50%',
                       padding: imageError || !profilePhoto ? 0.8 : 0,
                     }}
                   />
@@ -278,18 +278,18 @@ export function Navbar({ token, logout }: NavbarProps) {
                 src={imLogo}
                 alt="ICM Logo"
                 loading="lazy"
-                sx={{ width: "5.6em", height: "3.6em" }}
+                sx={{ width: '5.6em', height: '3.6em' }}
               />
             </>
           ) : (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton
                 sx={{
-                  borderRadius: "90px",
+                  borderRadius: '90px',
                   padding: 0.4,
-                  color: "#FFFFFF",
-                  backgroundColor: "#E5E5E550",
-                  "&:hover": { backgroundColor: "#C0515B" },
+                  color: '#FFFFFF',
+                  backgroundColor: '#E5E5E550',
+                  '&:hover': { backgroundColor: '#C0515B' },
                 }}
                 onClick={handleNavigate}
               >
@@ -297,16 +297,16 @@ export function Navbar({ token, logout }: NavbarProps) {
               </IconButton>
               <Typography
                 sx={{
-                  fontWeight: "600",
-                  fontSize: "16px",
-                  letterSpacing: "1.4px",
+                  fontWeight: '600',
+                  fontSize: '16px',
+                  letterSpacing: '1.4px',
                 }}
               >
                 {isClassPage
-                  ? "Turmas"
+                  ? 'Turmas'
                   : isLessonPage
-                  ? "Aulas e Materiais"
-                  : ""}
+                    ? 'Aulas e Materiais'
+                    : ''}
               </Typography>
             </Box>
           )}
@@ -314,7 +314,7 @@ export function Navbar({ token, logout }: NavbarProps) {
 
         <Tooltip title="Abrir menu">
           <IconButton onClick={handleMenuToggle(setAnchorElMenu)}>
-            <Box component="img" src={menuIcon} sx={{ width: "1em" }} />
+            <Box component="img" src={menuIcon} sx={{ width: '1em' }} />
           </IconButton>
         </Tooltip>
 
@@ -325,7 +325,7 @@ export function Navbar({ token, logout }: NavbarProps) {
         >
           {menuNavigation.map((item) => (
             <MenuItem key={item} onClick={() => handleMenuItemClick(item)}>
-              <Typography sx={{ textAlign: "center" }}>{item}</Typography>
+              <Typography sx={{ textAlign: 'center' }}>{item}</Typography>
             </MenuItem>
           ))}
         </Menu>
@@ -334,45 +334,45 @@ export function Navbar({ token, logout }: NavbarProps) {
       <Dialog
         open={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
-        sx={{ backgroundClip: "whitesmoke" }}
+        sx={{ backgroundClip: 'whitesmoke' }}
       >
         <DialogTitle sx={{ fontWeight: 600 }}>
           Alterar Foto de Perfil
         </DialogTitle>
         <DialogContent
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
             gap: 2.4,
           }}
         >
           {selectedPhoto ? (
-            <Box sx={{ cursor: "pointer", m: 0, p: 0 }} onClick={handleClick}>
+            <Box sx={{ cursor: 'pointer', m: 0, p: 0 }} onClick={handleClick}>
               <Box
                 component="img"
                 src={URL.createObjectURL(selectedPhoto)}
                 sx={{
-                  width: "110px",
-                  height: "110px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
+                  width: '110px',
+                  height: '110px',
+                  objectFit: 'cover',
+                  borderRadius: '50%',
                 }}
               />
               <Box
                 sx={{
-                  position: "absolute",
-                  top: "45%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  backgroundColor: "#BB162670",
-                  borderRadius: "50%",
-                  padding: "7px 8px",
-                  opacity: "90%",
+                  position: 'absolute',
+                  top: '45%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  backgroundColor: '#BB162670',
+                  borderRadius: '50%',
+                  padding: '7px 8px',
+                  opacity: '90%',
                 }}
               >
-                <AddAPhotoIcon sx={{ color: "whitesmoke", fontSize: "18px" }} />
+                <AddAPhotoIcon sx={{ color: 'whitesmoke', fontSize: '18px' }} />
               </Box>
             </Box>
           ) : profilePhoto && !imageError ? (
@@ -385,33 +385,33 @@ export function Navbar({ token, logout }: NavbarProps) {
                   e.currentTarget.src = avatar;
                 }}
                 sx={{
-                  width: "124px",
-                  height: "124px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
+                  width: '124px',
+                  height: '124px',
+                  objectFit: 'cover',
+                  borderRadius: '50%',
                 }}
-              />{" "}
+              />{' '}
               <Box
                 sx={{
-                  position: "absolute",
-                  top: "45%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  backgroundColor: "#BB162670",
-                  borderRadius: "50%",
-                  padding: "8px",
-                  opacity: "90%",
-                  ":hover": { cursor: "pointer" },
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  position: 'absolute',
+                  top: '45%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  backgroundColor: '#BB162670',
+                  borderRadius: '50%',
+                  padding: '8px',
+                  opacity: '90%',
+                  ':hover': { cursor: 'pointer' },
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <DeleteForeverIcon
                   onClick={() => handleDeletePhoto()}
                   sx={{
-                    color: "whitesmoke",
-                    fontSize: "22px",
+                    color: 'whitesmoke',
+                    fontSize: '22px',
                   }}
                 />
               </Box>
@@ -419,41 +419,41 @@ export function Navbar({ token, logout }: NavbarProps) {
           ) : (
             <Box
               sx={{
-                backgroundColor: "#EAEAEA",
-                padding: "2.6em",
-                cursor: "pointer",
-                borderRadius: "50%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                backgroundColor: '#EAEAEA',
+                padding: '2.6em',
+                cursor: 'pointer',
+                borderRadius: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
               onClick={handleClick}
             >
-              {" "}
-              <AddAPhotoIcon sx={{ fontSize: "22px" }} />
+              {' '}
+              <AddAPhotoIcon sx={{ fontSize: '22px' }} />
             </Box>
           )}
           <input
             type="file"
             accept="image/*"
             ref={fileInputRef}
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
             onChange={handleFileChange}
           />
-          <DialogActions sx={{ width: "100%" }}>
+          <DialogActions sx={{ width: '100%' }}>
             <Button
               sx={{
-                backgroundColor: "#BB1626",
-                color: "white",
+                backgroundColor: '#BB1626',
+                color: 'white',
                 fontWeight: 600,
-                width: "100%",
+                width: '100%',
               }}
               onClick={() => {
                 if (selectedPhoto) {
-                  if (selectedPhoto.type.startsWith("image/")) {
+                  if (selectedPhoto.type.startsWith('image/')) {
                     handleSave();
                   } else {
-                    alert("O arquivo selecionado não é uma imagem válida.");
+                    alert('O arquivo selecionado não é uma imagem válida.');
                   }
                 } else {
                   setOpenProfileModal(false);
@@ -461,9 +461,9 @@ export function Navbar({ token, logout }: NavbarProps) {
                 }
               }}
             >
-              {selectedPhoto && selectedPhoto.type.startsWith("image/")
-                ? "Salvar"
-                : "Fechar"}
+              {selectedPhoto && selectedPhoto.type.startsWith('image/')
+                ? 'Salvar'
+                : 'Fechar'}
             </Button>
           </DialogActions>
         </DialogContent>

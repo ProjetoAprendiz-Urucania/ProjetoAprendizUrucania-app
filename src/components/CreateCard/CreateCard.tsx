@@ -1,11 +1,11 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { useAuth } from "../../hooks/useAuth";
-import addimage from "../../assets/img/CreateCard/addImage.svg";
-import { useState } from "react";
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { useAuth } from '../../hooks/useAuth';
+import addimage from '../../assets/img/CreateCard/addImage.svg';
+import { useState } from 'react';
 
-import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
-import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
-import { useClass } from "../../hooks/useClass";
+import { ICreateClass, IUpdateClass } from '../../interfaces/class/IClass';
+import { ICreateLesson, IUpdateLesson } from '../../interfaces/lesson/ILesson';
+import { useClass } from '../../hooks/useClass';
 
 export function CreateCard({
   index,
@@ -24,11 +24,11 @@ export function CreateCard({
     classes,
   } = useClass();
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
-  const [name, setName] = useState<string>("");
-  const [teachers, setTeachers] = useState<string>("");
-  const [lessonLink, setLessonLink] = useState<string>("");
+  const [name, setName] = useState<string>('');
+  const [teachers, setTeachers] = useState<string>('');
+  const [lessonLink, setLessonLink] = useState<string>('');
 
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
 
@@ -37,8 +37,8 @@ export function CreateCard({
       setSelectedPhoto(null);
       const file = event.target.files[0];
 
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecione um arquivo de imagem válido.");
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione um arquivo de imagem válido.');
         return;
       }
 
@@ -49,8 +49,8 @@ export function CreateCard({
         const img = new Image();
         img.src = e.target?.result as string;
         img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
 
           if (!ctx) return;
 
@@ -64,15 +64,15 @@ export function CreateCard({
               if (blob) {
                 const jpegFile = new File(
                   [blob],
-                  file.name.replace(/\.\w+$/, ".jpeg"),
+                  file.name.replace(/\.\w+$/, '.jpeg'),
                   {
-                    type: "image/jpeg",
+                    type: 'image/jpeg',
                   }
                 );
                 setSelectedPhoto(jpegFile);
               }
             },
-            "image/jpeg",
+            'image/jpeg',
             0.9
           );
         };
@@ -119,7 +119,7 @@ export function CreateCard({
 
     if (
       Object.keys(payload).length > 0 &&
-      typeof index === "number" &&
+      typeof index === 'number' &&
       index >= 0 &&
       index < classes.length
     ) {
@@ -131,11 +131,11 @@ export function CreateCard({
 
   const handleUpdateLessonCard = async () => {
     if (!selectedClass) {
-      console.error("selectedClass is undefined");
+      console.error('selectedClass is undefined');
       return null;
     }
     if (!token || !selectedClass.id || index === undefined || index === null) {
-      console.log("Token, ID da aula ou ID do card não encontrados.");
+      console.log('Token, ID da aula ou ID do card não encontrados.');
       return;
     }
 
@@ -175,42 +175,42 @@ export function CreateCard({
 
   return (
     <>
-      {user?.role === "admin" && (
+      {user?.role === 'admin' && (
         <Box
           component="form"
           onSubmit={handleSubmit}
           sx={{
-            backgroundColor: "white",
-            borderRadius: "12px",
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
             padding: { xs: 4, md: 6 },
             gap: 3,
-            width: "100%",
-            minWidth: { xs: "300px", md: "400px" },
-            maxWidth: "500px",
-            margin: "0 auto",
+            width: '100%',
+            minWidth: { xs: '300px', md: '400px' },
+            maxWidth: '500px',
+            margin: '0 auto',
           }}
         >
-          <label htmlFor="file-upload" style={{ width: "100%" }}>
+          <label htmlFor="file-upload" style={{ width: '100%' }}>
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                border: "2px dashed #1E1E1E",
-                textAlign: "center",
-                borderRadius: "12px",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                border: '2px dashed #1E1E1E',
+                textAlign: 'center',
+                borderRadius: '12px',
                 padding: { xs: 3, md: 4 },
-                cursor: "pointer",
-                transition: "border-color 0.3s, transform 0.2s",
-                ":hover": {
-                  borderColor: "#ED3237",
-                  transform: "scale(1.02)",
+                cursor: 'pointer',
+                transition: 'border-color 0.3s, transform 0.2s',
+                ':hover': {
+                  borderColor: '#ED3237',
+                  transform: 'scale(1.02)',
                 },
               }}
             >
@@ -221,12 +221,12 @@ export function CreateCard({
                 }
                 alt="Upload classes image"
                 sx={{
-                  width: selectedPhoto ? "100px" : { xs: "40px", md: "50px" },
-                  height: selectedPhoto ? "100px" : "auto",
-                  objectFit: "cover",
-                  transition: "transform 0.2s",
-                  ":hover": {
-                    transform: selectedPhoto ? "scale(1.1)" : "scale(1.05)",
+                  width: selectedPhoto ? '100px' : { xs: '40px', md: '50px' },
+                  height: selectedPhoto ? '100px' : 'auto',
+                  objectFit: 'cover',
+                  transition: 'transform 0.2s',
+                  ':hover': {
+                    transform: selectedPhoto ? 'scale(1.1)' : 'scale(1.05)',
                   },
                 }}
               />
@@ -234,20 +234,20 @@ export function CreateCard({
                 variant="body2"
                 sx={{
                   marginTop: 2,
-                  color: "#1E1E1E",
-                  fontWeight: "bold",
+                  color: '#1E1E1E',
+                  fontWeight: 'bold',
                 }}
               >
                 {selectedPhoto
-                  ? "Imagem selecionada"
-                  : "Clique para selecionar uma imagem"}
+                  ? 'Imagem selecionada'
+                  : 'Clique para selecionar uma imagem'}
               </Typography>
             </Box>
             <input
               id="file-upload"
               type="file"
               accept="image/*"
-              style={{ display: "none" }}
+              style={{ display: 'none' }}
               onChange={handleFileChange}
             />
           </label>
@@ -294,7 +294,7 @@ export function CreateCard({
             required={index === undefined}
             id="teachers"
             label={
-              isClassPage ? "Professor" : "Professores (separados por vírgula)"
+              isClassPage ? 'Professor' : 'Professores (separados por vírgula)'
             }
             variant="outlined"
             sx={inputStyle}
@@ -306,13 +306,13 @@ export function CreateCard({
           <Button
             type="submit"
             sx={{
-              backgroundColor: "#BB1626",
-              fontWeight: "bold",
-              color: "white",
+              backgroundColor: '#BB1626',
+              fontWeight: 'bold',
+              color: 'white',
               mt: 2,
             }}
           >
-            {index !== null && index !== undefined ? "Atualizar" : "Confirmar"}
+            {index !== null && index !== undefined ? 'Atualizar' : 'Confirmar'}
           </Button>
         </Box>
       )}
@@ -321,26 +321,26 @@ export function CreateCard({
 }
 
 const inputStyle = {
-  "& .MuiInputLabel-root": {
-    color: "#1F1F1F",
-    fontSize: "15px",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+  '& .MuiInputLabel-root': {
+    color: '#1F1F1F',
+    fontSize: '15px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
-  "& .MuiInputLabel-root.Mui-focused": {
-    fontWeight: "bold",
-    color: "#ED3237",
+  '& .MuiInputLabel-root.Mui-focused': {
+    fontWeight: 'bold',
+    color: '#ED3237',
   },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#1F1F1F",
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#1F1F1F',
     },
-    "&:hover fieldset": {
-      borderColor: "#ED3237",
+    '&:hover fieldset': {
+      borderColor: '#ED3237',
     },
-    "&.Mui-focused fieldset": {
-      borderColor: "#ED3237",
+    '&.Mui-focused fieldset': {
+      borderColor: '#ED3237',
     },
   },
 };

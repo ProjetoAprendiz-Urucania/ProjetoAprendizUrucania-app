@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { ContentCard } from "../components/ContentCard/ContentCard";
-import { Box, Typography } from "@mui/material";
-import { SearchBar } from "../components/SearchBar/SearchBar";
-import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
-import { getStudents } from "../services/user.service";
-import { IStudent } from "../interfaces/student/IStudent";
-import { StudentTable } from "../components/StudentTable/StudentTable";
-import { useClass } from "../hooks/useClass";
-import { useAuth } from "../hooks/useAuth";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useEffect, useState } from 'react';
+import { ContentCard } from '../components/ContentCard/ContentCard';
+import { Box, Typography } from '@mui/material';
+import { SearchBar } from '../components/SearchBar/SearchBar';
+import { CreateCardButton } from '../components/CreateCardButton/CreateCardButton';
+import { getStudents } from '../services/user.service';
+import { IStudent } from '../interfaces/student/IStudent';
+import { StudentTable } from '../components/StudentTable/StudentTable';
+import { useClass } from '../hooks/useClass';
+import { useAuth } from '../hooks/useAuth';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 export function ClassesPage() {
   const { user } = useAuth();
@@ -17,7 +17,7 @@ export function ClassesPage() {
   const [classesDrop, setClassesDrop] = useState(false);
 
   const [students, setStudents] = useState<IStudent[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -25,7 +25,7 @@ export function ClassesPage() {
         const studentsData = await getStudents();
         setStudents(studentsData);
       } catch (error) {
-        console.error("Erro ao buscar alunos:", error);
+        console.error('Erro ao buscar alunos:', error);
       }
     };
 
@@ -34,7 +34,7 @@ export function ClassesPage() {
 
   const filteredClasses = searchTerm
     ? classes.filter((classItem) =>
-        (classItem.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+        (classItem.name ?? '').toLowerCase().includes(searchTerm.toLowerCase())
       )
     : classes;
 
@@ -45,24 +45,24 @@ export function ClassesPage() {
 
         <Box
           sx={{
-            textAlign: "left",
+            textAlign: 'left',
             marginBottom: 1,
-            display: "flex",
-            alignItems: "center",
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
           {!classesDrop ? (
             <KeyboardArrowUpIcon
-              sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+              sx={{ marginRight: '4px', marginLeft: -0.8, cursor: 'pointer' }}
               onClick={() => setClassesDrop(true)}
             />
           ) : (
             <KeyboardArrowDownIcon
-              sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+              sx={{ marginRight: '4px', marginLeft: -0.8, cursor: 'pointer' }}
               onClick={() => setClassesDrop(false)}
             />
           )}
-          <Typography variant="h5" sx={{ fontWeight: "600" }}>
+          <Typography variant="h5" sx={{ fontWeight: '600' }}>
             Turmas
           </Typography>
         </Box>
@@ -73,9 +73,9 @@ export function ClassesPage() {
                 key={classItem.id}
                 id={classItem.id}
                 index={index}
-                name={classItem.name || ""}
+                name={classItem.name || ''}
                 teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage || ""}
+                coverImage={classItem.coverImage || ''}
               />
             ))
           : null}
@@ -86,23 +86,23 @@ export function ClassesPage() {
           </Typography>
         )}
 
-        {user?.role === "admin" && <CreateCardButton />}
+        {user?.role === 'admin' && <CreateCardButton />}
 
-        {user?.role === "admin" && (
+        {user?.role === 'admin' && (
           <>
             <Box
               sx={{
-                textAlign: "left",
+                textAlign: 'left',
                 my: 2,
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
-              <Typography variant="h5" sx={{ fontWeight: "600" }}>
+              <Typography variant="h5" sx={{ fontWeight: '600' }}>
                 Alunos
               </Typography>
             </Box>
-            <Box sx={{ textAlign: "left", mb: 4 }}>
+            <Box sx={{ textAlign: 'left', mb: 4 }}>
               <StudentTable students={students} classes={classes} />
             </Box>
           </>

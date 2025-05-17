@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, ReactNode, useEffect } from "react";
-import { IClassContext } from "../interfaces/class/IClassContext";
-import { IClass, ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
+import { createContext, useState, ReactNode, useEffect } from 'react';
+import { IClassContext } from '../interfaces/class/IClassContext';
+import { IClass, ICreateClass, IUpdateClass } from '../interfaces/class/IClass';
 import {
   createClass,
   deleteClass,
@@ -9,20 +9,20 @@ import {
   getClassById,
   updateClassService,
   uploadClassPhoto,
-} from "../services/class.service";
-import { useAuth } from "../hooks/useAuth";
-import { getStudentClasses } from "../services/studentClass.service";
-import { ICreateLesson, IUpdateLesson } from "../interfaces/lesson/ILesson";
+} from '../services/class.service';
+import { useAuth } from '../hooks/useAuth';
+import { getStudentClasses } from '../services/studentClass.service';
+import { ICreateLesson, IUpdateLesson } from '../interfaces/lesson/ILesson';
 import {
   createLesson,
   deleteLesson,
   updateLessonService,
   uploadLessonPhoto,
-} from "../services/lesson.service";
+} from '../services/lesson.service';
 import {
   getAllMaterials,
   uploadMaterialService,
-} from "../services/theoryMaterials.service";
+} from '../services/theoryMaterials.service';
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -37,7 +37,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const tk = localStorage.getItem("token");
+  const tk = localStorage.getItem('token');
 
   const addClass = async (newClass: ICreateClass) => {
     if (!tk) return;
@@ -56,11 +56,11 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           lessons: [],
           coverImage: newClass.coverImage
             ? URL.createObjectURL(newClass.coverImage)
-            : "",
+            : '',
         } as IClass,
       ]);
     } catch (error) {
-      console.error("Erro ao criar classe:", error);
+      console.error('Erro ao criar classe:', error);
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       const updatedClasses = classes.filter((item) => item.id !== classId);
       setClasses(updatedClasses);
     } catch (error) {
-      console.error("Erro ao remover classe:", error);
+      console.error('Erro ao remover classe:', error);
     } finally {
       setLoading(false);
     }
@@ -87,13 +87,13 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     };
     setSelectedClassIndex(classIndex);
     setSelectedClass(selected);
-    localStorage.setItem("selectedClassId", selected.id);
+    localStorage.setItem('selectedClassId', selected.id);
   };
 
   const loadSelectedClassFromStorage = async () => {
     if (!tk) return;
 
-    const storedClassId = localStorage.getItem("selectedClassId");
+    const storedClassId = localStorage.getItem('selectedClassId');
     if (!storedClassId) {
       setSelectedClass(null);
       return;
@@ -104,8 +104,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       const recoverClassData: IClass = await getClassById(storedClassId, tk);
       setSelectedClass(recoverClassData);
     } catch (error) {
-      console.error("Erro ao buscar classe por ID:", error);
-      localStorage.removeItem("selectedClassId");
+      console.error('Erro ao buscar classe por ID:', error);
+      localStorage.removeItem('selectedClassId');
       setSelectedClass(null);
     } finally {
       setLoading(false);
@@ -139,7 +139,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
       const filteredUpdate = Object.fromEntries(
         Object.entries(updatedClass).filter(
-          ([, value]) => value !== undefined && value !== ""
+          ([, value]) => value !== undefined && value !== ''
         )
       );
 
@@ -178,13 +178,13 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           ...response,
           coverImage: newLesson.coverImage
             ? URL.createObjectURL(newLesson.coverImage)
-            : "",
+            : '',
         },
       ];
 
       updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
     } catch (error) {
-      console.error("Erro ao criar aula:", error);
+      console.error('Erro ao criar aula:', error);
     } finally {
       setLoading(false);
     }
@@ -202,7 +202,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
       updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
     } catch (error) {
-      console.error("Erro ao remover aula:", error);
+      console.error('Erro ao remover aula:', error);
     } finally {
       setLoading(false);
     }
@@ -237,7 +237,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
       const validUpdates = Object.fromEntries(
         Object.entries(updatedLesson).filter(
-          ([, value]) => value !== undefined && value !== ""
+          ([, value]) => value !== undefined && value !== ''
         )
       );
 
@@ -301,7 +301,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         theoryMaterials: materials,
       });
     } catch (error) {
-      console.error("Erro ao buscar materiais:", error);
+      console.error('Erro ao buscar materiais:', error);
     } finally {
       setLoading(false);
     }
@@ -327,7 +327,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         return prev;
       });
     } catch (error) {
-      console.error("Erro ao enviar o arquivo:", error);
+      console.error('Erro ao enviar o arquivo:', error);
     } finally {
       setLoading(false);
     }
@@ -337,31 +337,31 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     if (!loading) {
       const fetchStudentClasses = async () => {
         if (!tk || !user) {
-          console.error("Erro: Token ou usuário inexistente.");
+          console.error('Erro: Token ou usuário inexistente.');
           return;
         }
 
         try {
           const role = user.role;
           const response =
-            role === "admin"
+            role === 'admin'
               ? await getAdminClasses(tk)
               : await getStudentClasses(user.id, tk);
 
           if (!response) return;
 
           const fetchedClasses =
-            role === "admin"
+            role === 'admin'
               ? Array.isArray(response)
                 ? response
                 : []
               : Array.isArray(response.classes)
-              ? response.classes
-              : [];
+                ? response.classes
+                : [];
 
           setClasses(fetchedClasses);
         } catch (error) {
-          console.error("Erro ao buscar turmas:", error);
+          console.error('Erro ao buscar turmas:', error);
         }
       };
       fetchStudentClasses();

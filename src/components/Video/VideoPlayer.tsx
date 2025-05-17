@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
-import ReactPlayer from "react-player";
+import { Box } from '@mui/material';
+import ReactPlayer from 'react-player';
 
 interface VideoPlayerProps {
   url: string;
@@ -10,17 +10,17 @@ export function VideoPlayer({ url, onProgress }: VideoPlayerProps) {
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         marginY: { xs: 4.2, sm: 6 },
-        backgroundColor: "#000000",
+        backgroundColor: '#000000',
       }}
     >
       <Box
         sx={{
-          width: { xs: "100%", sm: "80%", md: "70%" },
-          aspectRatio: "16 / 9",
+          width: { xs: '100%', sm: '80%', md: '70%' },
+          aspectRatio: '16 / 9',
         }}
       >
         <ReactPlayer

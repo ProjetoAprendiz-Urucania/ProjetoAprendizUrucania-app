@@ -1,17 +1,17 @@
-import { createBrowserRouter } from "react-router-dom";
-import { AuthPage } from "../Pages/AuthPage";
-import { AuthForm } from "../Pages/AuthForm/AuthForm";
-import { AuthFormPassword } from "../Pages/AuthForm/AuthFormPassword";
-import { ClassesPage } from "../Pages/ClassesPage";
-import { ClassPage } from "../Pages/ClassPage";
-import { ProtectedRoute } from "../hoc/ProtectedRoute";
-import { LessonPage } from "../Pages/LessonPage";
-import { AppLayout } from "../layout/AppLayout";
-import { ClassProvider } from "../context/ClassContext";
+import { createBrowserRouter } from 'react-router-dom';
+import { AuthPage } from '../Pages/AuthPage';
+import { AuthForm } from '../Pages/AuthForm/AuthForm';
+import { AuthFormPassword } from '../Pages/AuthForm/AuthFormPassword';
+import { ClassesPage } from '../Pages/ClassesPage';
+import { ClassPage } from '../Pages/ClassPage';
+import { ProtectedRoute } from '../hoc/ProtectedRoute';
+import { LessonPage } from '../Pages/LessonPage';
+import { AppLayout } from '../layout/AppLayout';
+import { ClassProvider } from '../context/ClassContext';
 
 export const routes = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <AppLayout>
         <AuthPage />,
@@ -19,25 +19,25 @@ export const routes = createBrowserRouter([
     ),
     children: [
       {
-        path: "/login",
+        path: '/login',
         element: <AuthForm mode="login" />,
       },
       {
-        path: "/register",
+        path: '/register',
         element: <AuthForm mode="register" />,
       },
       {
-        path: "/forgot",
+        path: '/forgot',
         element: <AuthFormPassword mode="forgot" />,
       },
       {
-        path: "/newPassword/:token",
+        path: '/newPassword/:token',
         element: <AuthFormPassword mode="newPassword" />,
       },
     ],
   },
   {
-    path: "/classes",
+    path: '/classes',
     element: (
       <ClassProvider>
         <AppLayout>
@@ -49,7 +49,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/classes/:id",
+    path: '/classes/:id',
     element: (
       <ClassProvider>
         <AppLayout>
@@ -61,7 +61,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/classes/:classId/lessons/:lessonId",
+    path: '/classes/:classId/lessons/:lessonId',
     element: (
       <ClassProvider>
         <AppLayout>

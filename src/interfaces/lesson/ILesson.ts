@@ -1,5 +1,5 @@
 // import { IClass } from "../class/IClass";
-import { ITheoryMaterial } from "../TheoryMaterial/ITheoryMaterial";
+import { ITheoryMaterial } from '../TheoryMaterial/ITheoryMaterial';
 export interface ILesson {
   id: string;
   name: string;

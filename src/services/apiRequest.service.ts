@@ -1,14 +1,14 @@
-import { AxiosError, AxiosResponse, AxiosRequestConfig } from "axios";
-import { axiosInstance } from "./axios.service";
+import { AxiosError, AxiosResponse, AxiosRequestConfig } from 'axios';
+import { axiosInstance } from './axios.service';
 
 function handleAuthError() {
-  localStorage.removeItem("token");
-  window.dispatchEvent(new Event("auth:logout"));
+  localStorage.removeItem('token');
+  window.dispatchEvent(new Event('auth:logout'));
 }
 
 export async function apiRequest(
   endpoint: string,
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   body?: unknown,
   token?: string
 ) {
@@ -16,31 +16,30 @@ export async function apiRequest(
     const headers: Record<string, string> = {};
 
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     if (body instanceof FormData) {
-      headers["Content-Type"] = "multipart/form-data; boundary";
-
+      headers['Content-Type'] = 'multipart/form-data; boundary';
     } else {
-      headers["Content-Type"] = "application/json";
+      headers['Content-Type'] = 'application/json';
     }
 
     const config: AxiosRequestConfig = {
       url: endpoint,
       method,
       headers,
-      data: body, 
+      data: body,
     };
 
     const response: AxiosResponse = await axiosInstance(config);
     return response.data;
   } catch (error) {
-    console.log("Erro na requisição:", error);
+    console.log('Erro na requisição:', error);
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
         handleAuthError();
-        throw new Error("Sessão expirada. Faça login novamente.");
+        throw new Error('Sessão expirada. Faça login novamente.');
       }
 
       throw new Error(
@@ -49,6 +48,6 @@ export async function apiRequest(
       );
     }
 
-    throw new Error("Erro inesperado na requisição.");
+    throw new Error('Erro inesperado na requisição.');
   }
 }

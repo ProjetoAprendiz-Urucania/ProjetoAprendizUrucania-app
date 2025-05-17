@@ -1,12 +1,12 @@
-import { ILesson } from "../lesson/ILesson";
-import { ITheoryMaterial } from "../TheoryMaterial/ITheoryMaterial";
+import { ILesson } from '../lesson/ILesson';
+import { ITheoryMaterial } from '../TheoryMaterial/ITheoryMaterial';
 
 export interface IClass {
   id: string;
   name: string;
   teachers: string;
   coverImage: string;
-  lessons: ILesson[]
+  lessons: ILesson[];
   theoryMaterials?: ITheoryMaterial[];
 }
 
@@ -16,7 +16,7 @@ export interface ICreateClass {
   coverImage?: File;
 }
 
-export interface IUpdateClass{
+export interface IUpdateClass {
   name?: string;
   teacherInfo?: string;
   teachers?: string;

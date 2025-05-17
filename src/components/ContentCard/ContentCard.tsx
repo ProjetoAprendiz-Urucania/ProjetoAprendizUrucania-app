@@ -7,17 +7,17 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
-import defaultCardImage from "../../assets/img/defaultCardImage.svg";
-import { ICardData } from "../../interfaces/ICardData";
-import { useAuth } from "../../hooks/useAuth";
-import options from "../../assets/img/ContentCard/options.png";
-import { CreateCard } from "../CreateCard/CreateCard";
-import { useClass } from "../../hooks/useClass";
+} from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import defaultCardImage from '../../assets/img/defaultCardImage.svg';
+import { ICardData } from '../../interfaces/ICardData';
+import { useAuth } from '../../hooks/useAuth';
+import options from '../../assets/img/ContentCard/options.png';
+import { CreateCard } from '../CreateCard/CreateCard';
+import { useClass } from '../../hooks/useClass';
 
-const adminMenu = ["Editar", "Excluir"];
+const adminMenu = ['Editar', 'Excluir'];
 
 export function ContentCard({
   id,
@@ -29,7 +29,7 @@ export function ContentCard({
   const { user } = useAuth();
   const { handleSelectedClass, selectedClass, removeClass, removeLesson } =
     useClass();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +37,7 @@ export function ContentCard({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
-  const isClassesPage = location.pathname === "/classes";
+  const isClassesPage = location.pathname === '/classes';
 
   useEffect(() => {
     if (coverImage) {
@@ -75,9 +75,9 @@ export function ContentCard({
 
       handleCloseMenu();
 
-      if (option === "Editar") {
+      if (option === 'Editar') {
         setOpenProfileModal(true);
-      } else if (option === "Excluir" && token) {
+      } else if (option === 'Excluir' && token) {
         try {
           if (!isClassesPage) {
             removeLesson(id);
@@ -85,7 +85,7 @@ export function ContentCard({
             removeClass(id);
           }
         } catch (error) {
-          console.error("Erro ao excluir:", error);
+          console.error('Erro ao excluir:', error);
         }
       }
     },
@@ -106,38 +106,38 @@ export function ContentCard({
     <>
       <Card
         sx={{
-          display: "flex",
+          display: 'flex',
           marginY: 2.8,
           borderRadius: 2,
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.51)",
-          transition: "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
-          "&:hover": {
-            transform: "scale(1.001)",
-            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.51)",
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.51)',
+          transition: 'box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.001)',
+            boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.51)',
           },
-          cursor: "pointer",
+          cursor: 'pointer',
         }}
         onClick={handleOpenLessons}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minWidth: "116px",
-            overflow: "hidden",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '116px',
+            overflow: 'hidden',
           }}
         >
           <CardMedia
             component="img"
             sx={{
-              width: "76px",
-              height: "58px",
-              aspectRatio: "4 / 3",
-              objectFit: "cover",
+              width: '76px',
+              height: '58px',
+              aspectRatio: '4 / 3',
+              objectFit: 'cover',
               borderRadius: 1,
-              border: "1px outset whitesmoke",
-              filter: "drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))",
+              border: '1px outset whitesmoke',
+              filter: 'drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))',
             }}
             image={imageSrc}
             alt="Capa do curso"
@@ -147,35 +147,35 @@ export function ContentCard({
         <Box
           sx={{
             marginLeft: -1.8,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
           }}
         >
           <CardContent
             sx={{
-              textAlign: "left",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "100%",
+              textAlign: 'left',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
             }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography
                 sx={{
-                  fontSize: { xs: "15px", sm: "16px", md: "18px", lg: "20px" },
+                  fontSize: { xs: '15px', sm: '16px', md: '18px', lg: '20px' },
                   fontWeight: 600,
                   maxWidth: {
-                    xs: "180px",
-                    sm: "190px",
-                    md: "200px",
-                    lg: "100%",
+                    xs: '180px',
+                    sm: '190px',
+                    md: '200px',
+                    lg: '100%',
                   },
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 {name}
@@ -183,17 +183,17 @@ export function ContentCard({
               <Typography
                 variant="subtitle2"
                 sx={{
-                  color: "text.secondary",
-                  fontSize: { xs: "12px", md: "14px", lg: "16px" },
+                  color: 'text.secondary',
+                  fontSize: { xs: '12px', md: '14px', lg: '16px' },
                   maxWidth: {
-                    xs: "140px",
-                    sm: "380px",
-                    md: "500px",
-                    lg: "540px",
+                    xs: '140px',
+                    sm: '380px',
+                    md: '500px',
+                    lg: '540px',
                   },
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 {teacherInfo}
@@ -201,18 +201,18 @@ export function ContentCard({
             </Box>
           </CardContent>
 
-          {user?.role === "admin" && (
-            <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+          {user?.role === 'admin' && (
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
               <Box
                 component="img"
                 src={options}
                 onClick={handleOpenMenu}
                 alt="Opções"
                 sx={{
-                  width: "24px",
+                  width: '24px',
                   mr: 2,
-                  ":hover": { transform: "scale(1.2)" },
-                  cursor: "pointer",
+                  ':hover': { transform: 'scale(1.2)' },
+                  cursor: 'pointer',
                 }}
               />
             </Box>

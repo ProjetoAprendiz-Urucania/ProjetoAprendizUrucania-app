@@ -1,6 +1,6 @@
-import { createContext } from "react";
-import { IUser } from "../interfaces/IUser";
-import { useState, ReactNode, useEffect } from "react";
+import { createContext } from 'react';
+import { IUser } from '../interfaces/IUser';
+import { useState, ReactNode, useEffect } from 'react';
 
 interface AuthContextType {
   user: IUser | null;
@@ -20,15 +20,15 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("token");
+    return localStorage.getItem('token');
   });
 
   const [user, setUser] = useState<IUser | null>(() => {
     try {
-      const storedUser = localStorage.getItem("user");
+      const storedUser = localStorage.getItem('user');
       return storedUser ? JSON.parse(storedUser) : null;
     } catch (error) {
-      console.error("Erro ao recuperar usuário do localStorage:", error);
+      console.error('Erro ao recuperar usuário do localStorage:', error);
       return null;
     }
   });
@@ -36,53 +36,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const setUserWithStorage = (user: IUser | null) => {
     setUser(user);
     if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
     } else {
-      localStorage.removeItem("user");
+      localStorage.removeItem('user');
     }
-    window.dispatchEvent(new Event("storage"));
+    window.dispatchEvent(new Event('storage'));
   };
 
   const setTokenWithStorage = (token: string | null) => {
     setToken(token);
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem('token', token);
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
     }
-    window.dispatchEvent(new Event("storage"));
+    window.dispatchEvent(new Event('storage'));
   };
 
   useEffect(() => {
     const handleStorageChange = () => {
       try {
-        const storedUser = localStorage.getItem("user");
+        const storedUser = localStorage.getItem('user');
         setUser(storedUser ? JSON.parse(storedUser) : null);
-        setToken(localStorage.getItem("token"));
+        setToken(localStorage.getItem('token'));
       } catch (error) {
-        console.error("Erro ao atualizar usuário do localStorage:", error);
+        console.error('Erro ao atualizar usuário do localStorage:', error);
       }
     };
 
     const handleAuthLogout = () => logout(true);
 
-    window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("auth:logout", handleAuthLogout);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('auth:logout', handleAuthLogout);
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("auth:logout", handleAuthLogout);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth:logout', handleAuthLogout);
     };
   }, []);
 
   const logout = (internal = false) => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
 
     if (!internal) {
-      window.dispatchEvent(new Event("auth:logout"));
+      window.dispatchEvent(new Event('auth:logout'));
     }
   };
 

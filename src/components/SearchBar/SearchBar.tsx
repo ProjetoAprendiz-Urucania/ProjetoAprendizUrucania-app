@@ -1,6 +1,6 @@
-import { Box, InputAdornment, InputBase } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useLocation } from "react-router-dom";
+import { Box, InputAdornment, InputBase } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useLocation } from 'react-router-dom';
 
 interface ISearchBarProps {
   searchTerm: string;
@@ -19,35 +19,35 @@ export function SearchBar({
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
       placeholder={
-        !isLessonsPage ? "Busque por turmas..." : "Busque por aulas..."
+        !isLessonsPage ? 'Busque por turmas...' : 'Busque por aulas...'
       }
       autoFocus
       sx={{
-        minWidth: "100%",
-        backgroundColor: "#EAEAEA",
-        color: "#1E1E1E",
-        borderRadius: "4px",
-        padding: "8px",
+        minWidth: '100%',
+        backgroundColor: '#EAEAEA',
+        color: '#1E1E1E',
+        borderRadius: '4px',
+        padding: '8px',
         marginY: 4.6,
-        paddingRight: "40px",
+        paddingRight: '40px',
       }}
       endAdornment={
         <InputAdornment position="end" sx={{ marginRight: -3 }}>
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
+              display: 'flex',
+              alignItems: 'center',
               gap: 1,
             }}
           >
             <CloseIcon
               sx={{
-                cursor: "pointer",
-                color: "#4E4E4E",
-                "&:hover": { color: "red" },
-                "&:focus": { color: "#4E4E4E" },
+                cursor: 'pointer',
+                color: '#4E4E4E',
+                '&:hover': { color: 'red' },
+                '&:focus': { color: '#4E4E4E' },
               }}
-              onClick={() => setSearchTerm("")}
+              onClick={() => setSearchTerm('')}
             />
           </Box>
         </InputAdornment>

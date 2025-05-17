@@ -1,5 +1,5 @@
-import { useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -9,16 +9,16 @@ import {
   TextField,
   Snackbar,
   Alert,
-} from "@mui/material";
+} from '@mui/material';
 
-import { AuthContext } from "../../context/AuthContext";
-import { IStudent } from "../../interfaces/student/IStudent";
-import { updateStudent, forgotPassword } from "../../services/user.service";
+import { AuthContext } from '../../context/AuthContext';
+import { IStudent } from '../../interfaces/student/IStudent';
+import { updateStudent, forgotPassword } from '../../services/user.service';
 
-import imLogo from "../../assets/img/Form/im_logo.png";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import imLogo from '../../assets/img/Form/im_logo.png';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 interface ITokenPayload extends JwtPayload {
   id: string;
@@ -27,10 +27,10 @@ interface ITokenPayload extends JwtPayload {
 }
 
 interface IAuthFormPassword {
-  mode: "newPassword" | "forgot";
+  mode: 'newPassword' | 'forgot';
   handleApiResponse?: (
     message: string,
-    severity: "success" | "error" | "info" | "warning"
+    severity: 'success' | 'error' | 'info' | 'warning'
   ) => void;
 }
 
@@ -38,15 +38,15 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
-    throw new Error("UserContext must be used within a UserProvider");
+    throw new Error('UserContext must be used within a UserProvider');
   }
 
-  const isForgot = mode === "forgot";
-  const isnewPassword = mode === "newPassword";
+  const isForgot = mode === 'forgot';
+  const isnewPassword = mode === 'newPassword';
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const { token } = useParams<{ token?: string }>();
-  const [newPassword, setNewPassword] = useState("");
+  const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -60,11 +60,11 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
 
     if (isForgot) {
       if (!email.trim()) {
-        setError("Preencha todos os campos obrigatórios");
+        setError('Preencha todos os campos obrigatórios');
         return;
       }
     } else if (!newPassword.trim()) {
-      setError("Preencha todos os campos obrigatórios");
+      setError('Preencha todos os campos obrigatórios');
       return;
     }
 
@@ -74,57 +74,57 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
       if (isForgot) {
         res = await forgotPassword(email);
 
-        if (res === "userExists") {
-          setEmail("");
+        if (res === 'userExists') {
+          setEmail('');
           setSuccess(
-            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
+            'Seu link de Recuperação foi enviado ao email informado, redirecionando a login'
           );
-          setTimeout(() => navigate("/login"), 3000);
+          setTimeout(() => navigate('/login'), 3000);
         }
       } else {
-        const tk: ITokenPayload = jwtDecode(token || "");
+        const tk: ITokenPayload = jwtDecode(token || '');
         const newStudentPassword: IStudent = {
           password: newPassword,
           name: tk.name,
           email: tk.email,
         };
 
-        res = await updateStudent(tk.id, newStudentPassword, token || "");
+        res = await updateStudent(tk.id, newStudentPassword, token || '');
 
         if (res.email) {
-          setNewPassword("");
-          setSuccess("Senha mudada com sucesso, redirecionando a login");
-          setTimeout(() => navigate("/login"), 3000);
+          setNewPassword('');
+          setSuccess('Senha mudada com sucesso, redirecionando a login');
+          setTimeout(() => navigate('/login'), 3000);
         }
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Erro inesperado");
+      setError(error instanceof Error ? error.message : 'Erro inesperado');
     }
   };
 
   return (
     <Box
       sx={{
-        backgroundColor: "white",
-        padding: "30px",
-        borderRadius: "12px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
+        backgroundColor: 'white',
+        padding: '30px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
       }}
     >
-      <Box sx={{ minWidth: { xs: "240px", sm: "280px" } }}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+      <Box sx={{ minWidth: { xs: '240px', sm: '280px' } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
           <Box component="img" src={imLogo} alt="Logo" width="42px" />
         </Box>
 
         <form
           onSubmit={handleSubmit}
           style={{
-            display: "flex",
-            flexDirection: "column",
+            display: 'flex',
+            flexDirection: 'column',
             gap: 28,
           }}
         >
@@ -132,7 +132,7 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
             <TextField
               id="password"
               label="Nova Senha"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               variant="outlined"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -166,28 +166,28 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
           <Button
             type="submit"
             sx={{
-              backgroundColor: "#BB1626",
-              fontWeight: "bold",
-              color: "white",
+              backgroundColor: '#BB1626',
+              fontWeight: 'bold',
+              color: 'white',
               mt: 2,
             }}
           >
-            {isnewPassword ? "Mudar Senha" : "Confirmar"}
+            {isnewPassword ? 'Mudar Senha' : 'Confirmar'}
           </Button>
         </form>
 
-        <Box sx={{ textAlign: "center", mt: 3 }}>
+        <Box sx={{ textAlign: 'center', mt: 3 }}>
           <Link
             href="/login"
             sx={{
-              fontSize: "14px",
-              color: "#ED3237",
-              fontWeight: "bolder",
-              textDecoration: "underline",
-              cursor: "pointer",
+              fontSize: '14px',
+              color: '#ED3237',
+              fontWeight: 'bolder',
+              textDecoration: 'underline',
+              cursor: 'pointer',
               marginY: 1.5,
-              "&:hover": {
-                color: "#BB1626",
+              '&:hover': {
+                color: '#BB1626',
               },
             }}
           >
@@ -201,7 +201,7 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
         autoHideDuration={6000}
         onClose={() => setError(null)}
       >
-        <Alert severity="error" sx={{ width: "100%" }}>
+        <Alert severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
       </Snackbar>
@@ -211,7 +211,7 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
         autoHideDuration={6000}
         onClose={() => setSuccess(null)}
       >
-        <Alert severity="success" sx={{ width: "100%" }}>
+        <Alert severity="success" sx={{ width: '100%' }}>
           {success}
         </Alert>
       </Snackbar>
@@ -220,26 +220,26 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
 }
 
 const inputStyle = {
-  "& .MuiInputLabel-root": {
-    color: "#1F1F1F",
-    fontSize: "15px",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+  '& .MuiInputLabel-root': {
+    color: '#1F1F1F',
+    fontSize: '15px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
-  "& .MuiInputLabel-root.Mui-focused": {
-    fontWeight: "bold",
-    color: "#ED3237",
+  '& .MuiInputLabel-root.Mui-focused': {
+    fontWeight: 'bold',
+    color: '#ED3237',
   },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#1F1F1F",
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#1F1F1F',
     },
-    "&:hover fieldset": {
-      borderColor: "#ED3237",
+    '&:hover fieldset': {
+      borderColor: '#ED3237',
     },
-    "&.Mui-focused fieldset": {
-      borderColor: "#ED3237",
+    '&.Mui-focused fieldset': {
+      borderColor: '#ED3237',
     },
   },
 };
