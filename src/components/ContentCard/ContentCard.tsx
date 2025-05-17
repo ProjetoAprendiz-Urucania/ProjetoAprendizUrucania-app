@@ -82,7 +82,6 @@ export function ContentCard({
           if (!isClassesPage) {
             removeLesson(id);
           } else {
-            console.log("class");
             removeClass(id);
           }
         } catch (error) {
