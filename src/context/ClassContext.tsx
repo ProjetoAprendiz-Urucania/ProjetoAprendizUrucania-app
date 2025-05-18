@@ -12,10 +12,15 @@ import {
 } from "../services/class.service";
 import { useAuth } from "../hooks/useAuth";
 import { getStudentClasses } from "../services/studentClass.service";
-import { ICreateLesson, IUpdateLesson } from "../interfaces/lesson/ILesson";
+import {
+  ICreateLesson,
+  ILesson,
+  IUpdateLesson,
+} from "../interfaces/lesson/ILesson";
 import {
   createLesson,
   deleteLesson,
+  getLessonsByClassId,
   updateLessonService,
   uploadLessonPhoto,
 } from "../services/lesson.service";
@@ -30,8 +35,11 @@ interface ClassProviderProps {
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
+  const [lessons, setLessons] = useState<ILesson[]>([]);
+
   const [selectedClassIndex, setSelectedClassIndex] = useState(-1);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
+
   const [loading, setLoading] = useState(false);
 
   const tk = localStorage.getItem("token");
@@ -282,11 +290,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     });
   };
 
-  const getClassLessons = () => {
-    if (!selectedClass) return;
-    return selectedClass.lessons;
-  };
-
   const uploadMaterial = async (selectedFile: File, selectedLesson: string) => {
     if (!selectedClass || !tk) return;
     try {
@@ -344,6 +347,19 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   useEffect(() => {
+    const fetchLessons = async () => {
+      if (!tk || !selectedClass) return;
+      try {
+        const fetchedLessons = await getLessonsByClassId(selectedClass.id, tk);
+        setLessons(fetchedLessons || []);
+      } catch (error) {
+        console.error("Erro ao buscar aulas:", error);
+      }
+    };
+    fetchLessons();
+  }, [tk, selectedClass]);
+
+  useEffect(() => {
     loadSelectedClassFromStorage();
   }, []);
 
@@ -360,13 +376,13 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         removeClass,
         handleSelectedClass,
         loadSelectedClassFromStorage,
-        getClassLessons,
         addLesson,
         selectedClassIndex,
         removeLesson,
         updateLesson,
         uploadMaterial,
         fetchStudentClasses,
+        lessons,
       }}
     >
       {children}

@@ -11,12 +11,10 @@ import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
 import { getAllMaterials } from "../services/theoryMaterials.service";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-import { ILesson } from "../interfaces/lesson/ILesson";
-import { getLessonsByClassId } from "../services/lesson.service";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass } = useClass();
+  const { selectedClass, lessons } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
@@ -24,8 +22,6 @@ export function ClassPage() {
   const tk = localStorage.getItem("token");
 
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
-
-  const [lessons, setLessons] = useState<ILesson[]>([]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -38,19 +34,6 @@ export function ClassPage() {
       }
     };
     fetchMaterials();
-  }, [tk, selectedClass]);
-
-  useEffect(() => {
-    const fetchLessons = async () => {
-      if (!tk || !selectedClass) return;
-      try {
-        const fetchedLessons = await getLessonsByClassId(selectedClass.id, tk);
-        setLessons(fetchedLessons || []);
-      } catch (error) {
-        console.error("Erro ao buscar aulas:", error);
-      }
-    };
-    fetchLessons();
   }, [tk, selectedClass]);
 
   return (

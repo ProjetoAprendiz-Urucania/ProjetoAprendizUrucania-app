@@ -18,12 +18,13 @@ export function LessonPage() {
   const { lessonId } = useParams<{
     lessonId: string;
   }>();
-  const { selectedClass } = useClass();
+  const { selectedClass, lessons } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
+  const [link, setLink] = useState<string | undefined>();
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -48,6 +49,17 @@ export function LessonPage() {
 
     fetchMaterials();
   }, [selectedClass?.id, lessonId, tk]);
+
+  useEffect(() => {
+    const fetchLessonLink = () => {
+      setLink(
+        (lessons ?? []).find((lesson) => lesson.id === lessonId)?.lessonLink ||
+          ""
+      );
+    };
+
+    fetchLessonLink();
+  }, [lessonId, tk]);
 
   const handleConfirmPresence = async () => {
     try {
@@ -79,10 +91,7 @@ export function LessonPage() {
   return (
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
       <VideoPlayer
-        url={
-          selectedClass?.lessons.find((lesson) => lesson.id === lessonId)
-            ?.lessonLink || ""
-        }
+        url={link ?? ""}
         onProgress={(progress) => setProgress(progress)}
       />
 

@@ -48,7 +48,7 @@ export function ContentCard({
     }
   }, [coverImage]);
 
-  const handleOpenLessons = useCallback(() => {
+  const handleOpenContent = useCallback(() => {
     if (isClassesPage) {
       handleSelectedClass(index);
       navigate(`/classes/${id}`);
@@ -118,7 +118,7 @@ export function ContentCard({
           },
           cursor: "pointer",
         }}
-        onClick={handleOpenLessons}
+        onClick={handleOpenContent}
       >
         <Box
           sx={{
