@@ -84,7 +84,7 @@ export function ClassesPage() {
             ))
           : null}
 
-        {filteredClasses.length === 0 && (
+        {filteredClasses.length === 0 && user?.role === "student" && (
           <Typography variant="h6" sx={{ mb: 2, mt: 4 }}>
             Nenhuma turma encontrada
           </Typography>
