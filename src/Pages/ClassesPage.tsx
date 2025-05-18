@@ -13,7 +13,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export function ClassesPage() {
   const { user } = useAuth();
-  const { classes } = useClass();
+  const { classes, fetchStudentClasses, loading } = useClass();
   const [classesDrop, setClassesDrop] = useState(false);
 
   const [students, setStudents] = useState<IStudent[]>([]);
@@ -31,6 +31,10 @@ export function ClassesPage() {
 
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    fetchStudentClasses();
+  }, [loading]);
 
   const filteredClasses = searchTerm
     ? classes.filter((classItem) =>

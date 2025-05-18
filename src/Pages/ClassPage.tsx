@@ -9,20 +9,49 @@ import { CreateCardButton } from "../components/CreateCardButton/CreateCardButto
 import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
 import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
+import { getAllMaterials } from "../services/theoryMaterials.service";
+import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
+import { ILesson } from "../interfaces/lesson/ILesson";
+import { getLessonsByClassId } from "../services/lesson.service";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass, getClassLessons, getMaterials, loading } = useClass();
+  const { selectedClass } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
+  const tk = localStorage.getItem("token");
+
+  const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
+
+  const [lessons, setLessons] = useState<ILesson[]>([]);
 
   useEffect(() => {
-    if (!loading) {
-      getMaterials();
-    }
-  }, [loading]);
+    const fetchMaterials = async () => {
+      if (!tk || !selectedClass) return;
+      try {
+        const fetchedMaterials = await getAllMaterials(selectedClass.id, tk);
+        setMaterials(fetchedMaterials || []);
+      } catch (error) {
+        console.error("Erro ao buscar materiais:", error);
+      }
+    };
+    fetchMaterials();
+  }, [tk, selectedClass]);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      if (!tk || !selectedClass) return;
+      try {
+        const fetchedLessons = await getLessonsByClassId(selectedClass.id, tk);
+        setLessons(fetchedLessons || []);
+      } catch (error) {
+        console.error("Erro ao buscar aulas:", error);
+      }
+    };
+    fetchLessons();
+  }, [tk, selectedClass]);
 
   return (
     <>
@@ -51,8 +80,8 @@ export function ClassPage() {
         </Typography>
       </Box>
       {!lessonsDrop &&
-        ((getClassLessons() ?? 0) && !searchTerm
-          ? (getClassLessons() || []).map((lessonItem, index) => {
+        ((lessons ?? 0) && !searchTerm
+          ? (lessons || []).map((lessonItem, index) => {
               return (
                 <ContentCard
                   key={lessonItem.id}
@@ -66,8 +95,8 @@ export function ClassPage() {
                 />
               );
             })
-          : Array.isArray(getClassLessons())
-          ? (getClassLessons() ?? [])
+          : Array.isArray(lessons)
+          ? (lessons ?? [])
               .filter((lessonItem) =>
                 lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
@@ -106,10 +135,26 @@ export function ClassPage() {
           Materiais Teóricos
         </Typography>
       </Box>
-      <Box sx={{ textAlign: "left", mb: 4 }}>
-        {!materialDrop &&
-          ((selectedClass?.theoryMaterials ?? 0) && !searchTerm
-            ? (selectedClass?.theoryMaterials ?? []).map((materialItem) => {
+      {!materialDrop &&
+        (!searchTerm
+          ? (materials ?? []).map((materialItem) => {
+              return materialItem ? (
+                <TheoryMaterialItem
+                  key={materialItem.id}
+                  {...materialItem}
+                  lessonId={materialItem.lessonId || ""}
+                  classId={selectedClass?.id || ""}
+                  materialId={materialItem.id}
+                />
+              ) : null;
+            })
+          : (materials ?? [])
+              .filter((materialItem) =>
+                materialItem.name
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase())
+              )
+              .map((materialItem) => {
                 return materialItem ? (
                   <TheoryMaterialItem
                     key={materialItem.id}
@@ -119,28 +164,10 @@ export function ClassPage() {
                     materialId={materialItem.id}
                   />
                 ) : null;
-              })
-            : (selectedClass?.theoryMaterials ?? [])
-                .filter((materialItem) =>
-                  materialItem.name
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
-                )
-                .map((materialItem) => {
-                  return materialItem ? (
-                    <TheoryMaterialItem
-                      key={materialItem.id}
-                      {...materialItem}
-                      lessonId={materialItem.lessonId || ""}
-                      classId={selectedClass?.id || ""}
-                      materialId={materialItem.id}
-                    />
-                  ) : null;
-                }))}
-        {user?.role === "admin" ? (
-          <CreateMaterialButton lessons={getClassLessons() || []} />
-        ) : null}
-      </Box>
+              }))}
+      {user?.role === "admin" ? (
+        <CreateMaterialButton lessons={lessons || []} />
+      ) : null}
     </>
   );
 }

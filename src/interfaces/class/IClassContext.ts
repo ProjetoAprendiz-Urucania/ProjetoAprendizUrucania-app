@@ -17,6 +17,6 @@ export interface IClassContext {
   loadSelectedClassFromStorage: () => void;
   getClassLessons: () => ILesson[] | undefined;
   selectedClassIndex: number;
-  getMaterials: () => void;
   uploadMaterial: (selectedFile: File, selectedLesson: string) => void
+  fetchStudentClasses: () => void;
 }

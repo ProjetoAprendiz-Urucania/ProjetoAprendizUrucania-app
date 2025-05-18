@@ -45,7 +45,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
             const classList = Array.isArray(response.classes)
               ? response.classes
               : [];
-            console.log(`Classes for ${student.name}:`, classList);
             return {
               ...student,
               classes: classList,

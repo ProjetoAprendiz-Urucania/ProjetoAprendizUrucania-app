@@ -19,10 +19,7 @@ import {
   updateLessonService,
   uploadLessonPhoto,
 } from "../services/lesson.service";
-import {
-  getAllMaterials,
-  uploadMaterialService,
-} from "../services/theoryMaterials.service";
+import { uploadMaterialService } from "../services/theoryMaterials.service";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -290,23 +287,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     return selectedClass.lessons;
   };
 
-  const getMaterials = async () => {
-    if (!tk || !selectedClass) return;
-
-    try {
-      const materials = await getAllMaterials(selectedClass.id, tk);
-
-      updateClassInState({
-        id: selectedClass.id,
-        theoryMaterials: materials,
-      });
-    } catch (error) {
-      console.error("Erro ao buscar materiais:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const uploadMaterial = async (selectedFile: File, selectedLesson: string) => {
     if (!selectedClass || !tk) return;
     try {
@@ -333,38 +313,35 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
-  useEffect(() => {
-    const fetchStudentClasses = async () => {
-      if (!tk || !user) {
-        console.error("Erro: Token ou usuário inexistente.");
-        return;
-      }
+  const fetchStudentClasses = async () => {
+    if (!tk || !user) {
+      console.error("Erro: Token ou usuário inexistente.");
+      return;
+    }
 
-      try {
-        const role = user.role;
-        const response =
-          role === "admin"
-            ? await getAdminClasses(tk)
-            : await getStudentClasses(user.id, tk);
+    try {
+      const role = user.role;
+      const response =
+        role === "admin"
+          ? await getAdminClasses(tk)
+          : await getStudentClasses(user.id, tk);
 
-        if (!response) return;
+      if (!response) return;
 
-        const fetchedClasses =
-          role === "admin"
-            ? Array.isArray(response)
-              ? response
-              : []
-            : Array.isArray(response.classes)
-            ? response.classes
-            : [];
+      const fetchedClasses =
+        role === "admin"
+          ? Array.isArray(response)
+            ? response
+            : []
+          : Array.isArray(response.classes)
+          ? response.classes
+          : [];
 
-        setClasses(fetchedClasses);
-      } catch (error) {
-        console.error("Erro ao buscar turmas:", error);
-      }
-    };
-    fetchStudentClasses();
-  }, [tk, user, loading]);
+      setClasses(fetchedClasses);
+    } catch (error) {
+      console.error("Erro ao buscar turmas:", error);
+    }
+  };
 
   useEffect(() => {
     loadSelectedClassFromStorage();
@@ -388,8 +365,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         selectedClassIndex,
         removeLesson,
         updateLesson,
-        getMaterials,
         uploadMaterial,
+        fetchStudentClasses,
       }}
     >
       {children}
