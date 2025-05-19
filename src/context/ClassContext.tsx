@@ -332,7 +332,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       setSelectedClass((prev) => {
         if (!prev) return null;
         if (prev.id === selectedClass.id) {
-          return { ...prev, ...updatedClassData };
+          return { ...prev, theoryMaterials: updatedClassData };
         }
         return prev;
       });
