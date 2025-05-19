@@ -24,7 +24,10 @@ import {
   updateLessonService,
   uploadLessonPhoto,
 } from "../services/lesson.service";
-import { uploadMaterialService } from "../services/theoryMaterials.service";
+import {
+  deleteMaterial,
+  uploadMaterialService,
+} from "../services/theoryMaterials.service";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -316,6 +319,30 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
+  const removeMaterial = async (lessonId: string, materialId: string) => {
+    if (!selectedClass || !tk) return;
+    try {
+      setLoading(true);
+      const updatedClassData = await deleteMaterial(
+        selectedClass.id,
+        lessonId,
+        materialId
+      );
+
+      setSelectedClass((prev) => {
+        if (!prev) return null;
+        if (prev.id === selectedClass.id) {
+          return { ...prev, ...updatedClassData };
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error("Failed to delete material:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchStudentClasses = async () => {
     if (!tk || !user) {
       console.error("Erro: Token ou usuário inexistente.");
@@ -383,6 +410,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         updateLesson,
         uploadMaterial,
         fetchStudentClasses,
+        removeMaterial,
         lessons,
       }}
     >

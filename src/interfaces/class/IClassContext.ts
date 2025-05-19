@@ -18,5 +18,6 @@ export interface IClassContext {
   selectedClassIndex: number;
   uploadMaterial: (selectedFile: File, selectedLesson: string) => void
   fetchStudentClasses: () => void;
+  removeMaterial: (lessonId: string,materialId: string) => void;
   lessons: ILesson[] | []
 }
