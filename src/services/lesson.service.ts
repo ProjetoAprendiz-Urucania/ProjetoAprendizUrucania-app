@@ -33,8 +33,10 @@ export function uploadLessonPhoto(
   token: string,
   coverImage?: File,
 ) {
-  const formData = new FormData();
-  formData.append("coverImage", coverImage ? coverImage : "");
+ const formData = new FormData();
+
+  if(coverImage)
+  formData.append('coverImage', coverImage);
 
   return apiRequest(
     `/classes/${classId}/${lessonId}/uploadPhoto`,
