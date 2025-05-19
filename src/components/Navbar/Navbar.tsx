@@ -50,7 +50,6 @@ function Navbar({ token, logout }: NavbarProps) {
     null
   );
   const [openProfileModal, setOpenProfileModal] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
   const [profilePhoto, setProfilePhoto] = useState<string | null>();
   const [imageError, setImageError] = useState(false);
@@ -118,10 +117,6 @@ function Navbar({ token, logout }: NavbarProps) {
         )
       );
     }
-  };
-
-  const handleClick = () => {
-    fileInputRef.current?.click();
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -349,95 +344,99 @@ function Navbar({ token, logout }: NavbarProps) {
             gap: 2.4,
           }}
         >
-          {selectedPhoto ? (
-            <Box sx={{ cursor: "pointer", m: 0, p: 0 }} onClick={handleClick}>
-              <Box
-                component="img"
-                src={URL.createObjectURL(selectedPhoto)}
-                sx={{
-                  width: "110px",
-                  height: "110px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
-                }}
-              />
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "45%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  backgroundColor: "#BB162670",
-                  borderRadius: "50%",
-                  padding: "7px 8px",
-                  opacity: "90%",
-                }}
-              >
-                <AddAPhotoIcon sx={{ color: "whitesmoke", fontSize: "18px" }} />
+          <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+            {selectedPhoto ? (
+              <Box sx={{ cursor: "pointer", m: 0, p: 0 }}>
+                <Box
+                  component="img"
+                  src={URL.createObjectURL(selectedPhoto)}
+                  sx={{
+                    width: "110px",
+                    height: "110px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "45%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    backgroundColor: "#BB162670",
+                    borderRadius: "50%",
+                    padding: "7px 8px",
+                    opacity: "90%",
+                  }}
+                >
+                  <AddAPhotoIcon
+                    sx={{ color: "whitesmoke", fontSize: "18px" }}
+                  />
+                </Box>
               </Box>
-            </Box>
-          ) : profilePhoto && !imageError ? (
-            <Box>
+            ) : profilePhoto && !imageError ? (
+              <Box>
+                <Box
+                  component="img"
+                  src={imageError ? avatar : profilePhoto || avatar}
+                  onError={(e) => {
+                    setImageError(true);
+                    e.currentTarget.src = avatar;
+                  }}
+                  sx={{
+                    width: "124px",
+                    height: "124px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                />{" "}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "45%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    backgroundColor: "#BB162670",
+                    borderRadius: "50%",
+                    padding: "8px",
+                    opacity: "90%",
+                    ":hover": { cursor: "pointer" },
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <DeleteForeverIcon
+                    onClick={() => handleDeletePhoto()}
+                    sx={{
+                      color: "whitesmoke",
+                      fontSize: "22px",
+                    }}
+                  />
+                </Box>
+              </Box>
+            ) : (
               <Box
-                component="img"
-                src={imageError ? avatar : profilePhoto || avatar}
-                onError={(e) => {
-                  setImageError(true);
-                  e.currentTarget.src = avatar;
-                }}
                 sx={{
-                  width: "124px",
-                  height: "124px",
-                  objectFit: "cover",
+                  backgroundColor: "#EAEAEA",
+                  padding: "2.6em",
+                  cursor: "pointer",
                   borderRadius: "50%",
-                }}
-              />{" "}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "45%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  backgroundColor: "#BB162670",
-                  borderRadius: "50%",
-                  padding: "8px",
-                  opacity: "90%",
-                  ":hover": { cursor: "pointer" },
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                <DeleteForeverIcon
-                  onClick={() => handleDeletePhoto()}
-                  sx={{
-                    color: "whitesmoke",
-                    fontSize: "22px",
-                  }}
-                />
+                {" "}
+                <AddAPhotoIcon sx={{ fontSize: "22px" }} />
               </Box>
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                backgroundColor: "#EAEAEA",
-                padding: "2.6em",
-                cursor: "pointer",
-                borderRadius: "50%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={handleClick}
-            >
-              {" "}
-              <AddAPhotoIcon sx={{ fontSize: "22px" }} />
-            </Box>
-          )}
+            )}
+          </label>
+
           <input
+            id="file-upload"
             type="file"
             accept="image/*"
-            ref={fileInputRef}
             style={{ display: "none" }}
             onChange={handleFileChange}
           />
