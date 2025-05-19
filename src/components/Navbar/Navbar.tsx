@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -344,94 +344,76 @@ function Navbar({ token, logout }: NavbarProps) {
             gap: 2.4,
           }}
         >
-          <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
-            {selectedPhoto ? (
-              <Box sx={{ cursor: "pointer", m: 0, p: 0 }}>
-                <Box
-                  component="img"
-                  src={URL.createObjectURL(selectedPhoto)}
-                  sx={{
-                    width: "110px",
-                    height: "110px",
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "45%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: "#BB162670",
-                    borderRadius: "50%",
-                    padding: "7px 8px",
-                    opacity: "90%",
-                  }}
-                >
-                  <AddAPhotoIcon
-                    sx={{ color: "whitesmoke", fontSize: "18px" }}
-                  />
-                </Box>
-              </Box>
-            ) : profilePhoto && !imageError ? (
-              <Box>
-                <Box
-                  component="img"
-                  src={imageError ? avatar : profilePhoto || avatar}
-                  onError={(e) => {
-                    setImageError(true);
-                    e.currentTarget.src = avatar;
-                  }}
-                  sx={{
-                    width: "124px",
-                    height: "124px",
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                  }}
-                />{" "}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "45%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: "#BB162670",
-                    borderRadius: "50%",
-                    padding: "8px",
-                    opacity: "90%",
-                    ":hover": { cursor: "pointer" },
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <DeleteForeverIcon
-                    onClick={() => handleDeletePhoto()}
-                    sx={{
-                      color: "whitesmoke",
-                      fontSize: "22px",
-                    }}
-                  />
-                </Box>
-              </Box>
-            ) : (
+          <Box sx={{ position: "relative", display: "inline-block" }}>
+            <label
+              htmlFor="file-upload"
+              style={{ display: "block", cursor: "pointer" }}
+            >
+              <Box
+                component="img"
+                src={
+                  selectedPhoto
+                    ? URL.createObjectURL(selectedPhoto)
+                    : profilePhoto || avatar
+                }
+                onError={(e) => {
+                  setImageError(true);
+                  e.currentTarget.src = avatar;
+                }}
+                sx={{
+                  width: "124px",
+                  height: "124px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                  border: "2px solid #ccc",
+                }}
+              />
+
               <Box
                 sx={{
-                  backgroundColor: "#EAEAEA",
-                  padding: "2.6em",
-                  cursor: "pointer",
+                  position: "absolute",
+                  bottom: -4,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#BB1626",
                   borderRadius: "50%",
+                  padding: "6px",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                {" "}
-                <AddAPhotoIcon sx={{ fontSize: "22px" }} />
+                <AddAPhotoIcon sx={{ color: "white", fontSize: "20px" }} />
+              </Box>
+            </label>
+
+            {profilePhoto && (
+              <Box
+                onClick={handleDeletePhoto}
+                sx={{
+                  position: "absolute",
+                  top: 12,
+                  right: 0,
+                  transform: "translate(25%, -25%)",
+                  backgroundColor: "#BB1626",
+                  borderRadius: "50%",
+                  paddingX: "5px",
+                  paddingY: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                <DeleteForeverIcon sx={{ color: "white", fontSize: "20px" }} />
               </Box>
             )}
-          </label>
+
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </Box>
 
           <input
             id="file-upload"
