@@ -101,6 +101,7 @@ export function CreateCard({
       const payload: ICreateLesson = {
         name: name,
         teacher: teachers,
+        coverImage: selectedPhoto || undefined,
         lessonLink: lessonLink,
       };
 

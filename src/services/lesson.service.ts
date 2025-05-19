@@ -38,12 +38,15 @@ export function uploadLessonPhoto(
   if(coverImage)
   formData.append('coverImage', coverImage);
 
-  return apiRequest(
+   const res = apiRequest(
     `/classes/${classId}/${lessonId}/uploadPhoto`,
     "POST",
     formData,
     token || undefined
   );
+
+  console.log("res",res)
+  return res;
 }
 
 export function updateLessonService(

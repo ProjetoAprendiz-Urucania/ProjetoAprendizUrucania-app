@@ -169,14 +169,12 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       const response = await createLesson(selectedClass.id, newLesson, tk);
 
       if (response && newLesson.coverImage) {
-        const res = await uploadLessonPhoto(
+        await uploadLessonPhoto(
           selectedClass.id,
           response.id,
           tk,
           newLesson.coverImage
         );
-
-        console.log("asd", res);
       }
 
       const updatedLessons = [
