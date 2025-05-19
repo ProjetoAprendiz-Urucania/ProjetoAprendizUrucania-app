@@ -239,22 +239,14 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         );
       }
 
-      const updatedCoverImage = updatedLesson.coverImage
-        ? URL.createObjectURL(updatedLesson.coverImage as File)
-        : response.coverImage;
-
-      const validUpdates = Object.fromEntries(
-        Object.entries(updatedLesson).filter(
-          ([, value]) => value !== undefined && value !== ""
-        )
-      );
-
-      const updatedLessons = selectedClass.lessons.map((lesson) =>
+      const updatedLessons = (selectedClass.lessons || []).map((lesson) =>
         lesson.id === lessonId
           ? {
               ...lesson,
-              ...validUpdates,
-              coverImage: updatedCoverImage,
+              ...response,
+              coverImage: updatedLesson.coverImage
+                ? URL.createObjectURL(updatedLesson.coverImage as File)
+                : lesson.coverImage,
             }
           : lesson
       );
@@ -264,7 +256,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         lessons: updatedLessons,
       });
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao atualizar aula:", error);
     } finally {
       setLoading(false);
     }
