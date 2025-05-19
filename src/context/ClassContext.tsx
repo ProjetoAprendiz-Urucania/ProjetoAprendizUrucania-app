@@ -133,12 +133,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         tk
       );
 
-      if (response && updatedClass.coverImage) {
-        await uploadClassPhoto(
-          selectedClass.id,
-          tk,
-          updatedClass.coverImage as File
-        );
+      if (response) {
+        await uploadClassPhoto(response.id, tk, updatedClass.coverImage);
       }
 
       const updatedCoverImage = updatedClass.coverImage
