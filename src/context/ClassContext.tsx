@@ -349,6 +349,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   useEffect(() => {
     const fetchLessons = async () => {
       if (!tk || !selectedClass) return;
+      setLessons([]);
       try {
         const fetchedLessons = await getLessonsByClassId(selectedClass.id, tk);
         setLessons(fetchedLessons || []);
