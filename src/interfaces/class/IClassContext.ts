@@ -8,7 +8,7 @@ export interface IClassContext {
   classes: IClass[];
   setClasses: (classes: IClass[]) => void;
   addClass: (data: ICreateClass) => void;
-  updateClass: (classId: string,data: Partial<IUpdateClass>) => void;
+  updateClass: (data: Partial<IUpdateClass>) => void;
   removeClass: (id: string) => void;
   addLesson: (data: ICreateLesson) => void;
   updateLesson: (id: string,data: Partial<IUpdateLesson>) => void;

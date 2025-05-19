@@ -120,10 +120,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
-  const updateClass = async (
-    classId: string,
-    updatedClass: Partial<IUpdateClass>
-  ) => {
+  const updateClass = async (updatedClass: Partial<IUpdateClass>) => {
     if (!tk || !selectedClass) return;
     try {
       setLoading(true);
@@ -154,7 +151,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       updateClassInState({
         ...selectedClass,
         ...filteredUpdate,
-        id: classId,
+        id: selectedClass.id,
         coverImage: updatedCoverImage,
       });
     } catch (error) {

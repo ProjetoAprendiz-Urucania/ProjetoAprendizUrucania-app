@@ -127,7 +127,7 @@ export function CreateCard({
       index >= 0 &&
       index < classes.length
     ) {
-      updateClass(classes[index].id, payload);
+      updateClass(payload);
     }
 
     setOpenProfileModal(false);
