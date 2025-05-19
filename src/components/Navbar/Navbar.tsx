@@ -415,13 +415,6 @@ function Navbar({ token, logout }: NavbarProps) {
             />
           </Box>
 
-          <input
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-          />
           <DialogActions sx={{ width: "100%" }}>
             <Button
               sx={{
@@ -429,10 +422,13 @@ function Navbar({ token, logout }: NavbarProps) {
                 color: "white",
                 fontWeight: 600,
                 width: "100%",
+                ":hover": {
+                  backgroundColor: "#A31421",
+                },
               }}
               onClick={() => {
                 if (selectedPhoto) {
-                  if (selectedPhoto.type.startsWith("image/")) {
+                  if (selectedPhoto.type) {
                     handleSave();
                   } else {
                     alert("O arquivo selecionado não é uma imagem válida.");
@@ -443,9 +439,7 @@ function Navbar({ token, logout }: NavbarProps) {
                 }
               }}
             >
-              {selectedPhoto && selectedPhoto.type.startsWith("image/")
-                ? "Salvar"
-                : "Fechar"}
+              {selectedPhoto?.type?.startsWith("image/") ? "Salvar" : "Fechar"}
             </Button>
           </DialogActions>
         </DialogContent>
