@@ -52,6 +52,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     try {
       setLoading(true);
       const response = await createClass(newClass, tk);
+
       if (response) {
         await uploadClassPhoto(response.id, tk, newClass.coverImage);
       }
@@ -131,11 +132,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       );
 
       if (response && updatedClass.coverImage) {
-        await uploadClassPhoto(
-          selectedClass.id,
-          tk,
-          updatedClass.coverImage as File
-        );
+        await uploadClassPhoto(selectedClass.id, tk, updatedClass.coverImage);
       }
 
       const updatedCoverImage = updatedClass.coverImage
