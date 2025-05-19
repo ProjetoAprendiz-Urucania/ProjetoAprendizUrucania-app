@@ -379,7 +379,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       }
     };
     fetchLessons();
-  }, [tk, selectedClass]);
+  }, [tk, selectedClass, classes]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
