@@ -55,5 +55,5 @@ export function updateLessonService(
   classData: Partial<IUpdateLesson>,
   token?: string
 ) {
-  return apiRequest(`classes/${classId}/${lessonId}`, "PUT", classData, token);
+  return apiRequest(`classes/${classId}/${lessonId}/uploadPhoto`, "PUT", classData, token);
 }
