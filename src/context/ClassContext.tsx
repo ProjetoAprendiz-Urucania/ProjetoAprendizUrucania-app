@@ -133,8 +133,12 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         tk
       );
 
-      if (response) {
-        await uploadClassPhoto(response.id, tk, updatedClass.coverImage);
+      if (response && updatedClass.coverImage) {
+        await uploadClassPhoto(
+          selectedClass.id,
+          tk,
+          updatedClass.coverImage as File
+        );
       }
 
       const updatedCoverImage = updatedClass.coverImage
@@ -235,14 +239,22 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         );
       }
 
-      const updatedLessons = (selectedClass.lessons || []).map((lesson) =>
+      const updatedCoverImage = updatedLesson.coverImage
+        ? URL.createObjectURL(updatedLesson.coverImage as File)
+        : response.coverImage;
+
+      const validUpdates = Object.fromEntries(
+        Object.entries(updatedLesson).filter(
+          ([, value]) => value !== undefined && value !== ""
+        )
+      );
+
+      const updatedLessons = selectedClass.lessons.map((lesson) =>
         lesson.id === lessonId
           ? {
               ...lesson,
-              ...response,
-              coverImage: updatedLesson.coverImage
-                ? URL.createObjectURL(updatedLesson.coverImage as File)
-                : lesson.coverImage,
+              ...validUpdates,
+              coverImage: updatedCoverImage,
             }
           : lesson
       );
@@ -252,7 +264,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         lessons: updatedLessons,
       });
     } catch (error) {
-      console.error("Erro ao atualizar aula:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
