@@ -114,9 +114,12 @@ export function CreateCard({
   };
 
   const handleUpdateClassCard = async () => {
+    console.log("asdasd");
+
     const payload: Partial<IUpdateClass> = {};
-    if (name) payload.name = name;
-    if (teachers) payload.teacherInfo = teachers;
+    payload.name = name;
+    payload.teacherInfo = teachers;
+    payload.coverImage = selectedPhoto ?? undefined;
 
     if (
       Object.keys(payload).length > 0 &&
@@ -124,7 +127,6 @@ export function CreateCard({
       index >= 0 &&
       index < classes.length
     ) {
-      console.log("asdasd");
       updateClass(classes[index].id, payload);
     }
 
@@ -146,6 +148,7 @@ export function CreateCard({
     payload.name = name;
     payload.teacher = teachers;
     payload.lessonLink = lessonLink;
+    payload.coverImage = selectedPhoto ?? undefined;
 
     if (Object.keys(payload).length > 0) {
       const completePayload: Partial<IUpdateLesson> = {
