@@ -27,7 +27,7 @@ export async function deleteLesson(classId: string, lessonId: string, token: str
 }
 
 
-export function uploadLessonPhoto(
+export function uploadLessonPhotoService(
   classId: string,
   lessonId: string,
   token: string,

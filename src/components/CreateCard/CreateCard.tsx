@@ -151,12 +151,7 @@ export function CreateCard({
     payload.coverImage = selectedPhoto ?? undefined;
 
     if (Object.keys(payload).length > 0) {
-      const completePayload: Partial<IUpdateLesson> = {
-        name: payload.name,
-        teacher: payload.teacher,
-        lessonLink: payload.lessonLink,
-      };
-      updateLesson(selectedClass.lessons[index].id, completePayload);
+      updateLesson(selectedClass.lessons[index].id, payload);
     }
 
     setOpenProfileModal(false);

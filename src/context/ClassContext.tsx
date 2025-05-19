@@ -22,7 +22,7 @@ import {
   deleteLesson,
   getLessonsByClassId,
   updateLessonService,
-  uploadLessonPhoto,
+  uploadLessonPhotoService,
 } from "../services/lesson.service";
 import {
   deleteMaterial,
@@ -166,7 +166,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       const response = await createLesson(selectedClass.id, newLesson, tk);
 
       if (response && newLesson.coverImage) {
-        await uploadLessonPhoto(
+        await uploadLessonPhotoService(
           selectedClass.id,
           response.id,
           tk,
@@ -225,7 +225,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       );
 
       if (response && updatedLesson.coverImage) {
-        await uploadLessonPhoto(
+        await uploadLessonPhotoService(
           selectedClass.id,
           lessonId,
           tk,
