@@ -436,19 +436,15 @@ function Navbar({ token, logout }: NavbarProps) {
                 },
               }}
               onClick={() => {
-                if (selectedPhoto) {
-                  if (selectedPhoto?.type) {
-                    handleSave();
-                  } else {
-                    alert("O arquivo selecionado não é uma imagem válida.");
-                  }
+                if (selectedPhoto instanceof File) {
+                  handleSave();
                 } else {
                   setOpenProfileModal(false);
                   setAnchorElMenu(null);
                 }
               }}
             >
-              {selectedPhoto?.type?.startsWith("image/") ? "Salvar" : "Fechar"}
+              {selectedPhoto ? "Salvar" : "Fechar"}
             </Button>
           </DialogActions>
         </DialogContent>
