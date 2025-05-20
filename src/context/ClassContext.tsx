@@ -368,18 +368,23 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   useEffect(() => {
-    const fetchLessons = async () => {
-      if (!tk || !selectedClass) return;
-      setLessons([]);
-      try {
-        const fetchedLessons = await getLessonsByClassId(selectedClass.id, tk);
-        setLessons(fetchedLessons || []);
-      } catch (error) {
-        console.error("Erro ao buscar aulas:", error);
-      }
-    };
-    fetchLessons();
-  }, [tk, selectedClass, classes]);
+    if (!loading) {
+      const fetchLessons = async () => {
+        if (!tk || !selectedClass) return;
+        setLessons([]);
+        try {
+          const fetchedLessons = await getLessonsByClassId(
+            selectedClass.id,
+            tk
+          );
+          setLessons(fetchedLessons || []);
+        } catch (error) {
+          console.error("Erro ao buscar aulas:", error);
+        }
+      };
+      fetchLessons();
+    }
+  }, [tk, loading]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();

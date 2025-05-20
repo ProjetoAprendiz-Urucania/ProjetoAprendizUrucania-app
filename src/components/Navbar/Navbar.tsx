@@ -170,7 +170,6 @@ function Navbar({ token, logout }: NavbarProps) {
     try {
       if (parsedUser?.id && selectedPhoto) {
         const res = await uploadProfilePhoto(parsedUser?.id, selectedPhoto);
-        console.log("response updated", res.updatedStudent?.profilePicture);
         setProfilePhoto(res.updatedStudent?.profilePicture);
 
         if (parsedUser) {
