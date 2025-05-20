@@ -140,10 +140,19 @@ function Navbar({ token, logout }: NavbarProps) {
 
           if (!ctx) return;
 
-          canvas.width = img.width;
-          canvas.height = img.height;
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let { width, height } = img;
 
-          ctx.drawImage(img, 0, 0);
+          if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+            width *= ratio;
+            height *= ratio;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
 
           canvas.toBlob(
             (blob) => {
@@ -152,9 +161,10 @@ function Navbar({ token, logout }: NavbarProps) {
                   [blob],
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
-                    type: "image/jpeg",
+                    type: blob.type || "image/jpeg",
                   }
                 );
+
                 setSelectedPhoto(jpegFile);
               }
             },
@@ -427,7 +437,7 @@ function Navbar({ token, logout }: NavbarProps) {
               }}
               onClick={() => {
                 if (selectedPhoto) {
-                  if (selectedPhoto.type) {
+                  if (selectedPhoto?.type) {
                     handleSave();
                   } else {
                     alert("O arquivo selecionado não é uma imagem válida.");
