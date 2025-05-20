@@ -12,15 +12,10 @@ import {
 } from "../services/class.service";
 import { useAuth } from "../hooks/useAuth";
 import { getStudentClasses } from "../services/studentClass.service";
-import {
-  ICreateLesson,
-  ILesson,
-  IUpdateLesson,
-} from "../interfaces/lesson/ILesson";
+import { ICreateLesson, IUpdateLesson } from "../interfaces/lesson/ILesson";
 import {
   createLesson,
   deleteLesson,
-  getLessonsByClassId,
   updateLessonService,
   uploadLessonPhotoService,
 } from "../services/lesson.service";
@@ -38,7 +33,6 @@ interface ClassProviderProps {
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
-  const [lessons, setLessons] = useState<ILesson[]>([]);
 
   const [selectedClassIndex, setSelectedClassIndex] = useState(-1);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
@@ -368,25 +362,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   useEffect(() => {
-    if (!loading) {
-      const fetchLessons = async () => {
-        if (!tk || !selectedClass) return;
-        setLessons([]);
-        try {
-          const fetchedLessons = await getLessonsByClassId(
-            selectedClass.id,
-            tk
-          );
-          setLessons(fetchedLessons || []);
-        } catch (error) {
-          console.error("Erro ao buscar aulas:", error);
-        }
-      };
-      fetchLessons();
-    }
-  }, [tk, loading]);
-
-  useEffect(() => {
     loadSelectedClassFromStorage();
   }, []);
 
@@ -410,7 +385,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         uploadMaterial,
         fetchStudentClasses,
         removeMaterial,
-        lessons,
       }}
     >
       {children}

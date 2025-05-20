@@ -1,4 +1,4 @@
-import { ICreateLesson,  ILesson,  IUpdateLesson } from "../lesson/ILesson";
+import { ICreateLesson,IUpdateLesson } from "../lesson/ILesson";
 import { IClass, ICreateClass, IUpdateClass } from "./IClass";
 
 export interface IClassContext {
@@ -19,5 +19,4 @@ export interface IClassContext {
   uploadMaterial: (selectedFile: File, selectedLesson: string) => void
   fetchStudentClasses: () => void;
   removeMaterial: (lessonId: string,materialId: string) => void;
-  lessons: ILesson[] | []
 }
