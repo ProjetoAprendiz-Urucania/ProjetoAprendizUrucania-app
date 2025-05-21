@@ -8,7 +8,7 @@ import { ProtectedRoute } from '../hoc/ProtectedRoute';
 import { LessonPage } from '../Pages/LessonPage';
 import { AppLayout } from '../layout/AppLayout';
 import { ClassProvider } from '../context/ClassContext';
-
+import { LoginForm } from '../components/LoginForm';
 export const routes = createBrowserRouter([
   {
     path: '/',
@@ -19,8 +19,9 @@ export const routes = createBrowserRouter([
     ),
     children: [
       {
+        index: true,
         path: '/login',
-        element: <AuthForm mode="login" />,
+        element: <LoginForm />,
       },
       {
         path: '/register',

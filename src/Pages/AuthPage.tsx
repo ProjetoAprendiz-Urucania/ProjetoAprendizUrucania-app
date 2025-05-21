@@ -11,14 +11,14 @@ export function AuthPage() {
   const location = useLocation();
   const path = location.pathname;
 
-  const getMode = (): AuthMode => {
-    if (path.includes('register')) return 'register';
-    if (path.includes('forgot')) return 'forgot';
-    if (path.includes('login')) return 'login';
-    return 'login';
-  };
+  // const getMode = (): AuthMode => {
+  //   if (path.includes('register')) return 'register';
+  //   if (path.includes('forgot')) return 'forgot';
+  //   if (path.includes('login')) return 'login';
+  //   return 'login';
+  // };
 
-  const mode = getMode();
+  // const mode = getMode();
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -63,11 +63,11 @@ export function AuthPage() {
           alignItems: 'center',
         }}
       >
-        {mode === 'newPassword' || mode === 'forgot' ? (
+        {/* {mode === 'newPassword' || mode === 'forgot' ? (
           <AuthFormPassword mode={mode} handleApiResponse={handleApiResponse} />
         ) : (
           <AuthForm mode={mode} handleApiResponse={handleApiResponse} />
-        )}
+        )} */}
 
         <Box
           component="img"

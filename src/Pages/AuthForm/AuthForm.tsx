@@ -255,6 +255,7 @@ const inputStyle = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  
   '& .MuiInputLabel-root.Mui-focused': {
     fontWeight: 'bold',
     color: '#ED3237',
