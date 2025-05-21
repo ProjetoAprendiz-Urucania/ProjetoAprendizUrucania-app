@@ -31,7 +31,6 @@ export function ClassPage() {
 
   const tk = localStorage.getItem("token");
 
-  // Buscar aulas
   useEffect(() => {
     if (!tk || !selectedClass) return;
     const fetchLessons = async () => {
@@ -45,7 +44,6 @@ export function ClassPage() {
     fetchLessons();
   }, [tk, selectedClass]);
 
-  // Buscar materiais teóricos
   useEffect(() => {
     if (!tk || !selectedClass) return;
     const fetchMaterials = async () => {
