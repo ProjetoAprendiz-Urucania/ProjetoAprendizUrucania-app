@@ -1,5 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, ReactNode, useEffect } from "react";
+import {
+  createContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useCallback,
+} from "react";
 import { IClassContext } from "../interfaces/class/IClassContext";
 import { IClass, ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
 import {
@@ -33,55 +39,58 @@ interface ClassProviderProps {
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
-
   const [selectedClassIndex, setSelectedClassIndex] = useState(-1);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
-
   const [loading, setLoading] = useState(false);
 
   const tk = localStorage.getItem("token");
 
-  const addClass = async (newClass: ICreateClass) => {
+  const handleApiCall = async (fn: () => Promise<void>) => {
     if (!tk) return;
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await createClass(newClass, tk);
-
-      if (response) {
-        await uploadClassPhoto(response.id, tk, newClass.coverImage);
-      }
-
-      setClasses((prev) => [
-        ...prev,
-        {
-          ...newClass,
-          id: response.id,
-          lessons: [],
-          coverImage: newClass.coverImage
-            ? URL.createObjectURL(newClass.coverImage)
-            : "",
-        } as IClass,
-      ]);
+      await fn();
     } catch (error) {
-      console.error("Erro ao criar classe:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const removeClass = async (classId: string) => {
-    if (!tk) return;
-    try {
-      setLoading(true);
-      await deleteClass(classId, tk);
-      const updatedClasses = classes.filter((item) => item.id !== classId);
-      setClasses(updatedClasses);
-    } catch (error) {
-      console.error("Erro ao remover classe:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const addClass = useCallback(
+    async (newClass: ICreateClass) => {
+      if (!tk) return;
+      await handleApiCall(async () => {
+        const response = await createClass(newClass, tk);
+        if (response) {
+          await uploadClassPhoto(response.id, tk, newClass.coverImage);
+          setClasses((prev) => [
+            ...prev,
+            {
+              ...newClass,
+              id: response.id,
+              lessons: [],
+              coverImage: newClass.coverImage
+                ? URL.createObjectURL(newClass.coverImage)
+                : "",
+            } as IClass,
+          ]);
+        }
+      });
+    },
+    [tk]
+  );
+
+  const removeClass = useCallback(
+    async (classId: string) => {
+      if (!tk) return;
+      await handleApiCall(async () => {
+        await deleteClass(classId, tk);
+        setClasses((prev) => prev.filter((item) => item.id !== classId));
+      });
+    },
+    [tk]
+  );
 
   const handleSelectedClass = (classIndex: number) => {
     const selected = {
@@ -93,260 +102,185 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     localStorage.setItem("selectedClassId", selected.id);
   };
 
-  const loadSelectedClassFromStorage = async () => {
+  const loadSelectedClassFromStorage = useCallback(async () => {
     if (!tk) return;
-
     const storedClassId = localStorage.getItem("selectedClassId");
-    if (!storedClassId) {
-      setSelectedClass(null);
-      return;
-    }
+    if (!storedClassId) return;
 
-    try {
-      setLoading(true);
-      const recoverClassData: IClass = await getClassById(storedClassId, tk);
-      setSelectedClass(recoverClassData);
-    } catch (error) {
-      console.error("Erro ao buscar classe por ID:", error);
-      localStorage.removeItem("selectedClassId");
-      setSelectedClass(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    await handleApiCall(async () => {
+      const classData = await getClassById(storedClassId, tk);
+      setSelectedClass(classData);
+    });
+  }, [tk]);
 
-  const updateClass = async (updatedClass: Partial<IUpdateClass>) => {
-    if (!tk || !selectedClass) return;
-    try {
-      setLoading(true);
-      const response = await updateClassService(
-        selectedClass.id,
-        updatedClass,
-        tk
-      );
-
-      if (response && updatedClass.coverImage) {
-        await uploadClassPhoto(selectedClass.id, tk, updatedClass.coverImage);
-      }
-
-      const updatedCoverImage = updatedClass.coverImage
-        ? URL.createObjectURL(updatedClass.coverImage as File)
-        : selectedClass.coverImage;
-
-      const filteredUpdate = Object.fromEntries(
-        Object.entries(updatedClass).filter(
-          ([, value]) => value !== undefined && value !== ""
-        )
-      );
-
-      updateClassInState({
-        ...selectedClass,
-        ...filteredUpdate,
-        id: selectedClass.id,
-        coverImage: updatedCoverImage,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addLesson = async (newLesson: ICreateLesson) => {
-    if (!tk || !selectedClass) return;
-    try {
-      setLoading(true);
-
-      const response = await createLesson(selectedClass.id, newLesson, tk);
-
-      if (response && newLesson.coverImage) {
-        await uploadLessonPhotoService(
+  const updateClass = useCallback(
+    async (updatedClass: Partial<IUpdateClass>) => {
+      if (!tk || !selectedClass) return;
+      await handleApiCall(async () => {
+        const response = await updateClassService(
           selectedClass.id,
-          response.id,
-          tk,
-          newLesson.coverImage
+          updatedClass,
+          tk
         );
-      }
+        if (response && updatedClass.coverImage) {
+          await uploadClassPhoto(selectedClass.id, tk, updatedClass.coverImage);
+        }
+        const updatedCoverImage = updatedClass.coverImage
+          ? URL.createObjectURL(updatedClass.coverImage as File)
+          : selectedClass.coverImage;
+        const filteredUpdate = Object.fromEntries(
+          Object.entries(updatedClass).filter(
+            ([, value]) => value !== undefined && value !== ""
+          )
+        );
+        updateClassInState({
+          ...selectedClass,
+          ...filteredUpdate,
+          id: selectedClass.id,
+          coverImage: updatedCoverImage,
+        });
+      });
+    },
+    [tk, selectedClass]
+  );
 
-      const updatedLessons = [
-        ...(selectedClass?.lessons || []),
-        {
-          ...response,
-          coverImage: newLesson.coverImage
-            ? URL.createObjectURL(newLesson.coverImage)
-            : "",
-        },
-      ];
+  const addLesson = useCallback(
+    async (newLesson: ICreateLesson) => {
+      if (!tk || !selectedClass) return;
+      await handleApiCall(async () => {
+        const response = await createLesson(selectedClass.id, newLesson, tk);
+        if (response && newLesson.coverImage) {
+          await uploadLessonPhotoService(
+            selectedClass.id,
+            response.id,
+            tk,
+            newLesson.coverImage
+          );
+        }
+        const updatedLessons = [
+          ...(selectedClass?.lessons || []),
+          {
+            ...response,
+            coverImage: newLesson.coverImage
+              ? URL.createObjectURL(newLesson.coverImage)
+              : "",
+          },
+        ];
+        updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
+      });
+    },
+    [tk, selectedClass]
+  );
 
-      updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
-    } catch (error) {
-      console.error("Erro ao criar aula:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const removeLesson = useCallback(
+    async (lessonId: string) => {
+      if (!tk || !selectedClass) return;
+      await handleApiCall(async () => {
+        await deleteLesson(selectedClass.id, lessonId, tk);
+        const updatedLessons =
+          selectedClass.lessons?.filter((l) => l.id !== lessonId) || [];
+        updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
+      });
+    },
+    [tk, selectedClass]
+  );
 
-  const removeLesson = async (lessonId: string) => {
-    if (!tk || !selectedClass) return;
-    try {
-      setLoading(true);
-      await deleteLesson(selectedClass.id, lessonId, tk);
-
-      const updatedLessons = selectedClass?.lessons
-        ? selectedClass.lessons.filter((item) => item.id !== lessonId)
-        : [];
-
-      updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
-    } catch (error) {
-      console.error("Erro ao remover aula:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateLesson = async (
-    lessonId: string,
-    updatedLesson: Partial<IUpdateLesson>
-  ) => {
-    if (!tk || !selectedClass) return;
-    setLoading(true);
-    try {
-      const response = await updateLessonService(
-        selectedClass.id,
-        lessonId,
-        updatedLesson,
-        tk
-      );
-
-      if (response && updatedLesson.coverImage) {
-        await uploadLessonPhotoService(
+  const updateLesson = useCallback(
+    async (lessonId: string, updatedLesson: Partial<IUpdateLesson>) => {
+      if (!tk || !selectedClass) return;
+      await handleApiCall(async () => {
+        const response = await updateLessonService(
           selectedClass.id,
           lessonId,
-          tk,
-          updatedLesson.coverImage as File
+          updatedLesson,
+          tk
         );
-      }
-
-      const updatedCoverImage = updatedLesson.coverImage
-        ? URL.createObjectURL(updatedLesson.coverImage as File)
-        : response.coverImage;
-
-      const validUpdates = Object.fromEntries(
-        Object.entries(updatedLesson).filter(
-          ([, value]) => value !== undefined && value !== ""
-        )
-      );
-
-      const updatedLessons = selectedClass.lessons.map((lesson) =>
-        lesson.id === lessonId
-          ? {
-              ...lesson,
-              ...validUpdates,
-              coverImage: updatedCoverImage,
-            }
-          : lesson
-      );
-
-      updateClassInState({
-        id: selectedClass.id,
-        lessons: updatedLessons,
+        if (response && updatedLesson.coverImage) {
+          await uploadLessonPhotoService(
+            selectedClass.id,
+            lessonId,
+            tk,
+            updatedLesson.coverImage
+          );
+        }
+        const updatedCoverImage = updatedLesson.coverImage
+          ? URL.createObjectURL(updatedLesson.coverImage as File)
+          : response.coverImage;
+        const validUpdates = Object.fromEntries(
+          Object.entries(updatedLesson).filter(
+            ([, value]) => value !== undefined && value !== ""
+          )
+        );
+        const updatedLessons = selectedClass.lessons.map((lesson) =>
+          lesson.id === lessonId
+            ? { ...lesson, ...validUpdates, coverImage: updatedCoverImage }
+            : lesson
+        );
+        updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
       });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [tk, selectedClass]
+  );
 
   const updateClassInState = (
     updatedClassData: Partial<IClass> & { id: string }
   ) => {
     setClasses((prevClasses) =>
       prevClasses.map((c) =>
-        c.id === updatedClassData.id
-          ? {
-              ...c,
-              ...updatedClassData,
-            }
-          : c
+        c.id === updatedClassData.id ? { ...c, ...updatedClassData } : c
       )
     );
-
-    setSelectedClass((prev) => {
-      if (!prev) return null;
-      if (prev.id === updatedClassData.id) {
-        return { ...prev, ...updatedClassData };
-      }
-      return prev;
-    });
+    setSelectedClass((prev) =>
+      prev?.id === updatedClassData.id ? { ...prev, ...updatedClassData } : prev
+    );
   };
 
-  const uploadMaterial = async (selectedFile: File, selectedLesson: string) => {
-    if (!selectedClass || !tk) return;
-    try {
-      setLoading(true);
-
-      const updatedClassData = await uploadMaterialService(
-        selectedClass.id,
-        selectedLesson,
-        selectedFile,
-        tk
-      );
-
-      setSelectedClass((prev) => {
-        if (!prev) return null;
-        if (prev.id === selectedClass.id) {
-          return { ...prev, ...updatedClassData };
-        }
-        return prev;
+  const uploadMaterial = useCallback(
+    async (file: File, lessonId: string) => {
+      if (!tk || !selectedClass) return;
+      await handleApiCall(async () => {
+        const updatedData = await uploadMaterialService(
+          selectedClass.id,
+          lessonId,
+          file,
+          tk
+        );
+        setSelectedClass((prev) =>
+          prev?.id === selectedClass.id ? { ...prev, ...updatedData } : prev
+        );
       });
-    } catch (error) {
-      console.error("Erro ao enviar o arquivo:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [tk, selectedClass]
+  );
 
-  const removeMaterial = async (lessonId: string, materialId: string) => {
-    if (!selectedClass || !tk) return;
-    try {
-      setLoading(true);
-      const updatedClassData = await deleteMaterial(
-        selectedClass.id,
-        lessonId,
-        materialId
-      );
-
-      setSelectedClass((prev) => {
-        if (!prev) return null;
-        if (prev.id === selectedClass.id) {
-          return { ...prev, theoryMaterials: updatedClassData };
-        }
-        return prev;
+  const removeMaterial = useCallback(
+    async (lessonId: string, materialId: string) => {
+      if (!tk || !selectedClass) return;
+      await handleApiCall(async () => {
+        const updatedData = await deleteMaterial(
+          selectedClass.id,
+          lessonId,
+          materialId
+        );
+        setSelectedClass((prev) =>
+          prev?.id === selectedClass.id
+            ? { ...prev, theoryMaterials: updatedData }
+            : prev
+        );
       });
-    } catch (error) {
-      console.error("Failed to delete material:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [tk, selectedClass]
+  );
 
-  const fetchStudentClasses = async () => {
-    if (!tk || !user) {
-      console.error("Erro: Token ou usuário inexistente.");
-      return;
-    }
-
-    try {
+  const fetchStudentClasses = useCallback(async () => {
+    if (!tk || !user) return;
+    await handleApiCall(async () => {
       const role = user.role;
       const response =
         role === "admin"
           ? await getAdminClasses(tk)
           : await getStudentClasses(user.id, tk);
-
-      if (!response) return;
-
-      const fetchedClasses =
+      const fetched =
         role === "admin"
           ? Array.isArray(response)
             ? response
@@ -354,16 +288,13 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           : Array.isArray(response.classes)
           ? response.classes
           : [];
-
-      setClasses(fetchedClasses);
-    } catch (error) {
-      console.error("Erro ao buscar turmas:", error);
-    }
-  };
+      setClasses(fetched);
+    });
+  }, [tk, user]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
-  }, []);
+  }, [loadSelectedClassFromStorage]);
 
   return (
     <ClassContext.Provider
