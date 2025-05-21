@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { ContentCard } from "../components/ContentCard/ContentCard";
 import { Box, Typography } from "@mui/material";
-import { SearchBar } from "../components/SearchBar/SearchBar";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
+
+import { SearchBar } from "../components/SearchBar/SearchBar";
+import { ContentCard } from "../components/ContentCard/ContentCard";
 import { CreateCardButton } from "../components/CreateCardButton/CreateCardButton";
 import { CreateMaterialButton } from "../components/CreateMaterialButton/CreateMaterialButton";
+import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
+
 import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
-import { getAllMaterials } from "../services/theoryMaterials.service";
-import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-import { ILesson } from "../interfaces/lesson/ILesson";
+
 import { getLessonsByClassId } from "../services/lesson.service";
+import { getAllMaterials } from "../services/theoryMaterials.service";
+
+import { ILesson } from "../interfaces/lesson/ILesson";
+import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 
 export function ClassPage() {
   const { user } = useAuth();
@@ -21,18 +25,19 @@ export function ClassPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
-  const tk = localStorage.getItem("token");
 
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
 
+  const tk = localStorage.getItem("token");
+
+  // Buscar aulas
   useEffect(() => {
+    if (!tk || !selectedClass) return;
     const fetchLessons = async () => {
-      if (!tk || !selectedClass) return;
-      setLessons([]);
       try {
-        const fetchedLessons = await getLessonsByClassId(selectedClass.id, tk);
-        setLessons(fetchedLessons || []);
+        const res = await getLessonsByClassId(selectedClass.id, tk);
+        setLessons(res || []);
       } catch (error) {
         console.error("Erro ao buscar aulas:", error);
       }
@@ -40,12 +45,13 @@ export function ClassPage() {
     fetchLessons();
   }, [tk, selectedClass]);
 
+  // Buscar materiais teóricos
   useEffect(() => {
+    if (!tk || !selectedClass) return;
     const fetchMaterials = async () => {
-      if (!tk || !selectedClass) return;
       try {
-        const fetchedMaterials = await getAllMaterials(selectedClass.id, tk);
-        setMaterials(fetchedMaterials || []);
+        const res = await getAllMaterials(selectedClass.id, tk);
+        setMaterials(res || []);
       } catch (error) {
         console.error("Erro ao buscar materiais:", error);
       }
@@ -53,25 +59,30 @@ export function ClassPage() {
     fetchMaterials();
   }, [tk, selectedClass]);
 
+  const filteredLessons = lessons.filter((lesson) =>
+    lesson.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredMaterials = materials.filter((material) =>
+    material.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+      {/* --- AULAS --- */}
       <Box
-        sx={{
-          textAlign: "left",
-          marginBottom: 1,
-          display: "flex",
-          alignItems: "center",
-        }}
+        sx={{ textAlign: "left", mb: 1, display: "flex", alignItems: "center" }}
       >
         {!lessonsDrop ? (
           <KeyboardArrowUpIcon
-            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
             onClick={() => setLessonsDrop(true)}
           />
         ) : (
           <KeyboardArrowDownIcon
-            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
             onClick={() => setLessonsDrop(false)}
           />
         )}
@@ -79,55 +90,35 @@ export function ClassPage() {
           Aulas
         </Typography>
       </Box>
-      {!lessonsDrop &&
-        ((lessons ?? 0) && !searchTerm
-          ? (lessons || []).map((lessonItem, index) => {
-              return (
-                <ContentCard
-                  key={lessonItem.id}
-                  id={lessonItem.id}
-                  index={index}
-                  name={lessonItem.name}
-                  teacherInfo={lessonItem.teacher}
-                  coverImage={
-                    lessonItem.coverImage ? lessonItem.coverImage : ""
-                  }
-                />
-              );
-            })
-          : Array.isArray(lessons)
-          ? (lessons ?? [])
-              .filter((lessonItem) =>
-                lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((lessonItem, index) => (
-                <ContentCard
-                  key={lessonItem.id}
-                  id={lessonItem.id}
-                  index={index}
-                  name={lessonItem.name}
-                  teacherInfo={lessonItem.teacher}
-                  coverImage={lessonItem.coverImage ?? ""}
-                />
-              ))
-          : null)}
-      <CreateCardButton />
+
+      {!lessonsDrop && (
+        <>
+          {(searchTerm ? filteredLessons : lessons).map((lesson, index) => (
+            <ContentCard
+              key={lesson.id}
+              id={lesson.id}
+              index={index}
+              name={lesson.name}
+              teacherInfo={lesson.teacher}
+              coverImage={lesson.coverImage || ""}
+            />
+          ))}
+          <CreateCardButton />
+        </>
+      )}
+
+      {/* --- MATERIAIS TEÓRICOS --- */}
       <Box
-        sx={{
-          textAlign: "left",
-          my: 2,
-          display: "flex",
-          alignItems: "center",
-        }}
+        sx={{ textAlign: "left", my: 2, display: "flex", alignItems: "center" }}
       >
         {!materialDrop ? (
           <KeyboardArrowUpIcon
-            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
             onClick={() => setMaterialDrop(true)}
           />
         ) : (
           <KeyboardArrowDownIcon
-            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
             onClick={() => setMaterialDrop(false)}
           />
         )}
@@ -135,39 +126,21 @@ export function ClassPage() {
           Materiais Teóricos
         </Typography>
       </Box>
-      {!materialDrop &&
-        (!searchTerm
-          ? (materials ?? []).map((materialItem) => {
-              return materialItem ? (
-                <TheoryMaterialItem
-                  key={materialItem.id}
-                  {...materialItem}
-                  lessonId={materialItem.lessonId || ""}
-                  classId={selectedClass?.id || ""}
-                  materialId={materialItem.id}
-                />
-              ) : null;
-            })
-          : (materials ?? [])
-              .filter((materialItem) =>
-                materialItem.name
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase())
-              )
-              .map((materialItem) => {
-                return materialItem ? (
-                  <TheoryMaterialItem
-                    key={materialItem.id}
-                    {...materialItem}
-                    lessonId={materialItem.lessonId || ""}
-                    classId={selectedClass?.id || ""}
-                    materialId={materialItem.id}
-                  />
-                ) : null;
-              }))}
-      {user?.role === "admin" ? (
-        <CreateMaterialButton lessons={lessons || []} />
-      ) : null}
+
+      {!materialDrop && (
+        <>
+          {(searchTerm ? filteredMaterials : materials).map((material) => (
+            <TheoryMaterialItem
+              key={material.id}
+              {...material}
+              lessonId={material.lessonId || ""}
+              classId={selectedClass?.id || ""}
+              materialId={material.id}
+            />
+          ))}
+          {user?.role === "admin" && <CreateMaterialButton lessons={lessons} />}
+        </>
+      )}
     </>
   );
 }
