@@ -295,7 +295,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           : [];
       setClasses(fetched);
     });
-  }, [tk, user]);
+  }, [tk, selectedClass]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();

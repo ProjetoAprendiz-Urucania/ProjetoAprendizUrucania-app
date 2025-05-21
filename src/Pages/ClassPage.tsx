@@ -68,8 +68,6 @@ export function ClassPage() {
   return (
     <>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
-      {/* --- AULAS --- */}
       <Box
         sx={{ textAlign: "left", mb: 1, display: "flex", alignItems: "center" }}
       >
@@ -105,7 +103,6 @@ export function ClassPage() {
         </>
       )}
 
-      {/* --- MATERIAIS TEÓRICOS --- */}
       <Box
         sx={{ textAlign: "left", my: 2, display: "flex", alignItems: "center" }}
       >
