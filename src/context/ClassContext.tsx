@@ -93,6 +93,11 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   );
 
   const handleSelectedClass = (classIndex: number) => {
+    if (classIndex < 0 || classIndex >= classes.length) {
+      console.warn("Índice de classe inválido:", classIndex);
+      return;
+    }
+
     const selected = {
       ...classes[classIndex],
       lessons: classes[classIndex].lessons || [],
