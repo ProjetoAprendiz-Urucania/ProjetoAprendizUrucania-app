@@ -42,7 +42,7 @@ export function ClassPage() {
       }
     };
     fetchLessons();
-  }, [tk, selectedClass]);
+  }, []);
 
   useEffect(() => {
     if (!tk || !selectedClass) return;
@@ -55,7 +55,7 @@ export function ClassPage() {
       }
     };
     fetchMaterials();
-  }, [tk, selectedClass]);
+  }, []);
 
   const filteredLessons = lessons.filter((lesson) =>
     lesson.name.toLowerCase().includes(searchTerm.toLowerCase())
