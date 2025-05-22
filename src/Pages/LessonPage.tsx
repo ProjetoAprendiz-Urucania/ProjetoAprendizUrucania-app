@@ -7,54 +7,28 @@ import {
   KeyboardArrowUp as KeyboardArrowUpIcon,
 } from "@mui/icons-material";
 
-import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-import { getMaterialsByLesson } from "../services/theoryMaterials.service";
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
 import { confirmPresence } from "../services/frequencyList";
 import { useClass } from "../hooks/useClass";
 import { getLesson } from "../services/lesson.service";
 import { ILesson } from "../interfaces/lesson/ILesson";
+import { getMaterialsByLesson } from "../services/theoryMaterials.service";
+import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 
 export function LessonPage() {
   const { lessonId } = useParams<{
     lessonId: string;
   }>();
-  const { selectedClass, fetchLessons } = useClass();
-  const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
+  const { selectedClass } = useClass();
+  const [lessonMaterials, setLessonMaterials] = useState<
+    ITheoryMaterial[] | []
+  >([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
   const [link, setLink] = useState<string | undefined>();
-
-  useEffect(() => {
-    fetchLessons();
-  }, []);
-
-  useEffect(() => {
-    const fetchMaterials = async () => {
-      if (!selectedClass?.id || !lessonId) return;
-
-      if (!tk) {
-        console.log("err get classes() token inexistente");
-        return;
-      }
-
-      try {
-        const materials = await getMaterialsByLesson(
-          selectedClass.id,
-          lessonId,
-          tk
-        );
-        setMaterials(materials);
-      } catch (error) {
-        console.error("Erro ao buscar materiais:", error);
-      }
-    };
-
-    fetchMaterials();
-  }, [selectedClass?.id, lessonId]);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -71,6 +45,30 @@ export function LessonPage() {
       }
     };
     fetchLesson();
+  }, [selectedClass?.id, lessonId]);
+
+  useEffect(() => {
+    const fetchLessonMaterials = async () => {
+      if (!selectedClass?.id || !lessonId) return;
+
+      if (!tk) {
+        console.log("err get classes() token inexistente");
+        return;
+      }
+
+      try {
+        const materials: ITheoryMaterial[] = await getMaterialsByLesson(
+          selectedClass.id,
+          lessonId,
+          tk
+        );
+        setLessonMaterials(materials);
+      } catch (error) {
+        console.error("Erro ao buscar materiais:", error);
+      }
+    };
+
+    fetchLessonMaterials();
   }, [selectedClass?.id, lessonId]);
 
   const handleConfirmPresence = async () => {
@@ -184,8 +182,8 @@ export function LessonPage() {
       </Box>
 
       {!materialDrop &&
-        materials.length > 0 &&
-        materials.map((materialItem) => (
+        lessonMaterials.length > 0 &&
+        lessonMaterials.map((materialItem) => (
           <TheoryMaterialItem
             id={materialItem.id}
             name={materialItem.name}
