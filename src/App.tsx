@@ -44,7 +44,9 @@ function App() {
         sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
       >
         {!isLoginPage && !isRegisterPage && !isForgot && !isNewPassword && (
-          <Navbar logout={logout} token={token} />
+          <ClassProvider>
+            <Navbar logout={logout} token={token} />
+          </ClassProvider>
         )}
 
         <Container

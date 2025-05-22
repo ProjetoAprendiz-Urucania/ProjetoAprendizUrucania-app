@@ -25,6 +25,7 @@ import {
   uploadProfilePhoto,
   deleteProfilePhoto,
 } from "../../services/user.service";
+import { useClass } from "../../hooks/useClass";
 
 const menuNavigation = ["Turmas", "Sair"];
 const avatarMenuOptions = ["Alterar Foto"];
@@ -35,6 +36,7 @@ interface NavbarProps {
 }
 
 function Navbar({ token, logout }: NavbarProps) {
+  const { setSelectedClass } = useClass();
   const user = localStorage.getItem("user");
 
   let parsedUser = null;
@@ -108,6 +110,7 @@ function Navbar({ token, logout }: NavbarProps) {
 
   const handleNavigate = () => {
     if (isClassPage) {
+      setSelectedClass(null);
       navigate("/classes");
     } else if (isLessonPage) {
       navigate(

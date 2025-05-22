@@ -12,48 +12,17 @@ import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial"
 import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
 
-import { getLessonsByClassId } from "../services/lesson.service";
-import { getAllMaterials } from "../services/theoryMaterials.service";
-
-import { ILesson } from "../interfaces/lesson/ILesson";
-import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
-
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass } = useClass();
+  const { selectedClass, fetchLessons, lessons, fetchMaterials, materials } =
+    useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
 
-  const [lessons, setLessons] = useState<ILesson[]>([]);
-  const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
-
-  const tk = localStorage.getItem("token");
-
   useEffect(() => {
-    if (!tk || !selectedClass) return;
-    const fetchLessons = async () => {
-      try {
-        const res = await getLessonsByClassId(selectedClass.id, tk);
-        setLessons(res || []);
-      } catch (error) {
-        console.error("Erro ao buscar aulas:", error);
-      }
-    };
     fetchLessons();
-  }, []);
-
-  useEffect(() => {
-    if (!tk || !selectedClass) return;
-    const fetchMaterials = async () => {
-      try {
-        const res = await getAllMaterials(selectedClass.id, tk);
-        setMaterials(res || []);
-      } catch (error) {
-        console.error("Erro ao buscar materiais:", error);
-      }
-    };
     fetchMaterials();
   }, []);
 

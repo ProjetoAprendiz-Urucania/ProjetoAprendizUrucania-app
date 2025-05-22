@@ -18,17 +18,24 @@ import {
 } from "../services/class.service";
 import { useAuth } from "../hooks/useAuth";
 import { getStudentClasses } from "../services/studentClass.service";
-import { ICreateLesson, IUpdateLesson } from "../interfaces/lesson/ILesson";
+import {
+  ICreateLesson,
+  ILesson,
+  IUpdateLesson,
+} from "../interfaces/lesson/ILesson";
 import {
   createLesson,
   deleteLesson,
+  getLessonsByClassId,
   updateLessonService,
   uploadLessonPhotoService,
 } from "../services/lesson.service";
 import {
   deleteMaterial,
+  getAllMaterials,
   uploadMaterialService,
 } from "../services/theoryMaterials.service";
+import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
 
@@ -39,6 +46,8 @@ interface ClassProviderProps {
 export const ClassProvider = ({ children }: ClassProviderProps) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState<IClass[]>([]);
+  const [lessons, setLessons] = useState<ILesson[]>([]);
+  const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [selectedClassIndex, setSelectedClassIndex] = useState(-1);
   const [selectedClass, setSelectedClass] = useState<IClass | null>(null);
   const [loading, setLoading] = useState(false);
@@ -277,6 +286,27 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     [tk, selectedClass]
   );
 
+  const fetchMaterials = async () => {
+    if (!tk || !selectedClass) return;
+    try {
+      const res = await getAllMaterials(selectedClass.id, tk);
+      setMaterials(res || []);
+    } catch (error) {
+      console.error("Erro ao buscar materiais:", error);
+    }
+  };
+  fetchMaterials();
+
+  const fetchLessons = async () => {
+    if (!tk || !selectedClass) return;
+    try {
+      const res = await getLessonsByClassId(selectedClass.id, tk);
+      setLessons(res || []);
+    } catch (error) {
+      console.error("Erro ao buscar aulas:", error);
+    }
+  };
+
   const fetchStudentClasses = useCallback(async () => {
     if (!tk || !user) return;
     await handleApiCall(async () => {
@@ -296,6 +326,10 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       setClasses(fetched);
     });
   }, [tk, selectedClass]);
+
+  useEffect(() => {
+    fetchLessons();
+  }, [selectedClass]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
@@ -321,6 +355,10 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         uploadMaterial,
         fetchStudentClasses,
         removeMaterial,
+        fetchLessons,
+        fetchMaterials,
+        materials,
+        lessons,
       }}
     >
       {children}
