@@ -13,18 +13,24 @@ import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial"
 import { VideoPlayer } from "../components/Video/VideoPlayer";
 import { confirmPresence } from "../services/frequencyList";
 import { useClass } from "../hooks/useClass";
+import { getLesson } from "../services/lesson.service";
+import { ILesson } from "../interfaces/lesson/ILesson";
 
 export function LessonPage() {
   const { lessonId } = useParams<{
     lessonId: string;
   }>();
-  const { selectedClass, lessons } = useClass();
+  const { selectedClass, fetchLessons } = useClass();
   const [materials, setMaterials] = useState<ITheoryMaterial[]>([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
   const [link, setLink] = useState<string | undefined>();
+
+  useEffect(() => {
+    fetchLessons();
+  }, []);
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -48,18 +54,24 @@ export function LessonPage() {
     };
 
     fetchMaterials();
-  }, [selectedClass?.id, lessonId, tk]);
+  }, [selectedClass?.id, lessonId]);
 
   useEffect(() => {
-    const fetchLessonLink = () => {
-      setLink(
-        (lessons ?? []).find((lesson) => lesson.id === lessonId)?.lessonLink ||
-          ""
-      );
+    const fetchLesson = async () => {
+      if (!selectedClass || !lessonId || !tk) return;
+      try {
+        const lesson: ILesson = await getLesson(
+          selectedClass?.id,
+          lessonId,
+          tk
+        );
+        setLink(lesson.lessonLink);
+      } catch (error) {
+        console.error(error);
+      }
     };
-
-    fetchLessonLink();
-  }, [lessonId, tk]);
+    fetchLesson();
+  }, [selectedClass?.id, lessonId]);
 
   const handleConfirmPresence = async () => {
     try {
