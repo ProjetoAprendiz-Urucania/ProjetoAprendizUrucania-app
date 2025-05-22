@@ -39,7 +39,7 @@ export function LessonPage() {
         const materials = await getMaterialsByLesson(
           selectedClass.id,
           lessonId,
-          tk
+          tk,
         );
         setMaterials(materials);
       } catch (error) {
@@ -54,7 +54,7 @@ export function LessonPage() {
     const fetchLessonLink = () => {
       setLink(
         (lessons ?? []).find((lesson) => lesson.id === lessonId)?.lessonLink ||
-          ""
+          "",
       );
     };
 

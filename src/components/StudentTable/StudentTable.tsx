@@ -30,7 +30,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
   const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [studentsWithClasses, setStudentsWithClasses] = useState<IStudent[]>(
-    []
+    [],
   );
   const [actionType, setActionType] = useState<"add" | "remove" | null>(null);
   const token = localStorage.getItem("token") || "";
@@ -52,11 +52,11 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           } catch (error) {
             console.error(
               `Erro ao buscar turmas do aluno ${student.name}:`,
-              error
+              error,
             );
             return { ...student, classes: [] };
           }
-        })
+        }),
       );
 
       setStudentsWithClasses(updatedStudents);
@@ -217,7 +217,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
                     selectedStudent?.classes?.map((c) => c.name) || [];
 
                   const isInClass = currentClassNames.includes(
-                    classItem.name ?? ""
+                    classItem.name ?? "",
                   );
 
                   if (actionType === "add") return !isInClass;

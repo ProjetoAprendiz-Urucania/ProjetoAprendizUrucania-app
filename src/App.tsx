@@ -68,8 +68,8 @@ function App() {
                         ? "/newPassword/:token"
                         : "/classes"
                       : isNewPassword
-                      ? "/newPassword/:token"
-                      : "/login"
+                        ? "/newPassword/:token"
+                        : "/login"
                   }
                   replace
                 />

@@ -27,11 +27,11 @@ export function ClassPage() {
   }, []);
 
   const filteredLessons = lessons.filter((lesson) =>
-    lesson.name.toLowerCase().includes(searchTerm.toLowerCase())
+    lesson.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const filteredMaterials = materials.filter((material) =>
-    material.name.toLowerCase().includes(searchTerm.toLowerCase())
+    material.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

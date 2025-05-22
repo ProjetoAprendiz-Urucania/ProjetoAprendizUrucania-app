@@ -6,7 +6,7 @@ export interface IClass {
   name: string;
   teachers: string;
   coverImage: string;
-  lessons: ILesson[]
+  lessons: ILesson[];
   theoryMaterials?: ITheoryMaterial[];
 }
 
@@ -16,7 +16,7 @@ export interface ICreateClass {
   coverImage?: File;
 }
 
-export interface IUpdateClass{
+export interface IUpdateClass {
   name?: string;
   teacherInfo?: string;
   teachers?: string;

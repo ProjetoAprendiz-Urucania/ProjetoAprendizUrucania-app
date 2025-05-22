@@ -30,7 +30,7 @@ interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
   handleApiResponse: (
     message: string,
-    severity: "success" | "error" | "info" | "warning"
+    severity: "success" | "error" | "info" | "warning",
   ) => void;
 }
 
@@ -77,7 +77,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
         if (res === "userExists") {
           setEmail("");
           setSuccess(
-            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
+            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login",
           );
           setTimeout(() => navigate("/login"), 3000);
         }

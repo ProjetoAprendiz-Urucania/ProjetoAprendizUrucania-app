@@ -10,7 +10,7 @@ export async function apiRequest(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE",
   body?: unknown,
-  token?: string
+  token?: string,
 ) {
   try {
     const headers: Record<string, string> = {};
@@ -21,7 +21,6 @@ export async function apiRequest(
 
     if (body instanceof FormData) {
       headers["Content-Type"] = "multipart/form-data; boundary";
-
     } else {
       headers["Content-Type"] = "application/json";
     }
@@ -30,7 +29,7 @@ export async function apiRequest(
       url: endpoint,
       method,
       headers,
-      data: body, 
+      data: body,
     };
 
     const response: AxiosResponse = await axiosInstance(config);
@@ -45,7 +44,7 @@ export async function apiRequest(
 
       throw new Error(
         error.response?.data?.error ||
-          `Erro: ${error.response?.status} - ${error.response?.statusText}`
+          `Erro: ${error.response?.status} - ${error.response?.statusText}`,
       );
     }
 

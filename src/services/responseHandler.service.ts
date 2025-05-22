@@ -8,7 +8,7 @@ export default async function handleResponse(response: AxiosResponse) {
     throw new Error("Sessão expirada. Faça login novamente.");
   }
 
-  return response.data; 
+  return response.data;
 }
 
 export async function handleResponseStudent(response: AxiosResponse) {
@@ -21,4 +21,3 @@ export async function handleResponseStudent(response: AxiosResponse) {
 
   return { status: response.status, ...response.data };
 }
-

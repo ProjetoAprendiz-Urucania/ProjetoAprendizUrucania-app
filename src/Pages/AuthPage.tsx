@@ -32,7 +32,7 @@ export function AuthPage() {
 
   const handleApiResponse = (
     message: string,
-    severity: "success" | "error" | "info" | "warning"
+    severity: "success" | "error" | "info" | "warning",
   ) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
