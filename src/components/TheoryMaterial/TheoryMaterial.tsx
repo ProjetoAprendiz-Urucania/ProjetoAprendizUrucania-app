@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useClass } from "../../hooks/useClass";
+import { useApp } from "../../context/AppContext";
 
 export interface TheoryMaterialProps {
   id: string;
@@ -20,6 +21,7 @@ export function TheoryMaterialItem({
   lessonId,
 }: TheoryMaterialProps) {
   const { removeMaterial } = useClass();
+  const { handleMessage } = useApp();
 
   const handleOpenFile = () => {
     window.open(fileUrl, "_blank", "noopener,noreferrer");
@@ -27,6 +29,10 @@ export function TheoryMaterialItem({
 
   const handleDeleteFile = () => {
     removeMaterial(lessonId, materialId);
+    handleMessage("Material excluído com sucesso!", "success", {
+      vertical: "bottom",
+      horizontal: "left",
+    });
   };
 
   return (

@@ -13,6 +13,7 @@ import addfile from "../../assets/img/UploadFile/addfile.svg";
 import { useState } from "react";
 import { ILesson } from "../../interfaces/lesson/ILesson";
 import { useClass } from "../../hooks/useClass";
+import { useApp } from "../../context/AppContext";
 
 export function UploadFile({
   lessons,
@@ -23,6 +24,7 @@ export function UploadFile({
 }) {
   const { user } = useAuth();
   const { uploadMaterial } = useClass();
+  const { handleMessage } = useApp();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string>("");
@@ -46,6 +48,10 @@ export function UploadFile({
     setSelectedFile(null);
     setSelectedLesson("");
     setIsUploading(false);
+    handleMessage("Lição adicionada com sucesso!", "success", {
+      vertical: "bottom",
+      horizontal: "left",
+    });
   };
 
   return (

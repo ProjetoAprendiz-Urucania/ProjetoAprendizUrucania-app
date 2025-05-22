@@ -19,6 +19,7 @@ import imLogo from "../../assets/img/Form/im_logo.png";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { useApp } from "../../context/AppContext";
 
 interface ITokenPayload extends JwtPayload {
   id: string;
@@ -30,7 +31,7 @@ interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
   handleApiResponse: (
     message: string,
-    severity: "success" | "error" | "info" | "warning",
+    severity: "success" | "error" | "info" | "warning"
   ) => void;
 }
 
@@ -51,6 +52,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
   const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
+  const { handleMessage } = useApp();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,11 +62,17 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
 
     if (isForgot) {
       if (!email.trim()) {
-        setError("Preencha todos os campos obrigatórios");
+        handleMessage("Preencha com seu email", "error", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
         return;
       }
     } else if (!newPassword.trim()) {
-      setError("Preencha todos os campos obrigatórios");
+      handleMessage("Preencha todos os campos obrigatórios", "error", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
       return;
     }
 
@@ -77,7 +85,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
         if (res === "userExists") {
           setEmail("");
           setSuccess(
-            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login",
+            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
           );
           setTimeout(() => navigate("/login"), 3000);
         }

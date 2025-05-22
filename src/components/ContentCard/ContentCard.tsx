@@ -16,6 +16,7 @@ import { useAuth } from "../../hooks/useAuth";
 import options from "../../assets/img/ContentCard/options.png";
 import { CreateCard } from "../CreateCard/CreateCard";
 import { useClass } from "../../hooks/useClass";
+import { useApp } from "../../context/AppContext";
 
 const adminMenu = ["Editar", "Excluir"];
 
@@ -27,6 +28,7 @@ export function ContentCard({
   coverImage,
 }: ICardData) {
   const { user } = useAuth();
+  const { handleMessage } = useApp();
   const { handleSelectedClass, selectedClass, removeClass, removeLesson } =
     useClass();
   const token = localStorage.getItem("token");
@@ -62,7 +64,7 @@ export function ContentCard({
       e.stopPropagation();
       setAnchorEl(e.currentTarget);
     },
-    [],
+    []
   );
 
   const handleCloseMenu = useCallback(() => {
@@ -81,10 +83,11 @@ export function ContentCard({
         try {
           if (!isClassesPage) {
             removeLesson(id);
-          } else {
-            console.log("class");
-            removeClass(id);
-          }
+            handleMessage("Aula excluída com sucesso.", "success", {
+              vertical: "bottom",
+              horizontal: "left",
+            });
+          } 
         } catch (error) {
           console.error("Erro ao excluir:", error);
         }
@@ -100,7 +103,7 @@ export function ContentCard({
       removeLesson,
       removeClass,
       id,
-    ],
+    ]
   );
 
   return (

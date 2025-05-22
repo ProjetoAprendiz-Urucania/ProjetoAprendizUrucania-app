@@ -13,6 +13,7 @@ import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial"
 import { VideoPlayer } from "../components/Video/VideoPlayer";
 import { confirmPresence } from "../services/frequencyList";
 import { useClass } from "../hooks/useClass";
+import { useApp } from "../context/AppContext";
 
 export function LessonPage() {
   const { lessonId } = useParams<{
@@ -25,6 +26,7 @@ export function LessonPage() {
   const [progress, setProgress] = useState<number>(0);
   const [present, setPresent] = useState<boolean>(false);
   const [link, setLink] = useState<string | undefined>();
+  const { handleMessage } = useApp();
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -39,7 +41,7 @@ export function LessonPage() {
         const materials = await getMaterialsByLesson(
           selectedClass.id,
           lessonId,
-          tk,
+          tk
         );
         setMaterials(materials);
       } catch (error) {
@@ -54,7 +56,7 @@ export function LessonPage() {
     const fetchLessonLink = () => {
       setLink(
         (lessons ?? []).find((lesson) => lesson.id === lessonId)?.lessonLink ||
-          "",
+          ""
       );
     };
 
@@ -77,12 +79,24 @@ export function LessonPage() {
 
       const res = await confirmPresence(selectedClass.id, lessonId, user.id);
 
+      if (res) {
+        handleMessage("Sua presença ja foi confirmada!", "warning", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
+        return;
+      }
+      
       if (!res.success) {
         console.error("Erro ao confirmar presença:", res.message || res);
         return;
       }
 
       setPresent(true);
+      handleMessage("Presença confirmada com sucesso!", "success", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
     } catch (error) {
       console.error("Erro inesperado ao confirmar presença:", error);
     }

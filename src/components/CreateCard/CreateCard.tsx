@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
 import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
 import { useClass } from "../../hooks/useClass";
+import { useApp } from "../../context/AppContext";
 
 export function CreateCard({
   index,
@@ -15,6 +16,7 @@ export function CreateCard({
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
+  const { handleMessage } = useApp();
   const {
     selectedClass,
     addClass,
@@ -38,7 +40,10 @@ export function CreateCard({
       const file = event.target.files[0];
 
       if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecione um arquivo de imagem válido.");
+        handleMessage("Por favor, selecione um arquivo de valido.", "error", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
         return;
       }
 
@@ -67,13 +72,13 @@ export function CreateCard({
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
                     type: "image/jpeg",
-                  },
+                  }
                 );
                 setSelectedPhoto(jpegFile);
               }
             },
             "image/jpeg",
-            0.9,
+            0.9
           );
         };
       };
@@ -89,6 +94,10 @@ export function CreateCard({
       };
 
       addClass(payload);
+      handleMessage("Turma criada com sucesso!", "success", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
     }
 
     if (name && teachers && token) {
@@ -106,6 +115,10 @@ export function CreateCard({
       };
 
       addLesson(payload);
+      handleMessage("Aula criada com sucesso!", "success", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
     }
 
     if (name && teachers && token && selectedClass && selectedClass.id) {
@@ -128,6 +141,10 @@ export function CreateCard({
       index < classes.length
     ) {
       updateClass(payload);
+      handleMessage("Turma atualizada com sucesso!", "success", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
     }
 
     setOpenProfileModal(false);
@@ -152,6 +169,10 @@ export function CreateCard({
 
     if (Object.keys(payload).length > 0) {
       updateLesson(selectedClass.lessons[index].id, payload);
+      handleMessage("Aula atualizada com sucesso!", "success", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
     }
 
     setOpenProfileModal(false);
