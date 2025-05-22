@@ -71,7 +71,9 @@ export function ContentCard({
     setAnchorEl(null);
   }, []);
 
-  const handleMenuClick = useCallback(
+
+
+   const handleMenuClick = useCallback(
     async (option: string) => {
       if (isClassesPage) handleSelectedClass(index);
 
@@ -87,7 +89,14 @@ export function ContentCard({
               vertical: "bottom",
               horizontal: "left",
             });
-          } 
+          } else {
+            console.log("class");
+            removeClass(id);
+             handleMessage("Turma excluída com sucesso.", "success", {
+              vertical: "bottom",
+              horizontal: "left",
+            });
+          }
         } catch (error) {
           console.error("Erro ao excluir:", error);
         }

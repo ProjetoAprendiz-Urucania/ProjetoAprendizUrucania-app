@@ -44,74 +44,72 @@ export function ClassesPage() {
 
   return (
     <>
-      <>
-        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-        <Box
-          sx={{
-            textAlign: "left",
-            marginBottom: 1,
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          {!classesDrop ? (
-            <KeyboardArrowUpIcon
-              sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
-              onClick={() => setClassesDrop(true)}
-            />
-          ) : (
-            <KeyboardArrowDownIcon
-              sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
-              onClick={() => setClassesDrop(false)}
-            />
-          )}
-          <Typography variant="h5" sx={{ fontWeight: "600" }}>
-            Turmas
-          </Typography>
-        </Box>
-
-        {!classesDrop && filteredClasses.length > 0
-          ? filteredClasses.map((classItem, index) => (
-              <ContentCard
-                key={classItem.id}
-                id={classItem.id}
-                index={index}
-                name={classItem.name || ""}
-                teacherInfo={classItem.teachers}
-                coverImage={classItem.coverImage || ""}
-              />
-            ))
-          : null}
-
-        {filteredClasses.length === 0 && user?.role === "student" && (
-          <Typography variant="h6" sx={{ mb: 2, mt: 4 }}>
-            Nenhuma turma encontrada
-          </Typography>
+      <Box
+        sx={{
+          textAlign: "left",
+          marginBottom: 1,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        {!classesDrop ? (
+          <KeyboardArrowUpIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setClassesDrop(true)}
+          />
+        ) : (
+          <KeyboardArrowDownIcon
+            sx={{ marginRight: "4px", marginLeft: -0.8, cursor: "pointer" }}
+            onClick={() => setClassesDrop(false)}
+          />
         )}
+        <Typography variant="h5" sx={{ fontWeight: "600" }}>
+          Turmas
+        </Typography>
+      </Box>
 
-        {user?.role === "admin" && <CreateCardButton />}
+      {!classesDrop && filteredClasses.length > 0
+        ? filteredClasses.map((classItem, index) => (
+            <ContentCard
+              key={classItem.id}
+              id={classItem.id}
+              index={index}
+              name={classItem.name || ""}
+              teacherInfo={classItem.teachers}
+              coverImage={classItem.coverImage || ""}
+            />
+          ))
+        : null}
 
-        {user?.role === "admin" && (
-          <>
-            <Box
-              sx={{
-                textAlign: "left",
-                my: 2,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h5" sx={{ fontWeight: "600" }}>
-                Alunos
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: "left", mb: 4 }}>
-              <StudentTable students={students} classes={classes} />
-            </Box>
-          </>
-        )}
-      </>
+      {filteredClasses.length === 0 && user?.role === "student" && (
+        <Typography variant="h6" sx={{ mb: 2, mt: 4 }}>
+          Nenhuma turma encontrada
+        </Typography>
+      )}
+
+      {user?.role === "admin" && <CreateCardButton />}
+
+      {user?.role === "admin" && (
+        <>
+          <Box
+            sx={{
+              textAlign: "left",
+              my: 2,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "600" }}>
+              Alunos
+            </Typography>
+          </Box>
+          <Box sx={{ textAlign: "left", mb: 4 }}>
+            <StudentTable students={students} classes={classes} />
+          </Box>
+        </>
+      )}
     </>
   );
 }

@@ -107,12 +107,10 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       return;
     }
 
-    const selected = {
-      ...classes[classIndex],
-      lessons: classes[classIndex].lessons || [],
-    };
+    const selected = classes[classIndex];
     setSelectedClassIndex(classIndex);
     setSelectedClass(selected);
+    setLessons([]);
     localStorage.setItem("selectedClassId", selected.id);
   };
 
@@ -209,6 +207,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           updatedLesson,
           tk,
         );
+
         if (response && updatedLesson.coverImage) {
           await uploadLessonPhotoService(
             selectedClass.id,
@@ -297,7 +296,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       console.error("Erro ao buscar materiais:", error);
     }
   };
-  fetchMaterials();
 
   const fetchLessons = async () => {
     if (!tk || !selectedClass) return;
@@ -327,15 +325,18 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
             : [];
       setClasses(fetched);
     });
-  }, [tk, selectedClass]);
-
-  useEffect(() => {
-    fetchLessons();
-  }, [selectedClass]);
+  }, [tk, user]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
   }, [loadSelectedClassFromStorage]);
+
+  useEffect(() => {
+    if (selectedClass) {
+      fetchLessons();
+      fetchMaterials();
+    }
+  }, [selectedClass]);
 
   return (
     <ClassContext.Provider

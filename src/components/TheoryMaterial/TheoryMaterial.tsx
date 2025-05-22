@@ -50,12 +50,18 @@ export function TheoryMaterialItem({
         <Typography
           sx={{
             mt: 0.8,
+            maxWidth: { xs: "260px", md: "100%" },
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            cursor: "pointer",
             "&:hover": { transform: "scale(1.02)" },
           }}
           onClick={handleOpenFile}
         >
           {name}
         </Typography>
+
         <Box display={"flex"} gap={1}>
           <DeleteForeverIcon
             onClick={handleDeleteFile}

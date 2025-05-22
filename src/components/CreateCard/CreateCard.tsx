@@ -36,7 +36,6 @@ export function CreateCard({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setSelectedPhoto(null);
       const file = event.target.files[0];
 
       if (!file.type.startsWith("image/")) {
@@ -59,10 +58,19 @@ export function CreateCard({
 
           if (!ctx) return;
 
-          canvas.width = img.width;
-          canvas.height = img.height;
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let { width, height } = img;
 
-          ctx.drawImage(img, 0, 0);
+          if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+            width *= ratio;
+            height *= ratio;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
 
           canvas.toBlob(
             (blob) => {
@@ -71,9 +79,10 @@ export function CreateCard({
                   [blob],
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
-                    type: "image/jpeg",
+                    type: blob.type || "image/jpeg",
                   }
                 );
+
                 setSelectedPhoto(jpegFile);
               }
             },
@@ -127,8 +136,6 @@ export function CreateCard({
   };
 
   const handleUpdateClassCard = async () => {
-    console.log("asdasd");
-
     const payload: Partial<IUpdateClass> = {};
     payload.name = name;
     payload.teacherInfo = teachers;
@@ -155,11 +162,6 @@ export function CreateCard({
       console.error("selectedClass is undefined");
       return null;
     }
-    console.log(token, selectedClass.id, index);
-    if (!token || !selectedClass.id || index === undefined || index === null) {
-      console.log("Token, ID da aula ou ID do card não encontrados.");
-      return;
-    }
 
     const payload: Partial<IUpdateLesson> = {};
     payload.name = name;
@@ -167,12 +169,12 @@ export function CreateCard({
     payload.lessonLink = lessonLink;
     payload.coverImage = selectedPhoto ?? undefined;
 
-    if (Object.keys(payload).length > 0) {
+    if (
+      Object.keys(payload).length > 0 &&
+      typeof index === "number" &&
+      selectedClass.lessons[index]
+    ) {
       updateLesson(selectedClass.lessons[index].id, payload);
-      handleMessage("Aula atualizada com sucesso!", "success", {
-        vertical: "bottom",
-        horizontal: "left",
-      });
     }
 
     setOpenProfileModal(false);
