@@ -1,5 +1,5 @@
 import { AlertColor } from "@mui/material";
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 import {
   AlertMessage,
   horizontalAlign,
@@ -9,20 +9,16 @@ import {
 interface IAppContextProps {
   handleMessage: (
     message: string,
-    status: AlertColor,
+    error: AlertColor,
     position?: {
       vertical?: verticalAlign;
       horizontal?: horizontalAlign;
-    },
-  ) => void;
-  handleCloseSnackbar: (
-    _event?: React.SyntheticEvent | Event,
-    reason?: string,
+    }
   ) => void;
 }
 
 export const AppContext = createContext<IAppContextProps | undefined>(
-  undefined,
+  undefined
 );
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({
@@ -41,7 +37,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleCloseSnackbar = (
     _event?: React.SyntheticEvent | Event,
-    reason?: string,
+    reason?: string
   ) => {
     if (reason === "clickaway") {
       return;
@@ -55,7 +51,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     position?: {
       vertical?: verticalAlign;
       horizontal?: horizontalAlign;
-    },
+    }
   ) => {
     setMessage(message);
     setError(error);
@@ -66,7 +62,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   return (
-    <AppContext.Provider value={{ handleMessage, handleCloseSnackbar }}>
+    <AppContext.Provider value={{ handleMessage }}>
       {children}
       <AlertMessage
         open={openSnackbar}
@@ -81,3 +77,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     </AppContext.Provider>
   );
 };
+
+export function useApp() {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useApp should be used within a AppProvider.");
+  }
+  return context;
+}

@@ -4,10 +4,13 @@ import AuthForm from "./AuthForm/AuthForm";
 import AuthFormPassword from "./AuthForm/AuthFormPassword";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
 import { useState } from "react";
+import { useApp } from "../context/AppContext";
+import { AlertMessage } from "../components/AlertMessage/AlertMessage";
 
 type AuthMode = "register" | "forgot" | "login" | "newPassword";
 
 export function AuthPage() {
+  const { handleMessage } = useApp();
   const location = useLocation();
   const path = location.pathname;
 
@@ -32,11 +35,9 @@ export function AuthPage() {
 
   const handleApiResponse = (
     message: string,
-    severity: "success" | "error" | "info" | "warning",
+    severity: "success" | "error" | "info" | "warning"
   ) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
+   handleMessage(message, severity);
   };
 
   return (
@@ -81,15 +82,16 @@ export function AuthPage() {
         />
       </Box>
 
-      <Snackbar
+      <AlertMessage
         open={snackbarOpen}
-        autoHideDuration={6000}
         onClose={handleSnackbarClose}
+        severity={snackbarSeverity}
+        variant="filled"
+        vertical="bottom"
+        horizontal="right"
       >
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+        {snackbarMessage}
+      </AlertMessage>
     </Box>
   );
 }

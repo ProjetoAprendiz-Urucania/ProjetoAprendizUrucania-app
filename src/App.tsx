@@ -19,6 +19,7 @@ import { useAuth } from "./hooks/useAuth";
 import { Footer } from "./components/Footer/Footer";
 import { useEffect } from "react";
 import { ClassProvider } from "./context/ClassContext";
+import { AppProvider } from "./context/AppContext";
 
 function App() {
   const location = useLocation();
@@ -40,78 +41,80 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-      >
-        {!isLoginPage && !isRegisterPage && !isForgot && !isNewPassword && (
-          <ClassProvider>
-            <Navbar logout={logout} token={token} />
-          </ClassProvider>
-        )}
-
-        <Container
-          maxWidth="xl"
-          sx={{ flex: 1, display: "flex", flexDirection: "column", mb: 6 }}
+      <AppProvider>
+        <Box
+          sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
         >
-          <Routes>
-            <Route path="/newPassword/:token" element={<AuthPage />} />
-            <Route path="/forgot" element={<AuthPage />} />
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/register" element={<AuthPage />} />
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to={
-                    token
-                      ? isNewPassword
-                        ? "/newPassword/:token"
-                        : "/classes"
-                      : isNewPassword
-                        ? "/newPassword/:token"
-                        : "/login"
-                  }
-                  replace
-                />
-              }
-            />
-            <Route
-              path="/classes"
-              element={
-                <ProtectedRoute>
-                  <ClassProvider>
-                    <ClassesPage />
-                  </ClassProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/classes/:id"
-              element={
-                <ProtectedRoute>
-                  <ClassProvider>
-                    <ClassPage />
-                  </ClassProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/classes/:classId/lessons/:lessonId"
-              element={
-                <ProtectedRoute>
-                  <ClassProvider>
-                    <LessonPage />
-                  </ClassProvider>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Container>
+          {!isLoginPage && !isRegisterPage && !isForgot && !isNewPassword && (
+            <ClassProvider>
+              <Navbar logout={logout} token={token} />
+            </ClassProvider>
+          )}
 
-        {!isLoginPage && !isRegisterPage && !isForgot && !isNewPassword && (
-          <Footer />
-        )}
-      </Box>
+          <Container
+            maxWidth="xl"
+            sx={{ flex: 1, display: "flex", flexDirection: "column", mb: 6 }}
+          >
+            <Routes>
+              <Route path="/newPassword/:token" element={<AuthPage />} />
+              <Route path="/forgot" element={<AuthPage />} />
+              <Route path="/login" element={<AuthPage />} />
+              <Route path="/register" element={<AuthPage />} />
+              <Route
+                path="/"
+                element={
+                  <Navigate
+                    to={
+                      token
+                        ? isNewPassword
+                          ? "/newPassword/:token"
+                          : "/classes"
+                        : isNewPassword
+                          ? "/newPassword/:token"
+                          : "/login"
+                    }
+                    replace
+                  />
+                }
+              />
+              <Route
+                path="/classes"
+                element={
+                  <ProtectedRoute>
+                    <ClassProvider>
+                      <ClassesPage />
+                    </ClassProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/classes/:id"
+                element={
+                  <ProtectedRoute>
+                    <ClassProvider>
+                      <ClassPage />
+                    </ClassProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/classes/:classId/lessons/:lessonId"
+                element={
+                  <ProtectedRoute>
+                    <ClassProvider>
+                      <LessonPage />
+                    </ClassProvider>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Container>
+
+          {!isLoginPage && !isRegisterPage && !isForgot && !isNewPassword && (
+            <Footer />
+          )}
+        </Box>
+      </AppProvider>
     </ThemeProvider>
   );
 }

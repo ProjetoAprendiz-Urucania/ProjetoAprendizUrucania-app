@@ -17,12 +17,13 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { useAuth } from "../../hooks/useAuth";
 import { IUser } from "../../interfaces/IUser";
+import { useApp } from "../../context/AppContext";
 
 interface IAuthForm {
   mode: "login" | "register";
   handleApiResponse: (
     message: string,
-    severity: "success" | "error" | "info" | "warning",
+    severity: "success" | "error" | "info" | "warning"
   ) => void;
 }
 
@@ -45,19 +46,50 @@ export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const { handleMessage } = useApp();
+
+  const checkValidFields = () => {
+    if (isLogin) {
+      if (!email || !password) {
+        handleMessage("Preencha todos os campos", "error", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
+        return false;
+      }
+    }
+    if (isRegister) {
+      if (!name || !email || !password || !church) {
+        handleMessage("Preencha todos os campos", "error", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
+        return false;
+      }
+    }
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!checkValidFields()) return;
 
     try {
       let res: any;
 
       if (isLogin) {
         res = await login(email, password);
-        handleApiResponse("Login bem-sucedido!", "success");
+        handleMessage("Login realizado com sucesso!", "success", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
       } else {
         res = await createStudent(name, email, password, church);
-        handleApiResponse("Registro realizado com sucesso!", "success");
+        handleMessage("Registro realizado com sucesso!", "success", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
       }
 
       if (res.studentWithoutPassword && res.token) {
@@ -70,18 +102,15 @@ export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        handleApiResponse(
-          error.message === "Preencha todos os campos"
-            ? "Preencha todos os campos"
-            : error.message === "Login error: Invalid email or password."
-              ? "Email ou senha inválidos"
-              : error.message === "Email already registered."
-                ? "Email já está em uso"
-                : error.message,
-          "error",
-        );
+        handleMessage(error.message, "error", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
       } else {
-        handleApiResponse("Ocorreu um erro desconhecido.", "error");
+        handleMessage("Ocorreu um erro desconhecido.", "error", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
       }
     }
   };
