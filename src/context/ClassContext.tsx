@@ -323,11 +323,18 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           : [];
       setClasses(fetched);
     });
-  }, [tk, selectedClass]);
+  }, [tk, user]);
 
   useEffect(() => {
     loadSelectedClassFromStorage();
   }, [loadSelectedClassFromStorage]);
+
+  useEffect(() => {
+    if (selectedClass) {
+      fetchLessons();
+      fetchMaterials();
+    }
+  }, [selectedClass]);
 
   return (
     <ClassContext.Provider
