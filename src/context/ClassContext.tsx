@@ -207,6 +207,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           updatedLesson,
           tk
         );
+
         if (response && updatedLesson.coverImage) {
           await uploadLessonPhotoService(
             selectedClass.id,

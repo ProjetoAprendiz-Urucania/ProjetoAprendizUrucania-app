@@ -123,8 +123,6 @@ export function CreateCard({
   };
 
   const handleUpdateClassCard = async () => {
-    console.log("asdasd");
-
     const payload: Partial<IUpdateClass> = {};
     payload.name = name;
     payload.teacherInfo = teachers;
@@ -147,11 +145,6 @@ export function CreateCard({
       console.error("selectedClass is undefined");
       return null;
     }
-    console.log(token, selectedClass.id, index);
-    if (!token || !selectedClass.id || index === undefined || index === null) {
-      console.log("Token, ID da aula ou ID do card não encontrados.");
-      return;
-    }
 
     const payload: Partial<IUpdateLesson> = {};
     payload.name = name;
@@ -159,7 +152,11 @@ export function CreateCard({
     payload.lessonLink = lessonLink;
     payload.coverImage = selectedPhoto ?? undefined;
 
-    if (Object.keys(payload).length > 0) {
+    if (
+      Object.keys(payload).length > 0 &&
+      typeof index === "number" &&
+      selectedClass.lessons[index]
+    ) {
       updateLesson(selectedClass.lessons[index].id, payload);
     }
 
