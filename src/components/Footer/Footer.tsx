@@ -52,7 +52,7 @@ export function Footer() {
                 fontWeight: 600,
                 fontSize: "32px",
                 color: "white",
-                mb: 6,
+                mb: { xs: 4, md: 6 },
               }}
             >
               Redes sociais
