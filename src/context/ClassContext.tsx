@@ -329,13 +329,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     loadSelectedClassFromStorage();
   }, [loadSelectedClassFromStorage]);
 
-  useEffect(() => {
-    if (selectedClass) {
-      fetchLessons();
-      fetchMaterials();
-    }
-  }, [selectedClass]);
-
   return (
     <ClassContext.Provider
       value={{
