@@ -34,7 +34,6 @@ export function CreateCard({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setSelectedPhoto(null);
       const file = event.target.files[0];
 
       if (!file.type.startsWith("image/")) {
@@ -54,10 +53,19 @@ export function CreateCard({
 
           if (!ctx) return;
 
-          canvas.width = img.width;
-          canvas.height = img.height;
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let { width, height } = img;
 
-          ctx.drawImage(img, 0, 0);
+          if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+            width *= ratio;
+            height *= ratio;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
 
           canvas.toBlob(
             (blob) => {
@@ -66,9 +74,10 @@ export function CreateCard({
                   [blob],
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
-                    type: "image/jpeg",
+                    type: blob.type || "image/jpeg",
                   }
                 );
+
                 setSelectedPhoto(jpegFile);
               }
             },
