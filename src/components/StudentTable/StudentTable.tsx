@@ -41,14 +41,10 @@ export function StudentTable({ students, classes }: StudentTableProps) {
         students.map(async (student) => {
           try {
             const response = await getStudentClasses(student.id ?? "", token);
-
             const classList = Array.isArray(response.classes)
               ? response.classes
               : [];
-            return {
-              ...student,
-              classes: classList,
-            };
+            return { ...student, classes: classList };
           } catch (error) {
             console.error(
               `Erro ao buscar turmas do aluno ${student.name}:`,
@@ -58,7 +54,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           }
         })
       );
-
       setStudentsWithClasses(updatedStudents);
     };
 
@@ -74,7 +69,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
 
   const handleSubmit = async () => {
     if (!selectedStudent?.id || !selectedClassId) return;
-
     try {
       if (actionType === "add") {
         await addStudentToClass(selectedStudent.id, selectedClassId, token);
@@ -93,46 +87,42 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     {
       field: "profilePicture",
       headerName: "Foto",
-      flex: 0.25,
+      width: 70,
       sortable: false,
-      renderCell: (params) =>
-        params.value ? (
-          <Avatar src={params.value} />
-        ) : (
-          <Avatar src="/broken-image.jpg" />
-        ),
+      renderCell: (params) => (
+        <Avatar src={params.value || "/broken-image.jpg"} />
+      ),
     },
-    { field: "name", headerName: "Nome", width: 200 },
-    { field: "email", headerName: "Email", width: 250 },
-    { field: "church", headerName: "Igreja", width: 200 },
+    { field: "name", headerName: "Nome", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1.5 },
+    { field: "church", headerName: "Igreja", flex: 1 },
     {
       field: "classes",
       headerName: "Turmas",
-      flex: 0.5,
+      flex: 2,
       renderCell: (params) => {
         const classList: IClass[] = Array.isArray(params.row.classes)
           ? params.row.classes
           : [];
-
         return (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
             {classList.length > 0 ? (
-              classList.map((classItem, idx) => (
+              classList.map((c, idx) => (
                 <Box
                   key={idx}
                   sx={{
-                    fontSize: "0.7rem",
+                    fontSize: "0.75rem",
                     backgroundColor: "#BB162610",
                     color: "#BB1626",
-                    px: 2,
-                    borderRadius: "4px",
+                    px: 1,
+                    borderRadius: 1,
                   }}
                 >
-                  {classItem.name}
+                  {c.name}
                 </Box>
               ))
             ) : (
-              <Box sx={{ fontSize: "0.8rem", color: "#999" }}>Sem turmas</Box>
+              <Box sx={{ fontSize: "0.75rem", color: "#999" }}>Sem turmas</Box>
             )}
           </Box>
         );
@@ -141,7 +131,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
     {
       field: "actions",
       headerName: "Ações",
-      flex: 0.5,
+      flex: 1,
       renderCell: (params) => (
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
@@ -166,6 +156,9 @@ export function StudentTable({ students, classes }: StudentTableProps) {
   const btnStyle = {
     color: "#BB1626",
     borderColor: "#BB1626",
+    textTransform: "none",
+    fontSize: "0.75rem",
+    padding: "4px 8px",
     "&:hover": {
       backgroundColor: "#BB1626",
       color: "#fff",
@@ -174,32 +167,22 @@ export function StudentTable({ students, classes }: StudentTableProps) {
 
   return (
     <>
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", height: 600 }}>
         <DataGrid
           rows={studentsWithClasses}
           columns={columns}
           getRowId={(row) => row.id ?? ""}
           disableRowSelectionOnClick
-          getRowHeight={() => 50}
-          pageSizeOptions={[5, 10, 20]}
+          getRowHeight={() => "auto"}
           sx={{
             "& .MuiDataGrid-cell": {
-              display: "flex",
               alignItems: "center",
-              paddingTop: "16px",
-              paddingBottom: "16px",
-            },
-            "& .MuiDataGrid-row": {
-              minHeight: "80px !important",
-            },
-            "& .MuiDataGrid-columnHeader": {
-              minHeight: "72px !important",
+              py: "1.2em",
             },
             "& .MuiDataGrid-virtualScrollerRenderZone": {
-              rowGap: "8px",
+              rowGap: 1,
             },
           }}
-          autoHeight
         />
       </Box>
 
@@ -215,11 +198,9 @@ export function StudentTable({ students, classes }: StudentTableProps) {
                 .filter((classItem) => {
                   const currentClassNames =
                     selectedStudent?.classes?.map((c) => c.name) || [];
-
                   const isInClass = currentClassNames.includes(
                     classItem.name ?? ""
                   );
-
                   if (actionType === "add") return !isInClass;
                   if (actionType === "remove") return isInClass;
                   return false;
