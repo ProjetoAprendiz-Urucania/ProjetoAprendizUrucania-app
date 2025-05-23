@@ -14,19 +14,25 @@ import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass, fetchLessons, lessons, fetchMaterials, materials } =
-    useClass();
+  const {
+    selectedClass,
+    fetchLessons,
+    lessons,
+    fetchMaterials,
+    materials,
+    loading,
+  } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
-    if (selectedClass?.id) {
+    if (selectedClass?.id && !loading) {
       fetchLessons();
       fetchMaterials();
     }
-  }, [selectedClass?.id]);
+  }, [selectedClass?.id, loading]);
 
   const filteredLessons = lessons.filter((lesson) =>
     lesson.name.toLowerCase().includes(searchTerm.toLowerCase())
