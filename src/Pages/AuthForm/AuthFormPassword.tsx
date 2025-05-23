@@ -29,10 +29,6 @@ interface ITokenPayload extends JwtPayload {
 
 interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
-  handleApiResponse: (
-    message: string,
-    severity: "success" | "error" | "info" | "warning"
-  ) => void;
 }
 
 export default function AuthFormPassword({ mode }: IAuthFormPassword) {

@@ -21,13 +21,9 @@ import { useApp } from "../../context/AppContext";
 
 interface IAuthForm {
   mode: "login" | "register";
-  handleApiResponse: (
-    message: string,
-    severity: "success" | "error" | "info" | "warning"
-  ) => void;
 }
 
-export default function AuthForm({ mode, handleApiResponse }: IAuthForm) {
+export default function AuthForm({ mode }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {

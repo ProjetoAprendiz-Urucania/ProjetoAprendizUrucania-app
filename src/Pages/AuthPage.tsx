@@ -1,16 +1,12 @@
-import { Box, Snackbar, Alert } from "@mui/material";
+import { Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import AuthForm from "./AuthForm/AuthForm";
 import AuthFormPassword from "./AuthForm/AuthFormPassword";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
-import { useState } from "react";
-import { useApp } from "../context/AppContext";
-import { AlertMessage } from "../components/AlertMessage/AlertMessage";
 
 type AuthMode = "register" | "forgot" | "login" | "newPassword";
 
 export function AuthPage() {
-  const { handleMessage } = useApp();
   const location = useLocation();
   const path = location.pathname;
 
@@ -22,23 +18,6 @@ export function AuthPage() {
   };
 
   const mode = getMode();
-
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<
-    "success" | "error" | "info" | "warning"
-  >("info");
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const handleApiResponse = (
-    message: string,
-    severity: "success" | "error" | "info" | "warning"
-  ) => {
-   handleMessage(message, severity);
-  };
 
   return (
     <Box
@@ -65,9 +44,9 @@ export function AuthPage() {
         }}
       >
         {mode === "newPassword" || mode === "forgot" ? (
-          <AuthFormPassword mode={mode} handleApiResponse={handleApiResponse} />
+          <AuthFormPassword mode={mode} />
         ) : (
-          <AuthForm mode={mode} handleApiResponse={handleApiResponse} />
+          <AuthForm mode={mode} />
         )}
 
         <Box
@@ -81,17 +60,6 @@ export function AuthPage() {
           }}
         />
       </Box>
-
-      <AlertMessage
-        open={snackbarOpen}
-        onClose={handleSnackbarClose}
-        severity={snackbarSeverity}
-        variant="filled"
-        vertical="bottom"
-        horizontal="right"
-      >
-        {snackbarMessage}
-      </AlertMessage>
     </Box>
   );
 }
