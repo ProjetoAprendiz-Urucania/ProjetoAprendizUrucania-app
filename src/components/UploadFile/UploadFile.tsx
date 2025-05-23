@@ -12,8 +12,8 @@ import { useAuth } from "../../hooks/useAuth";
 import addfile from "../../assets/img/UploadFile/addfile.svg";
 import { useState } from "react";
 import { ILesson } from "../../interfaces/lesson/ILesson";
-import { useClass } from "../../hooks/useClass";
 import { useApp } from "../../context/AppContext";
+import { useMaterialActions } from "../../hooks/useMaterialActions";
 
 export function UploadFile({
   lessons,
@@ -23,7 +23,7 @@ export function UploadFile({
   setOpenProfileModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useAuth();
-  const { uploadMaterial } = useClass();
+  const { uploadMaterial } = useMaterialActions();
   const { handleMessage } = useApp();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

@@ -13,11 +13,7 @@ import { useAuth } from "../hooks/useAuth";
 import { getStudentClasses } from "../services/studentClass.service";
 import { ILesson } from "../interfaces/lesson/ILesson";
 import { getLessonsByClassId } from "../services/lesson.service";
-import {
-  deleteMaterial,
-  getAllMaterials,
-  uploadMaterialService,
-} from "../services/theoryMaterials.service";
+import { getAllMaterials } from "../services/theoryMaterials.service";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 
 export const ClassContext = createContext<IClassContext | undefined>(undefined);
@@ -57,39 +53,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     const classData = await getClassById(storedClassId, tk);
     setSelectedClass(classData);
   }, [tk]);
-
-  const uploadMaterial = useCallback(
-    async (file: File, lessonId: string) => {
-      if (!tk || !selectedClass) return;
-      const updatedData = await uploadMaterialService(
-        selectedClass.id,
-        lessonId,
-        file,
-        tk
-      );
-      setSelectedClass((prev) =>
-        prev?.id === selectedClass.id ? { ...prev, ...updatedData } : prev
-      );
-    },
-    [tk, selectedClass]
-  );
-
-  const removeMaterial = useCallback(
-    async (lessonId: string, materialId: string) => {
-      if (!tk || !selectedClass) return;
-      const updatedData = await deleteMaterial(
-        selectedClass.id,
-        lessonId,
-        materialId
-      );
-      setSelectedClass((prev) =>
-        prev?.id === selectedClass.id
-          ? { ...prev, theoryMaterials: updatedData }
-          : prev
-      );
-    },
-    [tk, selectedClass]
-  );
 
   const fetchMaterials = async () => {
     if (!tk || !selectedClass) return;
@@ -157,9 +120,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         handleSelectedClass,
         loadSelectedClassFromStorage,
         selectedClassIndex,
-        uploadMaterial,
         fetchStudentClasses,
-        removeMaterial,
         fetchLessons,
         fetchMaterials,
         materials,

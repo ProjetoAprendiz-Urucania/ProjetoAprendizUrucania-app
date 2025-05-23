@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useClass } from "../../hooks/useClass";
 import { useApp } from "../../context/AppContext";
+import { useMaterialActions } from "../../hooks/useMaterialActions";
 
 export interface TheoryMaterialProps {
   id: string;
@@ -20,7 +20,7 @@ export function TheoryMaterialItem({
   materialId,
   lessonId,
 }: TheoryMaterialProps) {
-  const { removeMaterial } = useClass();
+  const { removeMaterial } = useMaterialActions();
   const { handleMessage } = useApp();
 
   const handleOpenFile = () => {

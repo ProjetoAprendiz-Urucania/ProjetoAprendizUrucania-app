@@ -10,9 +10,7 @@ export interface IClassContext {
   handleSelectedClass: (classIndex: number) => void;
   loadSelectedClassFromStorage: () => void;
   selectedClassIndex: number;
-  uploadMaterial: (selectedFile: File, selectedLesson: string) => void;
   fetchStudentClasses: () => void;
-  removeMaterial: (lessonId: string, materialId: string) => void;
   fetchLessons: () => void;
   lessons: ILesson[];
   setLessons: React.Dispatch<React.SetStateAction<ILesson[]>>;
