@@ -7,24 +7,34 @@ import {
 } from "../services/class.service";
 import { useClass } from "./useClass";
 import { ICreateClass, IUpdateClass } from "../interfaces/class/IClass";
+import { useApp } from "../context/AppContext";
 
 export const useClassActions = () => {
   const { fetchStudentClasses, tk } = useClass();
+  const { handleMessage } = useApp();
 
   const addClass = useCallback(
     async (newClass: ICreateClass) => {
       if (!tk) return;
-      const response = await createClass(newClass, tk);
-      if (response) {
+        const response = await createClass(newClass, tk);
         try {
+          if(newClass.coverImage)
           await uploadClassPhoto(response.id, tk, newClass.coverImage);
-        } catch (error) {
+          handleMessage("Turma criada com sucesso!", "success", {
+            vertical: "bottom",
+            horizontal: "left",
+          });
+        } catch (error: unknown) {
+          handleMessage("Erro no upload da foto da turma", "error", {
+            vertical: "bottom",
+            horizontal: "left",
+          });
           console.error("Erro no upload da foto da turma:", error);
         }
-      }
+    
       fetchStudentClasses();
     },
-    [tk, fetchStudentClasses]
+    [tk, fetchStudentClasses, handleMessage]
   );
 
   const removeClass = useCallback(

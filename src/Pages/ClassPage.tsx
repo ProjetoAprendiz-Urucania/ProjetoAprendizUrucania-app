@@ -70,9 +70,9 @@ export function ClassPage() {
               coverImage={lesson.coverImage || ""}
             />
           ))}
-          <CreateCardButton />
         </>
       )}
+      <CreateCardButton />
 
       <Box
         sx={{ textAlign: "left", my: 2, display: "flex", alignItems: "center" }}

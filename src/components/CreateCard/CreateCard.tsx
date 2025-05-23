@@ -19,7 +19,7 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { handleMessage } = useApp();
-  const { selectedClass, classes } = useClass();
+  const { selectedClass, classes, lessons } = useClass();
   const { updateLesson, addLesson } = useLessonActions();
   const { addClass, updateClass } = useClassActions();
 
@@ -99,11 +99,19 @@ export function CreateCard({
         coverImage: selectedPhoto || undefined,
       };
 
+      const classExists = classes.some(
+        (classItem) => classItem.name === payload.name
+      );
+
+      if (classExists) {
+        handleMessage("Nome da turma já existe!", "warning", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
+        return;
+      }
+
       addClass(payload);
-      handleMessage("Turma criada com sucesso!", "success", {
-        vertical: "bottom",
-        horizontal: "left",
-      });
     }
 
     if (name && teachers && token) {
@@ -119,6 +127,18 @@ export function CreateCard({
         coverImage: selectedPhoto || undefined,
         lessonLink: lessonLink,
       };
+
+      const lessonExists = lessons.some(
+        (lessonItem) => lessonItem.name === payload.name
+      );
+
+      if (lessonExists) {
+        handleMessage("Nome da aula já existe!", "warning", {
+          vertical: "bottom",
+          horizontal: "left",
+        });
+        return;
+      }
 
       addLesson(payload);
       handleMessage("Aula criada com sucesso!", "success", {
@@ -137,6 +157,18 @@ export function CreateCard({
     payload.name = name;
     payload.teacherInfo = teachers;
     payload.coverImage = selectedPhoto ?? undefined;
+
+    const classExists = classes.some(
+      (classItem) => classItem.name === payload.name
+    );
+
+    if (classExists) {
+      handleMessage("Nome da turma já existe!", "warning", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
+      return;
+    }
 
     if (
       Object.keys(payload).length > 0 &&
@@ -165,6 +197,18 @@ export function CreateCard({
     payload.teacher = teachers;
     payload.lessonLink = lessonLink;
     payload.coverImage = selectedPhoto ?? undefined;
+
+    const lessonExists = lessons.some(
+      (lessonItem) => lessonItem.name === payload.name
+    );
+
+    if (lessonExists) {
+      handleMessage("Nome da aula já existe!", "warning", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
+      return;
+    }
 
     if (
       Object.keys(payload).length > 0 &&
