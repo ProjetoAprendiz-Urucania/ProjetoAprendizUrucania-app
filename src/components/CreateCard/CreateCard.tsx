@@ -102,6 +102,20 @@ export function CreateCard({
         coverImage: selectedPhoto || undefined,
       };
 
+      if (name === payload.name) {
+        const classExists = classes.some(
+          (classItem) => classItem.name === payload.name
+        );
+
+        if (classExists) {
+          handleMessage("Essa turma já existe!", "warning", {
+            vertical: "bottom",
+            horizontal: "left",
+          });
+          return;
+        }
+      }
+
       addClass(payload);
       handleMessage("Turma criada com sucesso!", "success", {
         vertical: "bottom",
