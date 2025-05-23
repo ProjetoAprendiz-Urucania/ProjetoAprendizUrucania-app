@@ -301,6 +301,7 @@ export function CreateCard({
                   marginTop: 2,
                   color: "#1E1E1E",
                   fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 {selectedPhoto

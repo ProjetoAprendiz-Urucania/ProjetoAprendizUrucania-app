@@ -110,6 +110,7 @@ export function UploadFile({
                   marginTop: 2,
                   color: "#1E1E1E",
                   fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 {selectedFile
