@@ -62,7 +62,7 @@ export function ContentCard({
       e.stopPropagation();
       setAnchorEl(e.currentTarget);
     },
-    []
+    [],
   );
 
   const handleCloseMenu = useCallback(() => {
@@ -99,7 +99,7 @@ export function ContentCard({
       removeLesson,
       removeClass,
       id,
-    ]
+    ],
   );
 
   return (

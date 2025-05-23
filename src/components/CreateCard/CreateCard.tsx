@@ -67,13 +67,13 @@ export function CreateCard({
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
                     type: "image/jpeg",
-                  }
+                  },
                 );
                 setSelectedPhoto(jpegFile);
               }
             },
             "image/jpeg",
-            0.9
+            0.9,
           );
         };
       };

@@ -34,7 +34,7 @@ export function ClassesPage() {
 
   const filteredClasses = searchTerm
     ? classes.filter((classItem) =>
-        (classItem.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+        (classItem.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : classes;
 

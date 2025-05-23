@@ -22,7 +22,7 @@ interface IAuthForm {
   mode: "login" | "register";
   handleApiResponse?: (
     message: string,
-    severity: "success" | "error" | "info" | "warning"
+    severity: "success" | "error" | "info" | "warning",
   ) => void;
 }
 
@@ -73,11 +73,11 @@ export function AuthForm({ mode, handleApiResponse }: IAuthForm) {
           error.message === "Preencha todos os campos"
             ? "Preencha todos os campos"
             : error.message === "Login error: Invalid email or password."
-            ? "Email ou senha inválidos"
-            : error.message === "Email already registered."
-            ? "Email já está em uso"
-            : error.message,
-          "error"
+              ? "Email ou senha inválidos"
+              : error.message === "Email already registered."
+                ? "Email já está em uso"
+                : error.message,
+          "error",
         );
       } else {
         handleApiResponse?.("Ocorreu um erro desconhecido.", "error");

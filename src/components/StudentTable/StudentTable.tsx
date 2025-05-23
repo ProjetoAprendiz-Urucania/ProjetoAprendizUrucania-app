@@ -50,7 +50,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           console.error("Erro ao buscar classes do aluno:", error);
           return { ...student, classes: "" };
         }
-      })
+      }),
     );
 
     setStudentClasses(loadedClasses);
@@ -69,8 +69,8 @@ export function StudentTable({ students, classes }: StudentTableProps) {
       const classesArray = Array.isArray(response)
         ? response
         : Array.isArray(response?.data)
-        ? response.data
-        : [];
+          ? response.data
+          : [];
 
       const classNames = classesArray.map((c: IClass) => c.name);
 
@@ -285,7 +285,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
                     [];
 
                   const isInStudentClass = studentClassNames.includes(
-                    classItem.name ?? ""
+                    classItem.name ?? "",
                   );
 
                   if (actionType === "add") return !isInStudentClass;

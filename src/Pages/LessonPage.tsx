@@ -38,7 +38,7 @@ export function LessonPage() {
         const materials = await getMaterialsByLesson(
           selectedClass.id,
           lessonId,
-          tk
+          tk,
         );
         setMaterials(materials);
       } catch (error) {

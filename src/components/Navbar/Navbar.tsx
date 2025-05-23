@@ -47,7 +47,7 @@ export function Navbar({ token, logout }: NavbarProps) {
   const navigate = useNavigate();
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
-    null
+    null,
   );
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -59,7 +59,7 @@ export function Navbar({ token, logout }: NavbarProps) {
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
   const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
-    location.pathname
+    location.pathname,
   );
 
   useEffect(() => {
@@ -114,8 +114,8 @@ export function Navbar({ token, logout }: NavbarProps) {
       navigate(
         location.pathname.replace(
           /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
-          "/classes/" + location.pathname.split("/")[2]
-        )
+          "/classes/" + location.pathname.split("/")[2],
+        ),
       );
     }
   };
@@ -158,13 +158,13 @@ export function Navbar({ token, logout }: NavbarProps) {
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
                     type: "image/jpeg",
-                  }
+                  },
                 );
                 setSelectedPhoto(jpegFile);
               }
             },
             "image/jpeg",
-            0.9
+            0.9,
           );
         };
       };
@@ -305,8 +305,8 @@ export function Navbar({ token, logout }: NavbarProps) {
                 {isClassPage
                   ? "Turmas"
                   : isLessonPage
-                  ? "Aulas e Materiais"
-                  : ""}
+                    ? "Aulas e Materiais"
+                    : ""}
               </Typography>
             </Box>
           )}

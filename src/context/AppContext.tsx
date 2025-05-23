@@ -14,12 +14,12 @@ interface IAppContextProps {
     position?: {
       vertical?: verticalAlign;
       horizontal?: horizontalAlign;
-    }
+    },
   ) => void;
 }
 
 export const AppContext = createContext<IAppContextProps | undefined>(
-  undefined
+  undefined,
 );
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({
@@ -38,7 +38,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleCloseSnackbar = (
     _event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -52,7 +52,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     position?: {
       vertical?: verticalAlign;
       horizontal?: horizontalAlign;
-    }
+    },
   ) => {
     setMessage(message);
     setError(error);

@@ -7,7 +7,10 @@ interface IProtectedRouteProps {
   roleRequired?: string;
 }
 
-export const ProtectedRoute = ({ children, roleRequired }: IProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  children,
+  roleRequired,
+}: IProtectedRouteProps) => {
   const storedUser = localStorage.getItem("user");
   const storeToken = localStorage.getItem("token");
 

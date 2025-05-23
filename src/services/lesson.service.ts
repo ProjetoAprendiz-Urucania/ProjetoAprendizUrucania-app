@@ -12,20 +12,28 @@ export function getLesson(classId: string, lessonId: string, token: string) {
 export function createLesson(
   classId: string,
   lessonData: ICreateLesson,
-  token: string
+  token: string,
 ) {
   return apiRequest(`classes/${classId}/lesson`, "POST", lessonData, token);
 }
 
-export async function deleteLesson(classId: string, lessonId: string, token: string) {
+export async function deleteLesson(
+  classId: string,
+  lessonId: string,
+  token: string,
+) {
   try {
-    return await apiRequest(`classes/${classId}/${lessonId}`, "DELETE", undefined, token);
+    return await apiRequest(
+      `classes/${classId}/${lessonId}`,
+      "DELETE",
+      undefined,
+      token,
+    );
   } catch (err) {
     console.error("Erro ao deletar aula:", err);
     throw new Error("Erro ao deletar aula. Tente novamente mais tarde.");
   }
 }
-
 
 export function uploadLessonPhoto(
   classId: string,
@@ -40,7 +48,7 @@ export function uploadLessonPhoto(
     `/classes/${classId}/${lessonId}/uploadPhoto`,
     "POST",
     formData,
-    token || undefined
+    token || undefined,
   );
 }
 
@@ -48,7 +56,7 @@ export function updateLessonService(
   classId: string,
   lessonId: string,
   classData: Partial<IUpdateLesson>,
-  token?: string
+  token?: string,
 ) {
   return apiRequest(`classes/${classId}/${lessonId}`, "PUT", classData, token);
 }

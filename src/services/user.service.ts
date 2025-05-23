@@ -4,15 +4,17 @@ import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
 export async function forgotPassword(email: string) {
   try {
-    const data: IStudentResponse = await apiRequest(`forgot/email/${email}`, "POST");
-    
+    const data: IStudentResponse = await apiRequest(
+      `forgot/email/${email}`,
+      "POST",
+    );
+
     if (!data.hash) {
       console.error("Erro: Hash ausente na resposta!");
       throw new Error("Email não identificado");
     }
 
-    return "userExists"
-
+    return "userExists";
   } catch (error) {
     console.error("Erro no login:", error);
     throw error;
@@ -45,7 +47,7 @@ export async function createStudent(
   name: string,
   email: string,
   password: string,
-  church: string
+  church: string,
 ) {
   const data: IStudentResponse = await apiRequest("register", "POST", {
     name,
@@ -81,7 +83,6 @@ export function getStudentById(id: string) {
 }
 
 export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
-
   if (!profilePhoto) {
     console.error("Nenhum arquivo foi selecionado!");
     return Promise.reject("Nenhum arquivo foi selecionado.");
@@ -90,25 +91,33 @@ export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
   const token = localStorage.getItem("token");
 
   const formData = new FormData();
-  formData.append('profilePhoto', profilePhoto);
+  formData.append("profilePhoto", profilePhoto);
 
-  return apiRequest(`students/${id}/profilePhoto`, "POST", formData, token || undefined);
+  return apiRequest(
+    `students/${id}/profilePhoto`,
+    "POST",
+    formData,
+    token || undefined,
+  );
 }
 
 export function deleteProfilePhoto(userId: string) {
-
   if (!userId) {
     return Promise.reject("Nenhum usuário identificado.");
   }
 
   const token = localStorage.getItem("token");
 
-  return apiRequest(`students/${userId}/profilePhoto`, "DELETE", null, token || undefined);
+  return apiRequest(
+    `students/${userId}/profilePhoto`,
+    "DELETE",
+    null,
+    token || undefined,
+  );
 }
 
-
 export function getStudentByEmail(email: string) {
-  if(!email){
+  if (!email) {
     throw new Error("Email is required");
   }
 
@@ -118,10 +127,14 @@ export function getStudentByEmail(email: string) {
     `students/email/${encodedEmail}`,
     "GET",
     undefined,
-    token || undefined
+    token || undefined,
   );
 }
 
-export function updateStudent(id: string, studentData: IStudent, token:string) {
+export function updateStudent(
+  id: string,
+  studentData: IStudent,
+  token: string,
+) {
   return apiRequest(`/students/${id}`, "PUT", studentData, token || undefined);
 }

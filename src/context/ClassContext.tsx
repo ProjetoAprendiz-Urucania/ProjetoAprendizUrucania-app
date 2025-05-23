@@ -114,7 +114,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const updateClass = async (
     classId: string,
-    updatedClass: Partial<IUpdateClass>
+    updatedClass: Partial<IUpdateClass>,
   ) => {
     if (!tk || !selectedClass) return;
     try {
@@ -122,14 +122,14 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       const response = await updateClassService(
         selectedClass.id,
         updatedClass,
-        tk
+        tk,
       );
 
       if (response && updatedClass.coverImage) {
         await uploadClassPhoto(
           selectedClass.id,
           tk,
-          updatedClass.coverImage as File
+          updatedClass.coverImage as File,
         );
       }
 
@@ -139,8 +139,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
       const filteredUpdate = Object.fromEntries(
         Object.entries(updatedClass).filter(
-          ([, value]) => value !== undefined && value !== ""
-        )
+          ([, value]) => value !== undefined && value !== "",
+        ),
       );
 
       updateClassInState({
@@ -168,7 +168,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           selectedClass.id,
           response.id,
           tk,
-          newLesson.coverImage
+          newLesson.coverImage,
         );
       }
 
@@ -210,7 +210,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
   const updateLesson = async (
     lessonId: string,
-    updatedLesson: Partial<IUpdateLesson>
+    updatedLesson: Partial<IUpdateLesson>,
   ) => {
     if (!tk || !selectedClass) return;
     setLoading(true);
@@ -219,7 +219,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         selectedClass.id,
         lessonId,
         updatedLesson,
-        tk
+        tk,
       );
 
       if (response && updatedLesson.coverImage) {
@@ -227,7 +227,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           selectedClass.id,
           lessonId,
           tk,
-          updatedLesson.coverImage as File
+          updatedLesson.coverImage as File,
         );
       }
 
@@ -237,8 +237,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
 
       const validUpdates = Object.fromEntries(
         Object.entries(updatedLesson).filter(
-          ([, value]) => value !== undefined && value !== ""
-        )
+          ([, value]) => value !== undefined && value !== "",
+        ),
       );
 
       const updatedLessons = selectedClass.lessons.map((lesson) =>
@@ -248,7 +248,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
               ...validUpdates,
               coverImage: updatedCoverImage,
             }
-          : lesson
+          : lesson,
       );
 
       updateClassInState({
@@ -263,7 +263,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   const updateClassInState = (
-    updatedClassData: Partial<IClass> & { id: string }
+    updatedClassData: Partial<IClass> & { id: string },
   ) => {
     setClasses((prevClasses) =>
       prevClasses.map((c) =>
@@ -272,8 +272,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
               ...c,
               ...updatedClassData,
             }
-          : c
-      )
+          : c,
+      ),
     );
 
     setSelectedClass((prev) => {
@@ -316,7 +316,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         selectedClass.id,
         selectedLesson,
         selectedFile,
-        tk
+        tk,
       );
 
       setSelectedClass((prev) => {
@@ -356,8 +356,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
                 ? response
                 : []
               : Array.isArray(response.classes)
-              ? response.classes
-              : [];
+                ? response.classes
+                : [];
 
           setClasses(fetchedClasses);
         } catch (error) {

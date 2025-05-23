@@ -67,21 +67,23 @@ export function ClassPage() {
               );
             })
           : Array.isArray(getClassLessons())
-          ? (getClassLessons() ?? [])
-              .filter((lessonItem) =>
-                lessonItem.name.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((lessonItem, index) => (
-                <ContentCard
-                  key={lessonItem.id}
-                  id={lessonItem.id}
-                  index={index}
-                  name={lessonItem.name}
-                  teacherInfo={lessonItem.teacher}
-                  coverImage={lessonItem.coverImage ?? ""}
-                />
-              ))
-          : null)}
+            ? (getClassLessons() ?? [])
+                .filter((lessonItem) =>
+                  lessonItem.name
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()),
+                )
+                .map((lessonItem, index) => (
+                  <ContentCard
+                    key={lessonItem.id}
+                    id={lessonItem.id}
+                    index={index}
+                    name={lessonItem.name}
+                    teacherInfo={lessonItem.teacher}
+                    coverImage={lessonItem.coverImage ?? ""}
+                  />
+                ))
+            : null)}
       <CreateCardButton />
       <Box
         sx={{
@@ -124,7 +126,7 @@ export function ClassPage() {
                 .filter((materialItem) =>
                   materialItem.name
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
+                    .includes(searchTerm.toLowerCase()),
                 )
                 .map((materialItem) => {
                   return materialItem ? (
