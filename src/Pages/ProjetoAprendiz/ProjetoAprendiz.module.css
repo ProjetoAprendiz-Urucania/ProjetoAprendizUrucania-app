@@ -1,0 +1,15 @@
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(120deg, #ffe3e3 0%, #fff 100%);
+  overflow: hidden;
+}
+
+.logoMain {
+  position: relative;
+  top: 50px;
+  margin-bottom: 80px;
+}

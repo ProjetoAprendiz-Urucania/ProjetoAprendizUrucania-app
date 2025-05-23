@@ -1,0 +1,50 @@
+.customButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8em 2.2em;
+  background: linear-gradient(90deg, #d79791, #d989b0);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 2em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(238, 9, 121, 0.2);
+  outline: none;
+  gap: 5px;
+}
+
+.customButton:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 1px 32px rgba(255, 106, 0, 0.25), 0 0 5px #ee0979;
+}
+
+.text {
+  position: relative;
+  z-index: 2;
+}
+
+.glow {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 300%;
+  background: radial-gradient(circle, #fff0 60%, #fde4d2 100%);
+  opacity: 0.25;
+  transform: translate(-50%, -50%) scale(0.2);
+  filter: blur(18px);
+  z-index: 1;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+.customButton:active .glow {
+  opacity: 0.5;
+  transform: translate(-50%, -50%) scale(.1);
+}
