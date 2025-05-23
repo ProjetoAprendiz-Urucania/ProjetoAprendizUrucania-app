@@ -104,9 +104,9 @@ export function ClassPage() {
               materialId={material.id}
             />
           ))}
-          {user?.role === "admin" && <CreateMaterialButton lessons={lessons} />}
         </>
       )}
+      {user?.role === "admin" && <CreateMaterialButton lessons={lessons} />}
     </>
   );
 }

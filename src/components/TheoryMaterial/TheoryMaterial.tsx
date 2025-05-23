@@ -40,8 +40,8 @@ export function TheoryMaterialItem({
       <Box
         sx={{
           borderTop: "1px solid rgba(30, 30, 30, 0.3)",
-          my: 1,
           display: "flex",
+          padding: 1,
           alignItems: "center",
           justifyContent: "space-between",
           cursor: "pointer",
@@ -49,7 +49,6 @@ export function TheoryMaterialItem({
       >
         <Typography
           sx={{
-            mt: 0.8,
             maxWidth: { xs: "260px", md: "100%" },
             overflow: "hidden",
             whiteSpace: "nowrap",

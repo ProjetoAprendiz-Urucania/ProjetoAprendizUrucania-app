@@ -69,8 +69,6 @@ export function UploadFile({
             padding: { xs: 4, md: 6 },
             gap: 3,
             width: "100%",
-            minWidth: { xs: "300px", md: "400px" },
-            maxWidth: "500px",
             margin: "0 auto",
           }}
         >
