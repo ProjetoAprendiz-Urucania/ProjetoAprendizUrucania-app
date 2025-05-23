@@ -1,19 +1,12 @@
-import { ICreateLesson, ILesson, IUpdateLesson } from "../lesson/ILesson";
+import {  ILesson } from "../lesson/ILesson";
 import { ITheoryMaterial } from "../TheoryMaterial/ITheoryMaterial";
-import { IClass, ICreateClass, IUpdateClass } from "./IClass";
+import { IClass } from "./IClass";
 
 export interface IClassContext {
-  loading: boolean;
   selectedClass: IClass | null;
   setSelectedClass: (selectedClass: IClass | null) => void;
   classes: IClass[];
-  setClasses: (classes: IClass[]) => void;
-  addClass: (data: ICreateClass) => void;
-  updateClass: (data: Partial<IUpdateClass>) => void;
-  removeClass: (id: string) => void;
-  addLesson: (data: ICreateLesson) => void;
-  updateLesson: (id: string, data: Partial<IUpdateLesson>) => void;
-  removeLesson: (id: string) => void;
+  setClasses: React.Dispatch<React.SetStateAction<IClass[]>>;
   handleSelectedClass: (classIndex: number) => void;
   loadSelectedClassFromStorage: () => void;
   selectedClassIndex: number;
@@ -22,6 +15,8 @@ export interface IClassContext {
   removeMaterial: (lessonId: string, materialId: string) => void;
   fetchLessons: () => void;
   lessons: ILesson[];
+  setLessons: React.Dispatch<React.SetStateAction<ILesson[]>>;
   fetchMaterials: () => void;
   materials: ITheoryMaterial[];
+  tk: string | null;
 }

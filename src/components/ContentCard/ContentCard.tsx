@@ -13,10 +13,12 @@ import { useEffect, useState, useCallback } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
 import { useAuth } from "../../hooks/useAuth";
-import options from "../../assets/img/ContentCard/options.png";
+import optionsIcon from "../../assets/img/ContentCard/options.png";
 import { CreateCard } from "../CreateCard/CreateCard";
 import { useClass } from "../../hooks/useClass";
 import { useApp } from "../../context/AppContext";
+import { useClassActions } from "../../hooks/useClassActions";
+import { useLessonActions } from "../../hooks/useLessonActions";
 
 const adminMenu = ["Editar", "Excluir"];
 
@@ -29,58 +31,62 @@ export function ContentCard({
 }: ICardData) {
   const { user } = useAuth();
   const { handleMessage } = useApp();
-  const { handleSelectedClass, selectedClass, removeClass, removeLesson } =
-    useClass();
-  const token = localStorage.getItem("token");
+  const { handleSelectedClass, selectedClass } = useClass();
+  const { removeLesson } = useLessonActions();
+  const { removeClass } = useClassActions();
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [openProfileModal, setOpenProfileModal] = useState(false);
-
   const isClassesPage = location.pathname === "/classes";
+  const token = localStorage.getItem("token");
+
+  const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   useEffect(() => {
-    if (coverImage) {
-      const img = new Image();
-      img.src = coverImage;
-      img.onload = () => setImageSrc(coverImage);
-      img.onerror = () => setImageSrc(defaultCardImage);
+    if (!coverImage) {
+      setImageSrc(defaultCardImage);
+      return;
     }
+
+    const img = new Image();
+    img.src = coverImage;
+    img.onload = () => setImageSrc(coverImage);
+    img.onerror = () => setImageSrc(defaultCardImage);
   }, [coverImage]);
 
   const handleOpenContent = useCallback(() => {
     if (isClassesPage) {
       handleSelectedClass(index);
       navigate(`/classes/${id}`);
-    } else {
-      navigate(`/classes/${selectedClass?.id}/lessons/${id}`);
+    } else if (selectedClass) {
+      navigate(`/classes/${selectedClass.id}/lessons/${id}`);
     }
   }, [isClassesPage, handleSelectedClass, index, id, navigate, selectedClass]);
 
-  const handleOpenMenu = useCallback(
-    (e: React.MouseEvent<HTMLImageElement>) => {
-      e.stopPropagation();
-      setAnchorEl(e.currentTarget);
-    },
-    []
-  );
+  const handleOpenMenu = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    setAnchorEl(e.currentTarget);
+  }, []);
 
   const handleCloseMenu = useCallback(() => {
     setAnchorEl(null);
   }, []);
 
-
-
-   const handleMenuClick = useCallback(
+  const handleMenuClick = useCallback(
     async (option: string) => {
-      if (isClassesPage) handleSelectedClass(index);
+      if (isClassesPage) {
+        handleSelectedClass(index);
+      }
 
       handleCloseMenu();
 
       if (option === "Editar") {
-        setOpenProfileModal(true);
+        setOpenEditModal(true);
       } else if (option === "Excluir" && token) {
         try {
           if (!isClassesPage) {
@@ -90,15 +96,18 @@ export function ContentCard({
               horizontal: "left",
             });
           } else {
-            console.log("class");
             removeClass(id);
-             handleMessage("Turma excluída com sucesso.", "success", {
+            handleMessage("Turma excluída com sucesso.", "success", {
               vertical: "bottom",
               horizontal: "left",
             });
           }
         } catch (error) {
           console.error("Erro ao excluir:", error);
+          handleMessage("Erro ao excluir item.", "error", {
+            vertical: "bottom",
+            horizontal: "left",
+          });
         }
       }
     },
@@ -108,84 +117,80 @@ export function ContentCard({
       index,
       isClassesPage,
       token,
-      selectedClass,
       removeLesson,
       removeClass,
       id,
+      handleMessage,
     ]
   );
 
   return (
     <>
       <Card
+        onClick={handleOpenContent}
         sx={{
           display: "flex",
-          marginY: 2.8,
+          my: 2.8,
           borderRadius: 2,
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.51)",
+          boxShadow: "0px 4px 10px rgba(0,0,0,0.51)",
           transition: "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
+          cursor: "pointer",
           "&:hover": {
             transform: "scale(1.001)",
-            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.51)",
+            boxShadow: "0px 6px 15px rgba(0,0,0,0.51)",
           },
-          cursor: "pointer",
         }}
-        onClick={handleOpenContent}
       >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            minWidth: "116px",
+            minWidth: 116,
             overflow: "hidden",
           }}
         >
           <CardMedia
             component="img"
+            image={imageSrc}
+            alt="Capa do curso"
             sx={{
-              width: "76px",
-              height: "58px",
+              width: 76,
+              height: 58,
               aspectRatio: "4 / 3",
               objectFit: "cover",
               borderRadius: 1,
               border: "1px outset whitesmoke",
-              filter: "drop-shadow(0px 0.6px 0.6px rgba(0, 0, 0, 0.7))",
+              filter: "drop-shadow(0 0.6px 0.6px rgba(0,0,0,0.7))",
             }}
-            image={imageSrc}
-            alt="Capa do curso"
           />
         </Box>
 
         <Box
           sx={{
-            marginLeft: -1.8,
+            ml: -1.8,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            width: "100%",
+            flexGrow: 1,
           }}
         >
           <CardContent
             sx={{
-              textAlign: "left",
               display: "flex",
-              flexDirection: "row",
               justifyContent: "space-between",
+              p: 1.5,
+              pr: 0,
               width: "100%",
+              textAlign: "left",
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography
                 sx={{
-                  fontSize: { xs: "15px", sm: "16px", md: "18px", lg: "20px" },
+                  fontSize: { xs: 15, sm: 16, md: 18, lg: 20 },
                   fontWeight: 600,
-                  maxWidth: {
-                    xs: "180px",
-                    sm: "190px",
-                    md: "200px",
-                    lg: "100%",
-                  },
+                  maxWidth: { xs: 180, sm: 190, md: 200, lg: "100%" },
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -193,17 +198,13 @@ export function ContentCard({
               >
                 {name}
               </Typography>
+
               <Typography
                 variant="subtitle2"
                 sx={{
                   color: "text.secondary",
-                  fontSize: { xs: "12px", md: "14px", lg: "16px" },
-                  maxWidth: {
-                    xs: "140px",
-                    sm: "380px",
-                    md: "500px",
-                    lg: "540px",
-                  },
+                  fontSize: { xs: 12, md: 14, lg: 16 },
+                  maxWidth: { xs: 140, sm: 380, md: 500, lg: 540 },
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -215,17 +216,19 @@ export function ContentCard({
           </CardContent>
 
           {user?.role === "admin" && (
-            <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+            <Box
+              sx={{ display: "flex", alignItems: "center", ml: "auto", pr: 2 }}
+            >
               <Box
                 component="img"
-                src={options}
-                onClick={handleOpenMenu}
+                src={optionsIcon}
                 alt="Opções"
+                onClick={handleOpenMenu}
                 sx={{
-                  width: "24px",
-                  mr: 2,
-                  ":hover": { transform: "scale(1.2)" },
+                  width: 24,
                   cursor: "pointer",
+                  transition: "transform 0.15s ease-in-out",
+                  "&:hover": { transform: "scale(1.2)" },
                 }}
               />
             </Box>
@@ -237,6 +240,8 @@ export function ContentCard({
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
         {adminMenu.map((option) => (
           <MenuItem key={option} onClick={() => handleMenuClick(option)}>
@@ -246,10 +251,12 @@ export function ContentCard({
       </Menu>
 
       <Dialog
-        open={openProfileModal}
-        onClose={() => setOpenProfileModal(false)}
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        maxWidth="sm"
+        fullWidth
       >
-        <CreateCard index={index} setOpenProfileModal={setOpenProfileModal} />
+        <CreateCard index={index} setOpenProfileModal={setOpenEditModal} />
       </Dialog>
     </>
   );

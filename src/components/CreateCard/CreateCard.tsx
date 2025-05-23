@@ -7,6 +7,8 @@ import { ICreateClass, IUpdateClass } from "../../interfaces/class/IClass";
 import { ICreateLesson, IUpdateLesson } from "../../interfaces/lesson/ILesson";
 import { useClass } from "../../hooks/useClass";
 import { useApp } from "../../context/AppContext";
+import { useClassActions } from "../../hooks/useClassActions";
+import { useLessonActions } from "../../hooks/useLessonActions";
 
 export function CreateCard({
   index,
@@ -17,14 +19,9 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { handleMessage } = useApp();
-  const {
-    selectedClass,
-    addClass,
-    updateClass,
-    updateLesson,
-    addLesson,
-    classes,
-  } = useClass();
+  const { selectedClass, classes } = useClass();
+  const { updateLesson, addLesson } = useLessonActions();
+  const { addClass, updateClass } = useClassActions();
 
   const token = localStorage.getItem("token");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -147,7 +144,7 @@ export function CreateCard({
       index >= 0 &&
       index < classes.length
     ) {
-      updateClass(payload);
+      updateClass(classes[index].id, payload);
       handleMessage("Turma atualizada com sucesso!", "success", {
         vertical: "bottom",
         horizontal: "left",
@@ -216,7 +213,6 @@ export function CreateCard({
             gap: 3,
             width: "100%",
             minWidth: { xs: "300px", md: "400px" },
-            maxWidth: "500px",
             margin: "0 auto",
           }}
         >
