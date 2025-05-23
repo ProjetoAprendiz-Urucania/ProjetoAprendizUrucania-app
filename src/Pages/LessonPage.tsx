@@ -16,8 +16,10 @@ import { ILesson } from "../interfaces/lesson/ILesson";
 import { getMaterialsByLesson } from "../services/theoryMaterials.service";
 import { ITheoryMaterial } from "../interfaces/TheoryMaterial/ITheoryMaterial";
 import { useApp } from "../context/AppContext";
+import { useAuth } from "../hooks/useAuth";
 
 export function LessonPage() {
+  const { user } = useAuth();
   const { lessonId } = useParams<{
     lessonId: string;
   }>();
@@ -96,7 +98,7 @@ export function LessonPage() {
         });
         return;
       }
-      
+
       if (!res.success) {
         console.error("Erro ao confirmar presença:", res.message || res);
         return;
@@ -118,59 +120,61 @@ export function LessonPage() {
         url={link ?? ""}
         onProgress={(progress) => setProgress(progress)}
       />
-
-      {progress < 99 ? (
-        <Box sx={{ width: "100%", marginBottom: 4 }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "#000", marginBottom: 1 }}
-          ></Typography>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            sx={{
-              height: 4.2,
-              backgroundColor: "#ddd",
-              "& .MuiLinearProgress-bar": {
-                backgroundColor: "#BB1626",
-              },
-            }}
-          />
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            width: "100%",
-            marginBottom: 6,
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <Button
-            onClick={() => handleConfirmPresence()}
-            sx={{
-              backgroundColor: "#BB1626",
-              fontWeight: "bold",
-              color: "white",
-              paddingX: 4,
-              paddingY: 1.2,
-              fontSize: "1rem",
-              textTransform: "none",
-              display: "flex",
-              alignItems: "center",
-              borderRadius: 8,
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-              "&:hover": {
-                backgroundColor: "#9B0E1D",
-              },
-            }}
-            endIcon={<CheckCircleIcon />}
-          >
-            {present ? "Presença Confirmada" : "Confirmar Presença"}
-          </Button>
-        </Box>
+      {user?.role === "student" && (
+        <>
+          {progress < 99 ? (
+            <Box sx={{ width: "100%", marginBottom: 4 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#000", marginBottom: 1 }}
+              ></Typography>
+              <LinearProgress
+                variant="determinate"
+                value={progress}
+                sx={{
+                  height: 4.2,
+                  backgroundColor: "#ddd",
+                  "& .MuiLinearProgress-bar": {
+                    backgroundColor: "#BB1626",
+                  },
+                }}
+              />
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                width: "100%",
+                marginBottom: 6,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                onClick={() => handleConfirmPresence()}
+                sx={{
+                  backgroundColor: "#BB1626",
+                  fontWeight: "bold",
+                  color: "white",
+                  paddingX: 4,
+                  paddingY: 1.2,
+                  fontSize: "1rem",
+                  textTransform: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  borderRadius: 8,
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                  "&:hover": {
+                    backgroundColor: "#9B0E1D",
+                  },
+                }}
+                endIcon={<CheckCircleIcon />}
+              >
+                {present ? "Presença Confirmada" : "Confirmar Presença"}
+              </Button>
+            </Box>
+          )}
+        </>
       )}
-
       <Box
         sx={{
           textAlign: "left",
@@ -194,7 +198,6 @@ export function LessonPage() {
           Materiais Teóricos
         </Typography>
       </Box>
-
       {!materialDrop &&
         lessonMaterials.length > 0 &&
         lessonMaterials.map((materialItem) => (
