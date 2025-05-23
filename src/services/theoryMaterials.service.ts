@@ -33,11 +33,6 @@ export async function uploadMaterialService(
 ) {
   const formData = new FormData();
   formData.append("TheoryMaterial", file);
-
-  console.log("formData", formData);
-  console.log("classId", classId);
-  console.log("lessonId", lessonId);
-
   return apiRequest(
     `classes/${classId}/${lessonId}/theoryMaterials`,
     "POST",

@@ -3,22 +3,17 @@ import { apiRequest } from "./apiRequest.service";
 import { IStudentResponse } from "../interfaces/student/IStudentResponse";
 
 export async function forgotPassword(email: string) {
-  try {
-    const data: IStudentResponse = await apiRequest(
-      `forgot/email/${email}`,
-      "POST",
-    );
+  const data: IStudentResponse = await apiRequest(
+    `forgot/email/${email}`,
+    "POST"
+  );
 
-    if (!data.hash) {
-      console.error("Erro: Hash ausente na resposta!");
-      throw new Error("Email não identificado");
-    }
-
-    return "userExists";
-  } catch (error) {
-    console.error("Erro no login:", error);
-    throw error;
+  if (!data.hash) {
+    console.error("Erro: Hash ausente na resposta!");
+    throw new Error("Email não identificado");
   }
+
+  return "userExists";
 }
 
 export async function login(email: string, password: string) {
@@ -38,7 +33,7 @@ export async function login(email: string, password: string) {
 
     return data;
   } catch (error) {
-    console.error("Erro no login:", error);
+    console.log(error);
     throw error;
   }
 }
@@ -47,7 +42,7 @@ export async function createStudent(
   name: string,
   email: string,
   password: string,
-  church: string,
+  church: string
 ) {
   const data: IStudentResponse = await apiRequest("register", "POST", {
     name,
@@ -63,7 +58,6 @@ export async function createStudent(
 
   localStorage.setItem("token", data.token);
   localStorage.setItem("user", JSON.stringify(data.studentWithoutPassword));
-
   return data;
 }
 
@@ -97,7 +91,7 @@ export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
     `students/${id}/profilePhoto`,
     "POST",
     formData,
-    token || undefined,
+    token || undefined
   );
 }
 
@@ -112,7 +106,7 @@ export function deleteProfilePhoto(userId: string) {
     `students/${userId}/profilePhoto`,
     "DELETE",
     null,
-    token || undefined,
+    token || undefined
   );
 }
 
@@ -127,14 +121,14 @@ export function getStudentByEmail(email: string) {
     `students/email/${encodedEmail}`,
     "GET",
     undefined,
-    token || undefined,
+    token || undefined
   );
 }
 
 export function updateStudent(
   id: string,
   studentData: IStudent,
-  token: string,
+  token: string
 ) {
   return apiRequest(`/students/${id}`, "PUT", studentData, token || undefined);
 }

@@ -22,17 +22,12 @@ export async function deleteLesson(
   lessonId: string,
   token: string,
 ) {
-  try {
     return await apiRequest(
       `classes/${classId}/${lessonId}`,
       "DELETE",
       undefined,
       token,
     );
-  } catch (err) {
-    console.error("Erro ao deletar aula:", err);
-    throw new Error("Erro ao deletar aula. Tente novamente mais tarde.");
-  }
 }
 
 export function uploadLessonPhotoService(

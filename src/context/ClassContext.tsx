@@ -87,7 +87,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         }
       });
     },
-    [tk],
+    [tk]
   );
 
   const removeClass = useCallback(
@@ -98,7 +98,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         setClasses((prev) => prev.filter((item) => item.id !== classId));
       });
     },
-    [tk],
+    [tk]
   );
 
   const handleSelectedClass = (classIndex: number) => {
@@ -132,7 +132,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         const response = await updateClassService(
           selectedClass.id,
           updatedClass,
-          tk,
+          tk
         );
         if (response && updatedClass.coverImage) {
           await uploadClassPhoto(selectedClass.id, tk, updatedClass.coverImage);
@@ -142,8 +142,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           : selectedClass.coverImage;
         const filteredUpdate = Object.fromEntries(
           Object.entries(updatedClass).filter(
-            ([, value]) => value !== undefined && value !== "",
-          ),
+            ([, value]) => value !== undefined && value !== ""
+          )
         );
         updateClassInState({
           ...selectedClass,
@@ -153,7 +153,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         });
       });
     },
-    [tk, selectedClass],
+    [tk, selectedClass]
   );
 
   const addLesson = useCallback(
@@ -166,7 +166,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
             selectedClass.id,
             response.id,
             tk,
-            newLesson.coverImage,
+            newLesson.coverImage
           );
         }
         const updatedLessons = [
@@ -181,7 +181,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
       });
     },
-    [tk, selectedClass],
+    [tk, selectedClass]
   );
 
   const removeLesson = useCallback(
@@ -194,7 +194,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
       });
     },
-    [tk, selectedClass],
+    [tk, selectedClass]
   );
 
   const updateLesson = useCallback(
@@ -205,7 +205,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           selectedClass.id,
           lessonId,
           updatedLesson,
-          tk,
+          tk
         );
 
         if (response && updatedLesson.coverImage) {
@@ -213,7 +213,7 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
             selectedClass.id,
             lessonId,
             tk,
-            updatedLesson.coverImage,
+            updatedLesson.coverImage
           );
         }
         const updatedCoverImage = updatedLesson.coverImage
@@ -221,32 +221,30 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           : response.coverImage;
         const validUpdates = Object.fromEntries(
           Object.entries(updatedLesson).filter(
-            ([, value]) => value !== undefined && value !== "",
-          ),
+            ([, value]) => value !== undefined && value !== ""
+          )
         );
         const updatedLessons = selectedClass.lessons.map((lesson) =>
           lesson.id === lessonId
             ? { ...lesson, ...validUpdates, coverImage: updatedCoverImage }
-            : lesson,
+            : lesson
         );
         updateClassInState({ id: selectedClass.id, lessons: updatedLessons });
       });
     },
-    [tk, selectedClass],
+    [tk, selectedClass]
   );
 
   const updateClassInState = (
-    updatedClassData: Partial<IClass> & { id: string },
+    updatedClassData: Partial<IClass> & { id: string }
   ) => {
     setClasses((prevClasses) =>
       prevClasses.map((c) =>
-        c.id === updatedClassData.id ? { ...c, ...updatedClassData } : c,
-      ),
+        c.id === updatedClassData.id ? { ...c, ...updatedClassData } : c
+      )
     );
     setSelectedClass((prev) =>
-      prev?.id === updatedClassData.id
-        ? { ...prev, ...updatedClassData }
-        : prev,
+      prev?.id === updatedClassData.id ? { ...prev, ...updatedClassData } : prev
     );
   };
 
@@ -258,14 +256,14 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           selectedClass.id,
           lessonId,
           file,
-          tk,
+          tk
         );
         setSelectedClass((prev) =>
-          prev?.id === selectedClass.id ? { ...prev, ...updatedData } : prev,
+          prev?.id === selectedClass.id ? { ...prev, ...updatedData } : prev
         );
       });
     },
-    [tk, selectedClass],
+    [tk, selectedClass]
   );
 
   const removeMaterial = useCallback(
@@ -275,16 +273,16 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
         const updatedData = await deleteMaterial(
           selectedClass.id,
           lessonId,
-          materialId,
+          materialId
         );
         setSelectedClass((prev) =>
           prev?.id === selectedClass.id
             ? { ...prev, theoryMaterials: updatedData }
-            : prev,
+            : prev
         );
       });
     },
-    [tk, selectedClass],
+    [tk, selectedClass]
   );
 
   const fetchMaterials = async () => {
@@ -321,8 +319,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
             ? response
             : []
           : Array.isArray(response.classes)
-            ? response.classes
-            : [];
+          ? response.classes
+          : [];
       setClasses(fetched);
     });
   }, [tk, user]);

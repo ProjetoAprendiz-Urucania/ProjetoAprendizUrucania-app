@@ -23,13 +23,8 @@ export function uploadClassPhoto(
 }
 
 export async function getAdminClasses(token: string) {
-  try {
     const res = await apiRequest("/classes", "GET", undefined, token);
     return res;
-  } catch (error) {
-    console.error("Erro ao buscar classes:", error);
-    throw error;
-  }
 }
 
 export function deleteClass(id: string, token: string) {
