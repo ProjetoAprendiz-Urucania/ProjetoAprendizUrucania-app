@@ -9,7 +9,7 @@ import {
 import { useClass } from "./useClass";
 
 export const useLessonActions = () => {
-  const {  selectedClass, fetchLessons, tk } = useClass();
+  const {  selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
@@ -35,6 +35,7 @@ export const useLessonActions = () => {
         try {
           await deleteLesson(selectedClass.id, lessonId, tk);
           fetchLessons();
+          fetchMaterials();
         } catch (error) {
           console.error("Erro ao deletar aula:", error);
         }
