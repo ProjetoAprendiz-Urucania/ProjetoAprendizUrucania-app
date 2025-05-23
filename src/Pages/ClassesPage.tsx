@@ -43,7 +43,7 @@ export function ClassesPage() {
     : classes;
 
   return (
-    <>
+    <Box >
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       <Box
@@ -52,6 +52,7 @@ export function ClassesPage() {
           marginBottom: 1,
           display: "flex",
           alignItems: "center",
+           marginY:  4 
         }}
       >
         {!classesDrop ? (
@@ -101,7 +102,7 @@ export function ClassesPage() {
               alignItems: "center",
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: "600" }}>
+            <Typography variant="h5" sx={{ fontWeight: "600", mt: 4 }}>
               Alunos
             </Typography>
           </Box>
@@ -110,6 +111,6 @@ export function ClassesPage() {
           </Box>
         </>
       )}
-    </>
+    </Box>
   );
 }

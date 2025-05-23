@@ -7,6 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 export interface TheoryMaterialProps {
   id: string;
+  index: number;
   name: string;
   fileType: string;
   lessonId: string;
@@ -17,6 +18,7 @@ export interface TheoryMaterialProps {
 
 export function TheoryMaterialItem({
   name,
+  index,
   fileUrl,
   materialId,
   lessonId,
@@ -41,7 +43,8 @@ export function TheoryMaterialItem({
     <Box>
       <Box
         sx={{
-          borderTop: "1px solid rgba(30, 30, 30, 0.3)",
+          borderTop: index === 0 ? "1px solid rgba(30, 30, 30, 0.3)" : "none",         
+          borderBottom: "1px solid rgba(30, 30, 30, 0.3)" ,
           display: "flex",
           padding: 1,
           alignItems: "center",

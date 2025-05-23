@@ -37,7 +37,7 @@ export function ClassPage() {
   );
 
   return (
-    <>
+    <Box sx={{ mt:  4,mb: 8 }} >
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Box
         sx={{ textAlign: "left", mb: 1, display: "flex", alignItems: "center" }}
@@ -53,7 +53,7 @@ export function ClassPage() {
             onClick={() => setLessonsDrop(false)}
           />
         )}
-        <Typography variant="h5" sx={{ fontWeight: "600" }}>
+        <Typography variant="h5" sx={{ fontWeight: "600" , my: 2}}>
           Aulas
         </Typography>
       </Box>
@@ -88,16 +88,17 @@ export function ClassPage() {
             onClick={() => setMaterialDrop(false)}
           />
         )}
-        <Typography variant="h5" sx={{ fontWeight: "600" }}>
+        <Typography variant="h5" sx={{ fontWeight: "600",my: 2 }}>
           Materiais Teóricos
         </Typography>
       </Box>
 
       {!materialDrop && (
         <>
-          {(searchTerm ? filteredMaterials : materials).map((material) => (
+          {(searchTerm ? filteredMaterials : materials).map((material,materialIndex) => (
             <TheoryMaterialItem
               key={material.id}
+              index={materialIndex}
               {...material}
               lessonId={material.lessonId || ""}
               classId={selectedClass?.id || ""}
@@ -107,6 +108,6 @@ export function ClassPage() {
         </>
       )}
       {user?.role === "admin" && <CreateMaterialButton lessons={lessons} />}
-    </>
+    </Box>
   );
 }

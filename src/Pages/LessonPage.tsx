@@ -195,9 +195,10 @@ export function LessonPage() {
       </Box>
       {!materialDrop &&
         lessonMaterials.length > 0 &&
-        lessonMaterials.map((materialItem) => (
+        lessonMaterials.map((materialItem,materialIndex) => (
           <TheoryMaterialItem
             id={materialItem.id}
+            index={materialIndex}
             name={materialItem.name}
             fileType={materialItem.fileType}
             lessonId={lessonId || ""}

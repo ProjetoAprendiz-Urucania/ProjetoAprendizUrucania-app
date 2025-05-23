@@ -166,7 +166,7 @@ export function StudentTable({ students, classes }: StudentTableProps) {
   };
 
   return (
-    <>
+    <Box sx={{ mt:  4,mb: 8  }}>
       <Box sx={{ width: "100%", height: 600 }}>
         <DataGrid
           rows={studentsWithClasses}
@@ -224,6 +224,6 @@ export function StudentTable({ students, classes }: StudentTableProps) {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 }
