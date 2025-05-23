@@ -14,14 +14,8 @@ import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const {
-    selectedClass,
-    fetchLessons,
-    lessons,
-    fetchMaterials,
-    materials,
-    loading,
-  } = useClass();
+  const { selectedClass, fetchLessons, lessons, fetchMaterials, materials } =
+    useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
@@ -32,14 +26,14 @@ export function ClassPage() {
       fetchLessons();
       fetchMaterials();
     }
-  }, [selectedClass?.id, loading]);
+  }, [selectedClass?.id]);
 
   const filteredLessons = lessons.filter((lesson) =>
-    lesson.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    lesson.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredMaterials = materials.filter((material) =>
-    material.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    material.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
