@@ -91,16 +91,11 @@ export function LessonPage() {
 
       const res = await confirmPresence(selectedClass.id, lessonId, user.id);
 
-      if (res) {
-        handleMessage("Sua presença ja foi confirmada!", "warning", {
+      if (!res.success) {
+        handleMessage("Sua presença já foi confirmada!", "warning", {
           vertical: "bottom",
           horizontal: "left",
         });
-        return;
-      }
-
-      if (!res.success) {
-        console.error("Erro ao confirmar presença:", res.message || res);
         return;
       }
 
