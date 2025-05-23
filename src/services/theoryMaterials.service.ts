@@ -3,13 +3,13 @@ import { apiRequest } from "./apiRequest.service";
 export async function getMaterialsByLesson(
   classId: string,
   lessonId: string,
-  token: string,
+  token: string
 ) {
   const res = await apiRequest(
     `classes/${classId}/${lessonId}/theoryMaterials`,
     "GET",
     undefined,
-    token,
+    token
   );
   console.log("res", res);
   return res;
@@ -20,7 +20,7 @@ export async function getAllMaterials(classId: string, token: string) {
     `classes/${classId}/theoryMaterials`,
     "GET",
     undefined,
-    token,
+    token
   );
   return res;
 }
@@ -29,7 +29,7 @@ export async function uploadMaterialService(
   classId: string,
   lessonId: string,
   file: File,
-  token: string,
+  token: string
 ) {
   const formData = new FormData();
   formData.append("TheoryMaterial", file);
@@ -37,20 +37,20 @@ export async function uploadMaterialService(
     `classes/${classId}/${lessonId}/theoryMaterials`,
     "POST",
     formData,
-    token,
+    token
   );
 }
 
 export async function deleteMaterial(
   classId: string,
   lessonId: string,
-  theoryMaterialId: string,
+  theoryMaterialId: string
 ) {
   const token = localStorage.getItem("token") || undefined;
   return apiRequest(
     `classes/${classId}/${lessonId}/theoryMaterials/${theoryMaterialId}`,
     "DELETE",
     undefined,
-    token,
+    token
   );
 }

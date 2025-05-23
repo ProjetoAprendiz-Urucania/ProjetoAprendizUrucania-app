@@ -71,9 +71,7 @@ export function ContentCard({
     setAnchorEl(null);
   }, []);
 
-
-
-   const handleMenuClick = useCallback(
+  const handleMenuClick = useCallback(
     async (option: string) => {
       if (isClassesPage) handleSelectedClass(index);
 
@@ -92,7 +90,7 @@ export function ContentCard({
           } else {
             console.log("class");
             removeClass(id);
-             handleMessage("Turma excluída com sucesso.", "success", {
+            handleMessage("Turma excluída com sucesso.", "success", {
               vertical: "bottom",
               horizontal: "left",
             });

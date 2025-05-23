@@ -35,7 +35,7 @@ interface NavbarProps {
   logout: () => void;
 }
 
-function Navbar({ token, logout }: NavbarProps) {
+export function Navbar({ token, logout }: NavbarProps) {
   const { setSelectedClass } = useClass();
   const user = localStorage.getItem("user");
 
@@ -49,7 +49,7 @@ function Navbar({ token, logout }: NavbarProps) {
   const navigate = useNavigate();
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
-    null,
+    null
   );
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -60,7 +60,7 @@ function Navbar({ token, logout }: NavbarProps) {
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
   const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
-    location.pathname,
+    location.pathname
   );
 
   useEffect(() => {
@@ -116,8 +116,8 @@ function Navbar({ token, logout }: NavbarProps) {
       navigate(
         location.pathname.replace(
           /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
-          "/classes/" + location.pathname.split("/")[2],
-        ),
+          "/classes/" + location.pathname.split("/")[2]
+        )
       );
     }
   };
@@ -165,14 +165,14 @@ function Navbar({ token, logout }: NavbarProps) {
                   file.name.replace(/\.\w+$/, ".jpeg"),
                   {
                     type: blob.type || "image/jpeg",
-                  },
+                  }
                 );
 
                 setSelectedPhoto(jpegFile);
               }
             },
             "image/jpeg",
-            0.9,
+            0.9
           );
         };
       };

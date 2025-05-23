@@ -42,7 +42,7 @@ export async function createStudent(
   name: string,
   email: string,
   password: string,
-  church: string
+  church: string,
 ) {
   const data: IStudentResponse = await apiRequest("register", "POST", {
     name,
@@ -86,6 +86,7 @@ export function uploadProfilePhoto(id: string, profilePhoto: File | null) {
 
   const formData = new FormData();
   formData.append("profilePhoto", profilePhoto);
+  formData.append("profilePhoto", profilePhoto);
 
   return apiRequest(
     `students/${id}/profilePhoto`,
@@ -121,7 +122,7 @@ export function getStudentByEmail(email: string) {
     `students/email/${encodedEmail}`,
     "GET",
     undefined,
-    token || undefined
+    token || undefined,
   );
 }
 

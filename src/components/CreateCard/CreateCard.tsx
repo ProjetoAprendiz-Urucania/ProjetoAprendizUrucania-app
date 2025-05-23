@@ -189,6 +189,10 @@ export function CreateCard({
       selectedClass.lessons[index]
     ) {
       updateLesson(selectedClass.lessons[index].id, payload);
+      handleMessage("Aula atualizada com sucesso!", "success", {
+        vertical: "bottom",
+        horizontal: "left",
+      });
     }
 
     setOpenProfileModal(false);

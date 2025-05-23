@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import AuthForm from "./AuthForm/AuthForm";
-import AuthFormPassword from "./AuthForm/AuthFormPassword";
+import { AuthForm } from "./AuthForm/AuthForm";
+import { AuthFormPassword } from "./AuthForm/AuthFormPassword";
 import logoIgreja from "../assets/img/Form/projeto_aprendiz_polo_urucania.svg";
 
 type AuthMode = "register" | "forgot" | "login" | "newPassword";
@@ -14,7 +14,7 @@ export function AuthPage() {
     if (path.includes("register")) return "register";
     if (path.includes("forgot")) return "forgot";
     if (path.includes("login")) return "login";
-    return "newPassword";
+    return "login";
   };
 
   const mode = getMode();

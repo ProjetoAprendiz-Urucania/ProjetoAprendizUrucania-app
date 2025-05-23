@@ -14,7 +14,7 @@ import { login, createStudent } from "../../services/user.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useAuth } from "../../hooks/useAuth";
 import { IUser } from "../../interfaces/IUser";
 import { useApp } from "../../context/AppContext";
@@ -23,14 +23,14 @@ interface IAuthForm {
   mode: "login" | "register";
 }
 
-export default function AuthForm({ mode }: IAuthForm) {
+export function AuthForm({ mode }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
     throw new Error("UserContext must be used within a UserProvider");
   }
 
-  const { setUser } = useAuth();
+  const { setUserWithStorage } = useAuth();
 
   const isLogin = mode === "login";
   const isRegister = mode === "register";
@@ -94,7 +94,7 @@ export default function AuthForm({ mode }: IAuthForm) {
         const userObject: IUser | null = storedUser
           ? JSON.parse(storedUser)
           : null;
-        setUser(userObject);
+        setUserWithStorage(userObject);
         navigate("/classes");
       }
     } catch (error: unknown) {

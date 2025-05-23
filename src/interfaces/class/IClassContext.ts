@@ -4,6 +4,7 @@ import { IClass, ICreateClass, IUpdateClass } from "./IClass";
 
 export interface IClassContext {
   loading: boolean;
+  loading: boolean;
   selectedClass: IClass | null;
   setSelectedClass: (selectedClass: IClass | null) => void;
   classes: IClass[];
@@ -12,6 +13,7 @@ export interface IClassContext {
   updateClass: (data: Partial<IUpdateClass>) => void;
   removeClass: (id: string) => void;
   addLesson: (data: ICreateLesson) => void;
+  updateLesson: (id: string, data: Partial<IUpdateLesson>) => void;
   updateLesson: (id: string, data: Partial<IUpdateLesson>) => void;
   removeLesson: (id: string) => void;
   handleSelectedClass: (classIndex: number) => void;

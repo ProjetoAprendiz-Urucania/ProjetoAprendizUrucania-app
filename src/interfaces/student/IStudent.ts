@@ -10,3 +10,4 @@ export interface IStudent {
   profilePicture?: string;
   classes?: IClass[];
 }
+
