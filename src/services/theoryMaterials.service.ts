@@ -15,13 +15,7 @@ export async function getMaterialsByLesson(
   return res;
 }
 
-export async function getAllMaterials(classId: string, token: string) {
-  const res = await apiRequest(
-    `classes/${classId}/theoryMaterials`,
-    "GET",
-    undefined,
-    token,
-  );
+
 export async function getAllMaterials(classId: string, token: string) {
   const res = await apiRequest(
     `classes/${classId}/theoryMaterials`,
@@ -32,12 +26,7 @@ export async function getAllMaterials(classId: string, token: string) {
   return res;
 }
 
-export async function uploadMaterialService(
-  classId: string,
-  lessonId: string,
-  file: File,
-  token: string,
-) {
+
 export async function uploadMaterialService(
   classId: string,
   lessonId: string,
@@ -59,18 +48,6 @@ export async function uploadMaterialService(
   );
 }
 
-export async function deleteMaterial(
-  classId: string,
-  lessonId: string,
-  theoryMaterialId: string,
-) {
-  const token = localStorage.getItem("token") || undefined;
-  return apiRequest(
-    `classes/${classId}/${lessonId}/theoryMaterials/${theoryMaterialId}`,
-    "DELETE",
-    undefined,
-    token,
-  );
 export async function deleteMaterial(
   classId: string,
   lessonId: string,

@@ -23,7 +23,7 @@ interface IAuthForm {
   mode: "login" | "register";
 }
 
-export default function AuthForm({ mode }: IAuthForm) {
+export  function AuthForm({ mode }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {

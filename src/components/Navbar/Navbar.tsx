@@ -35,7 +35,7 @@ interface NavbarProps {
   logout: () => void;
 }
 
-function Navbar({ token, logout }: NavbarProps) {
+export function Navbar({ token, logout }: NavbarProps) {
   const { setSelectedClass } = useClass();
   const user = localStorage.getItem("user");
 
@@ -455,5 +455,3 @@ function Navbar({ token, logout }: NavbarProps) {
     </AppBar>
   );
 }
-
-export default Navbar;
