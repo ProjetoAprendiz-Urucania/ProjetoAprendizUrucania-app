@@ -19,7 +19,7 @@ export const AlertMessage = ({
   severity,
   variant,
   vertical = "bottom",
-  horizontal = "right",
+  horizontal = "left",
   children,
 }: AlertMessageProps) => {
   return (
