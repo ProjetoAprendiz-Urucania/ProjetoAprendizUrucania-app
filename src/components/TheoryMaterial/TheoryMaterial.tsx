@@ -3,6 +3,7 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useApp } from "../../context/AppContext";
 import { useMaterialActions } from "../../hooks/useMaterialActions";
+import { useAuth } from "../../hooks/useAuth";
 
 export interface TheoryMaterialProps {
   id: string;
@@ -20,6 +21,7 @@ export function TheoryMaterialItem({
   materialId,
   lessonId,
 }: TheoryMaterialProps) {
+  const { user } = useAuth();
   const { removeMaterial } = useMaterialActions();
   const { handleMessage } = useApp();
 
@@ -62,14 +64,16 @@ export function TheoryMaterialItem({
         </Typography>
 
         <Box display={"flex"} gap={1}>
-          <DeleteForeverIcon
-            onClick={handleDeleteFile}
-            sx={{
-              cursor: "pointer",
-              "&:hover": { transform: "scale(1.04)" },
-              width: "1em",
-            }}
-          />
+          {user?.role === "admin" && (
+            <DeleteForeverIcon
+              onClick={handleDeleteFile}
+              sx={{
+                cursor: "pointer",
+                "&:hover": { transform: "scale(1.04)" },
+                width: "1em",
+              }}
+            />
+          )}
           <LaunchIcon
             onClick={handleOpenFile}
             sx={{
