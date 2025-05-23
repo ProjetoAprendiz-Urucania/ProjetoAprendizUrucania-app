@@ -64,7 +64,7 @@ export function LessonPage() {
         const materials: ITheoryMaterial[] = await getMaterialsByLesson(
           selectedClass.id,
           lessonId,
-          tk
+          tk,
         );
         setLessonMaterials(materials);
       } catch (error) {

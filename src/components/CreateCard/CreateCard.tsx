@@ -84,7 +84,7 @@ export function CreateCard({
               }
             },
             "image/jpeg",
-            0.9
+            0.9,
           );
         };
       };
@@ -223,7 +223,6 @@ export function CreateCard({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(isClassPage);
     if (isClassPage) {
       if (index !== null && index !== undefined) {
         handleUpdateLessonCard();

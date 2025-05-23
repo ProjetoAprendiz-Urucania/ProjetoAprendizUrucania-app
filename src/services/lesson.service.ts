@@ -13,6 +13,7 @@ export function createLesson(
   classId: string,
   lessonData: ICreateLesson,
   token: string,
+  token: string,
 ) {
   return apiRequest(`classes/${classId}/lesson`, "POST", lessonData, token);
 }
@@ -22,7 +23,18 @@ export async function deleteLesson(
   lessonId: string,
   token: string,
 ) {
+export async function deleteLesson(
+  classId: string,
+  lessonId: string,
+  token: string,
+) {
   try {
+    return await apiRequest(
+      `classes/${classId}/${lessonId}`,
+      "DELETE",
+      undefined,
+      token,
+    );
     return await apiRequest(
       `classes/${classId}/${lessonId}`,
       "DELETE",
@@ -50,6 +62,7 @@ export function uploadLessonPhotoService(
     "POST",
     formData,
     token || undefined,
+    token || undefined,
   );
 
   console.log("res", res);
@@ -60,6 +73,7 @@ export function updateLessonService(
   classId: string,
   lessonId: string,
   classData: Partial<IUpdateLesson>,
+  token?: string,
   token?: string,
 ) {
   return apiRequest(`classes/${classId}/${lessonId}`, "PUT", classData, token);

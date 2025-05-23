@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { IStudent } from "../../interfaces/student/IStudent";
 import { updateStudent, forgotPassword } from "../../services/user.service";
 
@@ -29,9 +29,13 @@ interface ITokenPayload extends JwtPayload {
 
 interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
+  handleApiResponse?: (
+    message: string,
+    severity: "success" | "error" | "info" | "warning",
+  ) => void;
 }
 
-export default function AuthFormPassword({ mode }: IAuthFormPassword) {
+export function AuthFormPassword({ mode }: IAuthFormPassword) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
@@ -81,7 +85,7 @@ export default function AuthFormPassword({ mode }: IAuthFormPassword) {
         if (res === "userExists") {
           setEmail("");
           setSuccess(
-            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
+            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login",
           );
           setTimeout(() => navigate("/login"), 3000);
         }
