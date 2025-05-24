@@ -130,7 +130,7 @@ export function ContentCard({
         onClick={handleOpenContent}
         sx={{
           display: "flex",
-          my: 2.8,
+          my: 5.2,
           borderRadius: 2,
           boxShadow: "0px 4px 10px rgba(0,0,0,0.51)",
           transition: "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",

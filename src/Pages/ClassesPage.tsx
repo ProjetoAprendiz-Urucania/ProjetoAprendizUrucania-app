@@ -52,7 +52,7 @@ export function ClassesPage() {
           marginBottom: 1,
           display: "flex",
           alignItems: "center",
-           marginY:  4 
+          marginY:  4 ,
         }}
       >
         {!classesDrop ? (
@@ -70,7 +70,7 @@ export function ClassesPage() {
           Turmas
         </Typography>
       </Box>
-
+        
       {!classesDrop && filteredClasses.length > 0
         ? filteredClasses.map((classItem, index) => (
             <ContentCard
