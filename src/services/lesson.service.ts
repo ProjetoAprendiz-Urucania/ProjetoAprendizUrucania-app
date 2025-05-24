@@ -66,3 +66,4 @@ export function updateLessonService(
 ) {
   return apiRequest(`classes/${classId}/${lessonId}`, "PUT", classData, token);
 }
+

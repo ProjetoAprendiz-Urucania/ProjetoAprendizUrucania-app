@@ -5,11 +5,13 @@ import {
   CheckCircle as CheckCircleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
+  Summarize as SummarizeIcon,
 } from "@mui/icons-material";
+import { handleDownloadExcel } from "../components/HandleDownloadExcel/HandleDownloadExcel";
 
 import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial";
 import { VideoPlayer } from "../components/Video/VideoPlayer";
-import { confirmPresence } from "../services/frequencyList";
+import { confirmPresence } from "../services/frequencyList.service";
 import { useClass } from "../hooks/useClass";
 import { getLesson } from "../services/lesson.service";
 import { ILesson } from "../interfaces/lesson/ILesson";
@@ -64,7 +66,7 @@ export function LessonPage() {
         const materials: ITheoryMaterial[] = await getMaterialsByLesson(
           selectedClass.id,
           lessonId,
-          tk,
+          tk
         );
         setLessonMaterials(materials);
       } catch (error) {
@@ -117,7 +119,7 @@ export function LessonPage() {
       />
       {user?.role === "student" && (
         <>
-          {progress < 99 ? (
+          {progress < 80 ? (
             <Box sx={{ width: "100%", marginBottom: 4 }}>
               <Typography
                 variant="body2"
@@ -195,7 +197,7 @@ export function LessonPage() {
       </Box>
       {!materialDrop &&
         lessonMaterials.length > 0 &&
-        lessonMaterials.map((materialItem,materialIndex) => (
+        lessonMaterials.map((materialItem, materialIndex) => (
           <TheoryMaterialItem
             id={materialItem.id}
             index={materialIndex}
@@ -208,6 +210,37 @@ export function LessonPage() {
             key={materialItem.id}
           />
         ))}
+      {user?.role === "admin" && (
+        <Box my={4}>
+          <Button
+            variant="contained"
+            startIcon={<SummarizeIcon />}
+            sx={{
+              backgroundColor: "#BB1626",
+              color: "white",
+              fontWeight: "bold",
+              textTransform: "none",
+              fontSize: "1rem",
+              px: 2,
+              py: 0.6,
+              mt: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              ":hover": {
+                backgroundColor: "#A11420",
+                boxShadow: 4,
+              },
+            }}
+            onClick={() => {
+              if (selectedClass?.id && lessonId) {
+                handleDownloadExcel(selectedClass.id, lessonId);
+              }
+            }}
+          >
+            Lista de Presença
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }

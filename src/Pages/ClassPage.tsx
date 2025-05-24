@@ -37,7 +37,7 @@ export function ClassPage() {
   );
 
   return (
-    <Box sx={{ mt:  4,mb: 8 }} >
+    <Box mb={12} mt={2}>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Box
         sx={{ textAlign: "left", mb: 1, display: "flex", alignItems: "center" }}
@@ -53,7 +53,7 @@ export function ClassPage() {
             onClick={() => setLessonsDrop(false)}
           />
         )}
-        <Typography variant="h5" sx={{ fontWeight: "600" , my: 2}}>
+        <Typography variant="h5" sx={{ fontWeight: "600" }}>
           Aulas
         </Typography>
       </Box>

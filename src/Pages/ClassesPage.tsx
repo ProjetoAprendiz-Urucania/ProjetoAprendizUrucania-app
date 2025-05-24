@@ -43,7 +43,7 @@ export function ClassesPage() {
     : classes;
 
   return (
-    <Box >
+    <Box  mb={12} mt={2}>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       <Box
@@ -52,7 +52,6 @@ export function ClassesPage() {
           marginBottom: 1,
           display: "flex",
           alignItems: "center",
-          marginY:  4 ,
         }}
       >
         {!classesDrop ? (
