@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import imLogo from "../../assets/img/Navbar/im_logo.svg";
 import avatar from "../../assets/img/Navbar/avatar.png";
@@ -46,7 +46,6 @@ export function Navbar({ token, logout }: NavbarProps) {
     parsedUser = JSON.parse(user);
   }
 
-  const location = useLocation();
   const navigate = useNavigate();
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
@@ -61,6 +60,9 @@ export function Navbar({ token, logout }: NavbarProps) {
   const isClassesPage = useMatch("/classes");
   const isClassPage = useMatch("/classes/:classId/lessons");
   const isLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
+
+  const matchClassPage = useMatch("/classes/:classId/lessons");
+  const matchLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
 
   console.log(isClassesPage, isClassPage, isLessonPage);
 
@@ -110,13 +112,12 @@ export function Navbar({ token, logout }: NavbarProps) {
   };
 
   const handleNavigate = () => {
-    if (isClassPage) {
+    if (matchClassPage) {
       navigate("/classes");
       setSelectedClass(null);
-    } else if (isLessonPage) {
-      navigate(
-        location.pathname.replace(/\/lessons\/[a-f0-9]{24}$/, "/lessons")
-      );
+    } else if (matchLessonPage) {
+      const classId = matchLessonPage.params.classId;
+      navigate(`/classes/${classId}/lessons`);
     }
   };
 
