@@ -26,6 +26,7 @@ import {
   deleteProfilePhoto,
 } from "../../services/user.service";
 import { useClass } from "../../hooks/useClass";
+import { useMatch } from "react-router-dom";
 
 const menuNavigation = ["Turmas", "Sair"];
 const avatarMenuOptions = ["Alterar Foto"];
@@ -57,13 +58,9 @@ export function Navbar({ token, logout }: NavbarProps) {
   const [imageError, setImageError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const isClassesPage = location.pathname === "/classes";
-  const isClassPage = /^\/classes\/[a-f0-9]{24}\/lessons$/.test(
-    location.pathname
-  );
-  const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
-    location.pathname
-  );
+  const isClassesPage = useMatch("/classes");
+  const isClassPage = useMatch("/classes/:classId/lessons");
+  const isLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
 
   console.log(isClassesPage, isClassPage, isLessonPage);
 
