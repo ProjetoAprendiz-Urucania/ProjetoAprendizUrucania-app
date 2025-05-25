@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -22,35 +22,45 @@ export function ClassPage() {
   const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
-    if (selectedClass?.id) {
-      fetchLessons();
-      fetchMaterials();
-    }
+    const loadLessonsAndMaterials = () => {
+      if (selectedClass?.id) {
+        fetchLessons();
+        fetchMaterials();
+      }
+    };
+
+    loadLessonsAndMaterials();
   }, [selectedClass?.id]);
 
-  const filteredLessons = lessons.filter((lesson) =>
-    lesson.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLessons = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return lessons.filter((lesson) => lesson.name.toLowerCase().includes(term));
+  }, [lessons, searchTerm]);
 
-  const filteredMaterials = materials.filter((material) =>
-    material.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMaterials = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return materials.filter((material) =>
+      material.name.toLowerCase().includes(term)
+    );
+  }, [materials, searchTerm]);
 
   return (
     <Box mb={12} mt={2}>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+      {/* Aulas */}
       <Box
         sx={{ textAlign: "left", mb: 1, display: "flex", alignItems: "center" }}
       >
-        {!lessonsDrop ? (
-          <KeyboardArrowUpIcon
-            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
-            onClick={() => setLessonsDrop(true)}
-          />
-        ) : (
+        {lessonsDrop ? (
           <KeyboardArrowDownIcon
             sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
             onClick={() => setLessonsDrop(false)}
+          />
+        ) : (
+          <KeyboardArrowUpIcon
+            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
+            onClick={() => setLessonsDrop(true)}
           />
         )}
         <Typography variant="h5" sx={{ fontWeight: "600" }}>
@@ -58,44 +68,42 @@ export function ClassPage() {
         </Typography>
       </Box>
 
-      {!lessonsDrop && (
-        <>
-          {(searchTerm ? filteredLessons : lessons).map((lesson, index) => (
-            <ContentCard
-              key={lesson.id}
-              id={lesson.id}
-              index={index}
-              name={lesson.name}
-              teacherInfo={lesson.teacher}
-              coverImage={lesson.coverImage || ""}
-            />
-          ))}
-        </>
-      )}
+      {!lessonsDrop &&
+        (searchTerm ? filteredLessons : lessons).map((lesson, index) => (
+          <ContentCard
+            key={lesson.id}
+            id={lesson.id}
+            index={index}
+            name={lesson.name}
+            teacherInfo={lesson.teacher}
+            coverImage={lesson.coverImage || ""}
+          />
+        ))}
+
       <CreateCardButton />
 
       <Box
         sx={{ textAlign: "left", my: 2, display: "flex", alignItems: "center" }}
       >
-        {!materialDrop ? (
-          <KeyboardArrowUpIcon
-            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
-            onClick={() => setMaterialDrop(true)}
-          />
-        ) : (
+        {materialDrop ? (
           <KeyboardArrowDownIcon
             sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
             onClick={() => setMaterialDrop(false)}
           />
+        ) : (
+          <KeyboardArrowUpIcon
+            sx={{ mr: "4px", ml: -0.8, cursor: "pointer" }}
+            onClick={() => setMaterialDrop(true)}
+          />
         )}
-        <Typography variant="h5" sx={{ fontWeight: "600",my: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: "600", my: 2 }}>
           Materiais Teóricos
         </Typography>
       </Box>
 
-      {!materialDrop && (
-        <>
-          {(searchTerm ? filteredMaterials : materials).map((material,materialIndex) => (
+      {!materialDrop &&
+        (searchTerm ? filteredMaterials : materials).map(
+          (material, materialIndex) => (
             <TheoryMaterialItem
               key={material.id}
               index={materialIndex}
@@ -104,9 +112,9 @@ export function ClassPage() {
               classId={selectedClass?.id || ""}
               materialId={material.id}
             />
-          ))}
-        </>
-      )}
+          )
+        )}
+
       {user?.role === "admin" && <CreateMaterialButton lessons={lessons} />}
     </Box>
   );
