@@ -14,17 +14,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh'  
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
       }}
     >
       {!isAuthRoute && <Navbar token={token} logout={logout} />}
-      <Container 
-        maxWidth="xl" 
-        sx={{ 
-          flexGrow: 1,   
-          py: 2
+      <Container
+        maxWidth="xl"
+        sx={{
+          flexGrow: 1,
+          py: 2,
         }}
       >
         {children}

@@ -49,7 +49,7 @@ export function Navbar({ token, logout }: NavbarProps) {
   const navigate = useNavigate();
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
-    null,
+    null
   );
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>();
@@ -60,8 +60,10 @@ export function Navbar({ token, logout }: NavbarProps) {
   const isClassesPage = location.pathname === "/classes";
   const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
   const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
-    location.pathname,
+    location.pathname
   );
+
+  console.log(isClassesPage, isClassPage, isLessonPage);
 
   useEffect(() => {
     if (!token) {
@@ -116,8 +118,8 @@ export function Navbar({ token, logout }: NavbarProps) {
       navigate(
         location.pathname.replace(
           /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
-          "/classes/" + location.pathname.split("/")[2],
-        ),
+          "/classes/" + location.pathname.split("/")[2]
+        )
       );
     }
   };
@@ -172,7 +174,7 @@ export function Navbar({ token, logout }: NavbarProps) {
               }
             },
             "image/jpeg",
-            0.9,
+            0.9
           );
         };
       };
