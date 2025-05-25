@@ -63,8 +63,8 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
       <Box
         sx={{
           position: "absolute",
-          bottom: 8,
-          right: 8,
+          bottom: 85,
+          right: 14,
           zIndex: 2,
           backgroundColor: "rgba(53, 53, 53, 0.5)",
           borderRadius: "50%",
