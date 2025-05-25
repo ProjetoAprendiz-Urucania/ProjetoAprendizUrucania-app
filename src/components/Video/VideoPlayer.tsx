@@ -13,13 +13,14 @@ interface VideoPlayerProps {
 
 export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
   const { user } = useAuth();
-  const playerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+
   const handleFullscreenToggle = () => {
-    if (!document.fullscreenElement && playerRef.current) {
-      playerRef.current.requestFullscreen();
-    } else if (document.fullscreenElement) {
+    if (!document.fullscreenElement) {
+      playerContainerRef.current?.requestFullscreen();
+    } else {
       document.exitFullscreen();
     }
   };
@@ -37,6 +38,7 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
 
   return (
     <Paper
+      ref={playerContainerRef}
       elevation={3}
       sx={{
         borderRadius: 3,
@@ -46,16 +48,15 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
         position: "relative",
         my: 8,
       }}
-      ref={playerRef}
     >
       <ReactPlayer
         url={url}
         controls={user?.role === "admin"}
         width="100%"
         height="100%"
-        onProgress={({ played, playedSeconds }) => {
-          onProgress({ played, playedSeconds });
-        }}
+        onProgress={({ played, playedSeconds }) =>
+          onProgress({ played, playedSeconds })
+        }
         onDuration={onDuration}
       />
 
