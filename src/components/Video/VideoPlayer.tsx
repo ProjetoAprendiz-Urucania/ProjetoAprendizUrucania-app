@@ -1,56 +1,78 @@
-import { Paper, Stack, Typography } from "@mui/material";
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { Paper, IconButton, Box } from "@mui/material";
 import ReactPlayer from "react-player";
 import { useAuth } from "../../hooks/useAuth";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import { useRef, useState, useEffect } from "react";
 
 interface VideoPlayerProps {
   url: string;
-  onProgress: (progress: number) => void;
+  onProgress: (progress: { played: number; playedSeconds: number }) => void;
+  onDuration: (duration: number) => void;
 }
 
-export function VideoPlayer({ url, onProgress }: VideoPlayerProps) {
-  const {user} = useAuth();
+export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
+  const { user } = useAuth();
+  const playerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleFullscreenToggle = () => {
+    if (!document.fullscreenElement && playerRef.current) {
+      playerRef.current.requestFullscreen();
+    } else if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
   return (
-    <Paper 
-      elevation={3} 
-      sx={{ 
-        borderRadius: 3, 
-        overflow: 'hidden', 
-        aspectRatio: '16/9',
+    <Paper
+      elevation={3}
+      sx={{
+        borderRadius: 3,
+        overflow: "hidden",
+        aspectRatio: "16/9",
         backgroundColor: "#000000",
-        position: 'relative',
+        position: "relative",
         my: 8,
       }}
+      ref={playerRef}
     >
-      {url ? (
-        <ReactPlayer
-          url={url}
-          controls={user?.role === 'admin' ? true : false}
-          width="100%"
-          height="100%"
-          onProgress={({ played }) => {
-            onProgress(played * 100);
-          }}
-        />
-      ) : (
-        <Stack 
-          alignItems="center" 
-          justifyContent="center" 
-          spacing={2}
-          sx={{ 
-            height: '100%', 
-            color: 'white', 
-            position: 'absolute', 
-            top: 0, left: 0, right: 0, bottom: 0, 
-            backgroundColor: 'rgba(0,0,0,0.7)' 
-          }}
-        >
-          <PlayArrowIcon sx={{ fontSize: 64, opacity: 0.7 }} />
-          <Typography variant="body2" sx={{ opacity: 0.8 }}>
-            No video available
-          </Typography>
-        </Stack>
-      )}
+      <ReactPlayer
+        url={url}
+        controls={user?.role === "admin"}
+        width="100%"
+        height="100%"
+        onProgress={({ played, playedSeconds }) => {
+          onProgress({ played, playedSeconds });
+        }}
+        onDuration={onDuration}
+      />
+
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 8,
+          right: 8,
+          zIndex: 2,
+          backgroundColor: "rgba(53, 53, 53, 0.5)",
+          borderRadius: "50%",
+        }}
+      >
+        <IconButton onClick={handleFullscreenToggle} sx={{ color: "#BB1626" }}>
+          {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+        </IconButton>
+      </Box>
     </Paper>
   );
 }

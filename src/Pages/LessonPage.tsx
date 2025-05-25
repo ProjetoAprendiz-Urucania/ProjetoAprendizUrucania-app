@@ -31,10 +31,18 @@ export function LessonPage() {
   >([]);
   const [materialDrop, setMaterialDrop] = useState(false);
   const [tk] = useState<string | null>(localStorage.getItem("token"));
-  const [progress, setProgress] = useState<number>(0);
+  const [progress, setProgress] = useState(0);
+  const [playedTime, setPlayedTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [present, setPresent] = useState<boolean>(false);
   const [link, setLink] = useState<string | undefined>();
   const { handleMessage } = useApp();
+
+  const formatTime = (seconds: number) => {
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  };
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -115,63 +123,69 @@ export function LessonPage() {
     <Box sx={{ marginY: { xs: 4, sm: 6, md: 8 } }}>
       <VideoPlayer
         url={link ?? ""}
-        onProgress={(progress) => setProgress(progress)}
+        onProgress={(state: { played: number; playedSeconds: number }) => {
+          setProgress(state.played * 100);
+          setPlayedTime(state.playedSeconds);
+        }}
+        onDuration={(duration: number) => {
+          setDuration(duration);
+        }}
       />
-      {user?.role === "student" && (
-        <>
-          {progress < 80 ? (
-            <Box sx={{ width: "100%", marginBottom: 4 }}>
-              <Typography
-                variant="body2"
-                sx={{ color: "#000", marginBottom: 1 }}
-              ></Typography>
-              <LinearProgress
-                variant="determinate"
-                value={progress}
-                sx={{
-                  height: 4.2,
-                  backgroundColor: "#ddd",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "#BB1626",
-                  },
-                }}
-              />
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                width: "100%",
-                marginBottom: 6,
-                display: "flex",
-                justifyContent: "center",
-              }}
+      <>
+        {progress < 85 ? (
+          <Box sx={{ width: "100%", marginBottom: 4 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "#1e1e1e", marginBottom: 1, fontWeight: "bold" }}
             >
-              <Button
-                onClick={() => handleConfirmPresence()}
-                sx={{
+              {formatTime(playedTime)} / {formatTime(duration)}
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                height: 4.2,
+                backgroundColor: "#ddd",
+                "& .MuiLinearProgress-bar": {
                   backgroundColor: "#BB1626",
-                  fontWeight: "bold",
-                  color: "white",
-                  paddingX: 4,
-                  paddingY: 1.2,
-                  fontSize: "1rem",
-                  textTransform: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  borderRadius: 8,
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-                  "&:hover": {
-                    backgroundColor: "#9B0E1D",
-                  },
-                }}
-                endIcon={<CheckCircleIcon />}
-              >
-                {present ? "Presença Confirmada" : "Confirmar Presença"}
-              </Button>
-            </Box>
-          )}
-        </>
-      )}
+                },
+              }}
+            />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              width: "100%",
+              marginBottom: 6,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              onClick={() => handleConfirmPresence()}
+              sx={{
+                backgroundColor: "#BB1626",
+                fontWeight: "bold",
+                color: "white",
+                paddingX: 4,
+                paddingY: 1.2,
+                fontSize: "1rem",
+                textTransform: "none",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: 8,
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                "&:hover": {
+                  backgroundColor: "#9B0E1D",
+                },
+              }}
+              endIcon={<CheckCircleIcon />}
+            >
+              {present ? "Presença Confirmada" : "Confirmar Presença"}
+            </Button>
+          </Box>
+        )}
+      </>
       <Box
         sx={{
           textAlign: "left",
