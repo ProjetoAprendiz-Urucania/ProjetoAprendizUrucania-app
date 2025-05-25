@@ -14,6 +14,7 @@ interface VideoPlayerProps {
 export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
   const { user } = useAuth();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   const playerContainerRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +52,7 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
     >
       <ReactPlayer
         url={url}
-        controls={user?.role === "admin"}
+        controls={isIOS || user?.role === "admin"}
         width="100%"
         height="100%"
         onProgress={({ played, playedSeconds }) =>
