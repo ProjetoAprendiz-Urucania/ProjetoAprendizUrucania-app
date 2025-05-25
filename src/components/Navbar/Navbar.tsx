@@ -64,8 +64,6 @@ export function Navbar({ token, logout }: NavbarProps) {
   const matchClassPage = useMatch("/classes/:classId/lessons");
   const matchLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
 
-  console.log(isClassesPage, isClassPage, isLessonPage);
-
   useEffect(() => {
     if (!token) {
       logout();

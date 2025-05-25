@@ -8,7 +8,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import defaultCardImage from "../../assets/img/defaultCardImage.svg";
 import { ICardData } from "../../interfaces/ICardData";
@@ -36,9 +36,9 @@ export function ContentCard({
   const { removeClass } = useClassActions();
 
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const isClassesPage = location.pathname === "/classes";
+  const isClassesPage = useMatch("/classes");
+
   const token = localStorage.getItem("token");
 
   const [imageSrc, setImageSrc] = useState<string>(defaultCardImage);
