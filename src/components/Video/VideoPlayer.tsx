@@ -72,7 +72,7 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
         }}
       >
         <IconButton onClick={handleFullscreenToggle} sx={{ color: "#BB1626" }}>
-          {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+          {isFullscreen && !isIOS ? <FullscreenExitIcon /> : <FullscreenIcon />}
         </IconButton>
       </Box>
     </Paper>
