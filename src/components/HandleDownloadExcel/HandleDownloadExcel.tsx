@@ -41,7 +41,7 @@ export const handleDownloadExcel = async (
 
     worksheet.columns = columns;
 
-    data.students.forEach((student: any) => {
+    data.students.forEach((student: unknown) => {
       worksheet.addRow(student);
     });
 

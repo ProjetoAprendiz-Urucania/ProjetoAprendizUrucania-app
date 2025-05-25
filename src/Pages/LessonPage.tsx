@@ -172,6 +172,12 @@ export function LessonPage() {
               "&:hover": {
                 backgroundColor: "#9B0E1D",
               },
+              "&.Mui-disabled": {
+                backgroundColor: "#CCC",
+                color: "#666",
+                boxShadow: "none",
+                cursor: "not-allowed",
+              },
             }}
             endIcon={<CheckCircleIcon />}
             disabled={user?.role === "admin"}
