@@ -70,7 +70,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         onClose={handleCloseSnackbar}
         severity={error}
         variant="filled"
-        vertical={position.vertical ?? "bottom"}
+        vertical={position.vertical ?? "top"}
         horizontal={position.horizontal ?? "right"}
       >
         {message}

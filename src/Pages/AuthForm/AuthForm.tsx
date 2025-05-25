@@ -23,7 +23,7 @@ interface IAuthForm {
   mode: "login" | "register";
 }
 
-export  function AuthForm({ mode }: IAuthForm) {
+export function AuthForm({ mode }: IAuthForm) {
   const userContext = useContext(AuthContext);
 
   if (!userContext) {
@@ -48,8 +48,8 @@ export  function AuthForm({ mode }: IAuthForm) {
     if (isLogin) {
       if (!email || !password) {
         handleMessage("Preencha todos os campos", "error", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
         return false;
       }
@@ -57,8 +57,8 @@ export  function AuthForm({ mode }: IAuthForm) {
     if (isRegister) {
       if (!name || !email || !password || !church) {
         handleMessage("Preencha todos os campos", "error", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
         return false;
       }
@@ -77,14 +77,14 @@ export  function AuthForm({ mode }: IAuthForm) {
       if (isLogin) {
         res = await login(email, password);
         handleMessage("Login realizado com sucesso!", "success", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
       } else {
         res = await createStudent(name, email, password, church);
         handleMessage("Registro realizado com sucesso!", "success", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
       }
 
@@ -99,13 +99,13 @@ export  function AuthForm({ mode }: IAuthForm) {
     } catch (error: unknown) {
       if (error instanceof Error) {
         handleMessage(error.message, "error", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
       } else {
         handleMessage("Ocorreu um erro desconhecido.", "error", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
       }
     }

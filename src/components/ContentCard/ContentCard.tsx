@@ -92,21 +92,21 @@ export function ContentCard({
           if (!isClassesPage) {
             removeLesson(id);
             handleMessage("Aula excluída com sucesso.", "success", {
-              vertical: "bottom",
-              horizontal: "left",
+              vertical: "top",
+              horizontal: "right",
             });
           } else {
             removeClass(id);
             handleMessage("Turma excluída com sucesso.", "success", {
-              vertical: "bottom",
-              horizontal: "left",
+              vertical: "top",
+              horizontal: "right",
             });
           }
         } catch (error) {
           console.error("Erro ao excluir:", error);
           handleMessage("Erro ao excluir item.", "error", {
-            vertical: "bottom",
-            horizontal: "left",
+            vertical: "top",
+            horizontal: "right",
           });
         }
       }

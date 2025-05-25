@@ -103,16 +103,16 @@ export function LessonPage() {
 
       if (!res.success) {
         handleMessage("Sua presença já foi confirmada!", "warning", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
         return;
       }
 
       setPresent(true);
       handleMessage("Presença confirmada com sucesso!", "success", {
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: "top",
+        horizontal: "right",
       });
     } catch (error) {
       console.error("Erro inesperado ao confirmar presença:", error);

@@ -21,13 +21,13 @@ export const useClassActions = () => {
           if(newClass.coverImage)
           await uploadClassPhoto(response.id, tk, newClass.coverImage);
           handleMessage("Turma criada com sucesso!", "success", {
-            vertical: "bottom",
-            horizontal: "left",
+            vertical: "top",
+            horizontal: "right",
           });
         } catch (error: unknown) {
           handleMessage("Erro no upload da foto da turma", "error", {
-            vertical: "bottom",
-            horizontal: "left",
+            vertical: "top",
+            horizontal: "right",
           });
           console.error("Erro no upload da foto da turma:", error);
         }

@@ -34,8 +34,8 @@ export function TheoryMaterialItem({
   const handleDeleteFile = () => {
     removeMaterial(lessonId, materialId);
     handleMessage("Material excluído com sucesso!", "success", {
-      vertical: "bottom",
-      horizontal: "left",
+      vertical: "top",
+      horizontal: "right",
     });
   };
 
@@ -43,8 +43,8 @@ export function TheoryMaterialItem({
     <Box>
       <Box
         sx={{
-          borderTop: index === 0 ? "1px solid rgba(30, 30, 30, 0.3)" : "none",         
-          borderBottom: "1px solid rgba(30, 30, 30, 0.3)" ,
+          borderTop: index === 0 ? "1px solid rgba(30, 30, 30, 0.3)" : "none",
+          borderBottom: "1px solid rgba(30, 30, 30, 0.3)",
           display: "flex",
           padding: 1,
           alignItems: "center",

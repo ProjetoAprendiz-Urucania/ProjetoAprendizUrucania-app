@@ -37,7 +37,7 @@ export function CreateCard({
 
       if (!file.type.startsWith("image/")) {
         handleMessage("Por favor, selecione um arquivo de valido.", "error", {
-          vertical: "bottom",
+          vertical: "top",
           horizontal: "left",
         });
         return;
@@ -84,7 +84,7 @@ export function CreateCard({
               }
             },
             "image/jpeg",
-            0.9,
+            0.9
           );
         };
       };
@@ -105,8 +105,8 @@ export function CreateCard({
 
       if (classExists) {
         handleMessage("Nome da turma já existe!", "warning", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
         return;
       }
@@ -134,16 +134,16 @@ export function CreateCard({
 
       if (lessonExists) {
         handleMessage("Nome da aula já existe!", "warning", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
         return;
       }
 
       addLesson(payload);
       handleMessage("Aula criada com sucesso!", "success", {
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: "top",
+        horizontal: "right",
       });
     }
 
@@ -164,8 +164,8 @@ export function CreateCard({
 
     if (classExists) {
       handleMessage("Nome da turma já existe!", "warning", {
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: "top",
+        horizontal: "right",
       });
       return;
     }
@@ -178,8 +178,8 @@ export function CreateCard({
     ) {
       updateClass(classes[index].id, payload);
       handleMessage("Turma atualizada com sucesso!", "success", {
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: "top",
+        horizontal: "right",
       });
     }
 
@@ -204,8 +204,8 @@ export function CreateCard({
 
     if (lessonExists) {
       handleMessage("Nome da aula já existe!", "warning", {
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: "top",
+        horizontal: "right",
       });
       return;
     }

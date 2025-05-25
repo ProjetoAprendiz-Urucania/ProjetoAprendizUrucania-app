@@ -31,7 +31,7 @@ interface IAuthFormPassword {
   mode: "newPassword" | "forgot";
   handleApiResponse?: (
     message: string,
-    severity: "success" | "error" | "info" | "warning",
+    severity: "success" | "error" | "info" | "warning"
   ) => void;
 }
 
@@ -63,15 +63,15 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
     if (isForgot) {
       if (!email.trim()) {
         handleMessage("Preencha com seu email", "error", {
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: "top",
+          horizontal: "right",
         });
         return;
       }
     } else if (!newPassword.trim()) {
       handleMessage("Preencha todos os campos obrigatórios", "error", {
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: "top",
+        horizontal: "right",
       });
       return;
     }
@@ -85,7 +85,7 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
         if (res === "userExists") {
           setEmail("");
           setSuccess(
-            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login",
+            "Seu link de Recuperação foi enviado ao email informado, redirecionando a login"
           );
           setTimeout(() => navigate("/login"), 3000);
         }

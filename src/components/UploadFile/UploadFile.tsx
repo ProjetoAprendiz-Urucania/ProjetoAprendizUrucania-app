@@ -49,8 +49,8 @@ export function UploadFile({
     setSelectedLesson("");
     setIsUploading(false);
     handleMessage("Lição adicionada com sucesso!", "success", {
-      vertical: "bottom",
-      horizontal: "left",
+      vertical: "top",
+      horizontal: "right",
     });
   };
 
