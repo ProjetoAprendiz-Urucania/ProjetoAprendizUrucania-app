@@ -156,7 +156,7 @@ export function LessonPage() {
           <Box
             sx={{
               width: "100%",
-              marginBottom: 6,
+              marginY: 8,
               display: "flex",
               justifyContent: "center",
             }}
@@ -178,8 +178,14 @@ export function LessonPage() {
                 "&:hover": {
                   backgroundColor: "#9B0E1D",
                 },
+                "&.Mui-disabled": {
+                  backgroundColor: "#999",
+                  color: "#eee",
+                  boxShadow: "none",
+                },
               }}
               endIcon={<CheckCircleIcon />}
+              disabled={user?.role === "admin"}
             >
               {present ? "Presença Confirmada" : "Confirmar Presença"}
             </Button>
