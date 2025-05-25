@@ -229,7 +229,7 @@ export function LessonPage() {
             }}
             onClick={() => {
               if (selectedClass?.id && lessonId) {
-                handleDownloadExcel(selectedClass.id, lessonId);
+                handleDownloadExcel(selectedClass.id, lessonId, handleMessage);
               }
             }}
           >

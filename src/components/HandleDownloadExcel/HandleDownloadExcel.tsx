@@ -1,10 +1,20 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { getFrequencyList } from "../../services/frequencyList.service";
+import { AlertColor } from "@mui/material";
+import { horizontalAlign, verticalAlign } from "../AlertMessage";
 
 export const handleDownloadExcel = async (
   classId: string,
-  lessonId: string
+  lessonId: string,
+  handleMessage: (
+    message: string,
+    error: AlertColor,
+    position?: {
+      vertical?: verticalAlign;
+      horizontal?: horizontalAlign;
+    }
+  ) => void
 ) => {
   try {
     const response = await getFrequencyList(classId, lessonId);
@@ -13,6 +23,10 @@ export const handleDownloadExcel = async (
 
     if (!success || data.students.length === 0) {
       console.warn("Nenhuma presença registrada.");
+      handleMessage("Nenhuma presença registrada.", "warning", {
+        vertical: "top",
+        horizontal: "right",
+      });
       return;
     }
 
