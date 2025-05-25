@@ -61,20 +61,25 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
         onDuration={onDuration}
       />
 
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 85,
-          right: 14,
-          zIndex: 2,
-          backgroundColor: "rgba(53, 53, 53, 0.5)",
-          borderRadius: "50%",
-        }}
-      >
-        <IconButton onClick={handleFullscreenToggle} sx={{ color: "#BB1626" }}>
-          {isFullscreen && !isIOS ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </IconButton>
-      </Box>
+      {!isIOS && (
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 85,
+            right: 14,
+            zIndex: 2,
+            backgroundColor: "rgba(53, 53, 53, 0.5)",
+            borderRadius: "50%",
+          }}
+        >
+          <IconButton
+            onClick={handleFullscreenToggle}
+            sx={{ color: "#BB1626" }}
+          >
+            {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+          </IconButton>
+        </Box>
+      )}
     </Paper>
   );
 }
