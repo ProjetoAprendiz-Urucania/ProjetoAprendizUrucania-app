@@ -62,7 +62,7 @@ export function ContentCard({
   const handleOpenContent = useCallback(() => {
     if (isClassesPage) {
       handleSelectedClass(index);
-      navigate(`/classes/${id}`);
+      navigate(`/classes/${id}/lessons`);
     } else if (selectedClass) {
       navigate(`/classes/${selectedClass.id}/lessons/${id}`);
     }

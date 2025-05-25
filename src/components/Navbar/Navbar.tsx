@@ -58,7 +58,9 @@ export function Navbar({ token, logout }: NavbarProps) {
   const [loading, setLoading] = useState(false);
 
   const isClassesPage = location.pathname === "/classes";
-  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+  const isClassPage = /^\/classes\/[a-f0-9]{24}\/lessons$/.test(
+    location.pathname
+  );
   const isLessonPage = /^\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/.test(
     location.pathname
   );
@@ -112,14 +114,11 @@ export function Navbar({ token, logout }: NavbarProps) {
 
   const handleNavigate = () => {
     if (isClassPage) {
-      setSelectedClass(null);
       navigate("/classes");
+      setSelectedClass(null);
     } else if (isLessonPage) {
       navigate(
-        location.pathname.replace(
-          /\/classes\/[a-f0-9]{24}\/lessons\/[a-f0-9]{24}$/,
-          "/classes/" + location.pathname.split("/")[2]
-        )
+        location.pathname.replace(/\/lessons\/[a-f0-9]{24}$/, "/lessons")
       );
     }
   };
