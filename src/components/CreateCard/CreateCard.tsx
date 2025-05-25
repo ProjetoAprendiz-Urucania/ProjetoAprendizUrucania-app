@@ -9,6 +9,7 @@ import { useClass } from "../../hooks/useClass";
 import { useApp } from "../../context/AppContext";
 import { useClassActions } from "../../hooks/useClassActions";
 import { useLessonActions } from "../../hooks/useLessonActions";
+import { useMatch } from "react-router-dom";
 
 export function CreateCard({
   index,
@@ -29,7 +30,7 @@ export function CreateCard({
   const [teachers, setTeachers] = useState<string>("");
   const [lessonLink, setLessonLink] = useState<string>("");
 
-  const isClassPage = /^\/classes\/[a-f0-9]{24}$/.test(location.pathname);
+  const isClassPage = useMatch("/classes/:classId/lessons");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
