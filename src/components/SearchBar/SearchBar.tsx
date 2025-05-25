@@ -28,7 +28,8 @@ export function SearchBar({
         color: "#1E1E1E",
         borderRadius: "4px",
         padding: "8px",
-        marginY: 4.6,
+        mt: 2.2,
+        mb: 4.6,
         paddingRight: "40px",
       }}
       endAdornment={
