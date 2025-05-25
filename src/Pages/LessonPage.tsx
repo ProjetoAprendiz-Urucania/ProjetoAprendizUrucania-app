@@ -174,6 +174,7 @@ export function LessonPage() {
               },
             }}
             endIcon={<CheckCircleIcon />}
+            disabled={user?.role === "admin"}
           >
             {present ? "Presença Confirmada" : "Confirmar Presença"}
           </Button>
