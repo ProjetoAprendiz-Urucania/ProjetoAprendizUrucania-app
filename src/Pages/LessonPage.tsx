@@ -133,7 +133,7 @@ export function LessonPage() {
       />
       <>
         {progress < 85 ? (
-          <Box sx={{ width: "100%", marginBottom: 4 }}>
+          <Box sx={{ width: "100%", marginBottom: 8 }}>
             <Typography
               variant="body2"
               sx={{ color: "#1e1e1e", marginBottom: 1, fontWeight: "bold" }}
