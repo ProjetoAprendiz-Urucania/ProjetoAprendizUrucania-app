@@ -210,7 +210,7 @@ export function AuthForm({ mode }: IAuthForm) {
                 <span
                   style={{
                     fontSize: "14px",
-                    color: "#6b7280",
+                    color: "#C14600",
                     textDecoration: "underline",
                     cursor: "pointer",
                   }}
@@ -252,7 +252,7 @@ export function AuthForm({ mode }: IAuthForm) {
             <span
               style={{
                 fontSize: "14px",
-                color: "#6b7280",
+                color: "#C14600",
                 textDecoration: "underline",
                 cursor: "pointer",
               }}

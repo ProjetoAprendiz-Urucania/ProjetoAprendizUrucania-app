@@ -188,7 +188,7 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
             <span
               style={{
                 fontSize: "14px",
-                color: "#ED3237",
+                color: "#C14600",
                 fontWeight: "bolder",
                 textDecoration: "underline",
                 cursor: "pointer",
