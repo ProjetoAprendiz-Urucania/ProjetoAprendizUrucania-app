@@ -138,3 +138,8 @@ export function updateStudent(
 ) {
   return apiRequest(`/students/${id}`, "PUT", studentData, token || undefined);
 }
+
+export function getStudentsByClassId(classId: string) {
+  const token = localStorage.getItem("token");
+  return apiRequest(`userClass/${classId}/students`, "GET", undefined, token || undefined);
+}

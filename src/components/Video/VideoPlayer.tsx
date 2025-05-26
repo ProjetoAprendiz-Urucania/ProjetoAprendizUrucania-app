@@ -48,7 +48,7 @@ export function VideoPlayer({ url, onProgress, onDuration }: VideoPlayerProps) {
         backgroundColor: "#000000",
         position: "relative",
         mt: 8,
-        mb: 4
+        mb: 4,
       }}
     >
       <ReactPlayer
