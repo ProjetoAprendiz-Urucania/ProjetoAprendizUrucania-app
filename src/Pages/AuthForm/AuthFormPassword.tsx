@@ -1,11 +1,10 @@
 import { useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Button,
   IconButton,
   InputAdornment,
-  Link,
   TextField,
   Snackbar,
   Alert,
@@ -185,21 +184,18 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
         </form>
 
         <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Link
-            href="/login"
-            sx={{
-              fontSize: "14px",
-              color: "#ED3237",
-              fontWeight: "bolder",
-              textDecoration: "underline",
-              cursor: "pointer",
-              marginY: 1.5,
-              "&:hover": {
-                color: "#BB1626",
-              },
-            }}
-          >
-            Fazer Login
+          <Link to="/login">
+            <span
+              style={{
+                fontSize: "14px",
+                color: "#ED3237",
+                fontWeight: "bolder",
+                textDecoration: "underline",
+                cursor: "pointer",
+              }}
+            >
+              Fazer Login
+            </span>
           </Link>
         </Box>
       </Box>
