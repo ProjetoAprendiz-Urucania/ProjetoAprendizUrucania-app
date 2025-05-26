@@ -5,10 +5,10 @@ import {
   Button,
   IconButton,
   InputAdornment,
-  Link,
   TextField,
   Typography,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import imLogo from "../../assets/img/Form/im_logo.png";
 import { login, createStudent } from "../../services/user.service";
 import Visibility from "@mui/icons-material/Visibility";
@@ -206,20 +206,17 @@ export function AuthForm({ mode }: IAuthForm) {
         {isLogin && (
           <>
             <Box sx={{ textAlign: "center", mt: 3 }}>
-              <Link
-                href="forgot"
-                sx={{
-                  fontSize: "14px",
-                  color: "#6b7280",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  marginY: 1,
-                  "&:hover": {
-                    color: "#ED3237",
-                  },
-                }}
-              >
-                Esqueci minha senha
+              <Link to="forgot">
+                <span
+                  style={{
+                    fontSize: "14px",
+                    color: "#6b7280",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
+                >
+                  Esqueci minha senha
+                </span>
               </Link>
             </Box>
             <Box
@@ -251,21 +248,17 @@ export function AuthForm({ mode }: IAuthForm) {
         )}
 
         <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Link
-            href={isLogin ? "/register" : "/login"}
-            sx={{
-              fontSize: "14px",
-              color: "#ED3237",
-              fontWeight: "bolder",
-              textDecoration: "underline",
-              cursor: "pointer",
-              marginY: 1.5,
-              "&:hover": {
-                color: "#BB1626",
-              },
-            }}
-          >
-            {isLogin ? "Registrar-se" : "Fazer Login"}
+          <Link to={isLogin ? "/register" : "/login"}>
+            <span
+              style={{
+                fontSize: "14px",
+                color: "#6b7280",
+                textDecoration: "underline",
+                cursor: "pointer",
+              }}
+            >
+              {isLogin ? "Registrar-se" : "Fazer Login"}
+            </span>
           </Link>
         </Box>
       </Box>

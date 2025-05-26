@@ -64,12 +64,12 @@ export function Navbar({ token, logout }: NavbarProps) {
   const matchClassPage = useMatch("/classes/:classId/lessons");
   const matchLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
 
-  // useEffect(() => {
-  //   if (!token) {
-  //     logout();
-  //     navigate("/login");
-  //   }
-  // }, [token, logout, navigate]);
+  useEffect(() => {
+    if (!token) {
+      logout();
+      navigate("/login");
+    }
+  }, [token, logout, navigate]);
 
   useEffect(() => {
     if (!openProfileModal) {

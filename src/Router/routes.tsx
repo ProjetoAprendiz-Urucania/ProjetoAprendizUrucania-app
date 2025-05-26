@@ -49,7 +49,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/classes/:id/lessons",
+    path: "/classes/:id",
     element: (
       <ClassProvider>
         <AppLayout>
