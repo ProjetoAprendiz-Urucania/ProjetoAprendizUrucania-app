@@ -11,15 +11,21 @@ export function AuthPage() {
   const path = location.pathname;
 
   const getMode = (): AuthMode => {
-    if (path.includes("register")) return "register";
-    if (path.includes("forgot")) return "forgot";
-    if (path.includes("login")) return "login";
-    return "login";
+    switch (path) {
+      case "/register":
+        return "register";
+      case "/forgot":
+        return "forgot";
+      case "/login":
+        return "login";
+      case "/new-password":
+        return "newPassword";
+      default:
+        return "login";
+    }
   };
 
   const mode = getMode();
-
-
 
   return (
     <Box
