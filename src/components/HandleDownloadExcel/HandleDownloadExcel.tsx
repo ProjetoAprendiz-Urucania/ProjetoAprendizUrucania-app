@@ -20,7 +20,6 @@ export const handleDownloadExcel = async (
 ) => {
   try {
     const response = await getFrequencyList(classId, lessonId);
-    console.log("Resposta da API:", response);
     const { success, data } = response;
 
     if (!success) {
