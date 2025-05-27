@@ -151,7 +151,7 @@ export function CreateCard({
       fetchMaterials();
     }
 
-    if (name && teachers && token && selectedClass && selectedClass.id) {
+    if (name && teachers && token && selectedClass) {
       setOpenProfileModal(false);
     }
   };

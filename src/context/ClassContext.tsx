@@ -69,20 +69,10 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     try {
       const res = await getLessonsByClassId(selectedClass.id, tk);
       const updatedLessons = res || [];
-
       setLessons(updatedLessons);
-      setSelectedClass({
-        ...selectedClass,
-        lessons: updatedLessons,
-      });
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
-
       setLessons([]);
-      setSelectedClass({
-        ...selectedClass,
-        lessons: [],
-      });
     }
   };
 
@@ -99,8 +89,8 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
           ? response
           : []
         : Array.isArray(response.classes)
-        ? response.classes
-        : [];
+          ? response.classes
+          : [];
     setClasses(fetched);
   }, [tk, user]);
 
