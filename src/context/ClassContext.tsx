@@ -65,26 +65,22 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   };
 
   const fetchLessons = useCallback(async () => {
-    if (!tk || !selectedClass) return;
+    if (!tk || !selectedClass?.id) return;
     try {
       const res = await getLessonsByClassId(selectedClass.id, tk);
       const updatedLessons = res || [];
 
       setLessons(updatedLessons);
-      setSelectedClass({
-        ...selectedClass,
-        lessons: updatedLessons,
-      });
+      setSelectedClass((prev) =>
+        prev ? { ...prev, lessons: updatedLessons } : prev
+      );
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
 
       setLessons([]);
-      setSelectedClass({
-        ...selectedClass,
-        lessons: [],
-      });
+      setSelectedClass((prev) => (prev ? { ...prev, lessons: [] } : prev));
     }
-  }, [tk, selectedClass]);
+  }, [tk, selectedClass?.id]);
 
   const fetchStudentClasses = useCallback(async () => {
     if (!tk || !user) return;
