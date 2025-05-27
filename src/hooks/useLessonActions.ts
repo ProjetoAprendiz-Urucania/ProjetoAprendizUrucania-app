@@ -11,7 +11,13 @@ import { useApp } from "../context/AppContext";
 
 export const useLessonActions = () => {
   const { handleMessage } = useApp();
-  const { selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
+  const {
+    selectedClass,
+    fetchLessons,
+    tk,
+    fetchMaterials,
+    fetchStudentClasses,
+  } = useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
@@ -37,7 +43,8 @@ export const useLessonActions = () => {
         });
         console.error("Erro no upload da foto da aula:", error);
       }
-
+      
+      fetchStudentClasses();
       fetchLessons();
     },
     [tk, selectedClass, handleMessage]
