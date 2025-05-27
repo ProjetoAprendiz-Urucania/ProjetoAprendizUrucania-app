@@ -36,7 +36,6 @@ export function AuthPage() {
         position: "absolute",
         top: 0,
         left: 0,
-        background: "linear-gradient(to bottom, #ffdada, #fff)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

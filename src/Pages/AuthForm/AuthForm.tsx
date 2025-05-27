@@ -206,13 +206,14 @@ export function AuthForm({ mode }: IAuthForm) {
         {isLogin && (
           <>
             <Box sx={{ textAlign: "center", mt: 3 }}>
-              <Link to="forgot">
+              <Link to="/forgot">
                 <span
                   style={{
                     fontSize: "14px",
                     color: "#C14600",
                     textDecoration: "underline",
                     cursor: "pointer",
+                    fontWeight: "bolder",
                   }}
                 >
                   Esqueci minha senha
@@ -255,6 +256,7 @@ export function AuthForm({ mode }: IAuthForm) {
                 color: "#C14600",
                 textDecoration: "underline",
                 cursor: "pointer",
+                fontWeight: "bolder",
               }}
             >
               {isLogin ? "Registrar-se" : "Fazer Login"}

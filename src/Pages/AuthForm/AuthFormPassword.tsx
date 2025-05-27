@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
@@ -108,6 +108,10 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
       setError(error instanceof Error ? error.message : "Erro inesperado");
     }
   };
+
+  useEffect(() => {
+    console.log("estou em authFormPassword");
+  }, []);
 
   return (
     <Box

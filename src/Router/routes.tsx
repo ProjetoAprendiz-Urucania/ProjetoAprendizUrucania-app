@@ -8,15 +8,12 @@ import { ProtectedRoute } from "../hoc/ProtectedRoute";
 import { LessonPage } from "../Pages/LessonPage";
 import { AppLayout } from "../layout/AppLayout";
 import { ClassProvider } from "../context/ClassContext";
+import { AuthLayout } from "../layout/AuthLayout";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <AppLayout>
-        <AuthPage />,
-      </AppLayout>
-    ),
+    element: <AuthLayout />,
     children: [
       {
         path: "/login",
@@ -34,42 +31,41 @@ export const routes = createBrowserRouter([
         path: "/newPassword/:token",
         element: <AuthFormPassword mode="newPassword" />,
       },
+      { path: "", element: <AuthPage /> },
     ],
   },
   {
-    path: "/classes",
+    path: "classes",
     element: (
       <ClassProvider>
-        <AppLayout>
+        <AppLayout />
+      </ClassProvider>
+    ),
+    children: [
+      {
+        path: "",
+        element: (
           <ProtectedRoute>
             <ClassesPage />
           </ProtectedRoute>
-        </AppLayout>
-      </ClassProvider>
-    ),
-  },
-  {
-    path: "/classes/:id",
-    element: (
-      <ClassProvider>
-        <AppLayout>
+        ),
+      },
+      {
+        path: ":id/lessons",
+        element: (
           <ProtectedRoute>
             <ClassPage />
           </ProtectedRoute>
-        </AppLayout>
-      </ClassProvider>
-    ),
-  },
-  {
-    path: "/classes/:classId/lessons/:lessonId",
-    element: (
-      <ClassProvider>
-        <AppLayout>
+        ),
+      },
+      {
+        path: ":classId/lessons/:lessonId",
+        element: (
           <ProtectedRoute>
             <LessonPage />
           </ProtectedRoute>
-        </AppLayout>
-      </ClassProvider>
-    ),
+        ),
+      },
+    ],
   },
 ]);
