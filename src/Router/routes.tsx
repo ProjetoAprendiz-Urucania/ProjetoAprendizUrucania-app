@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import { AuthPage } from "../Pages/AuthPage";
 import { AuthForm } from "../Pages/AuthForm/AuthForm";
 import { AuthFormPassword } from "../Pages/AuthForm/AuthFormPassword";
 import { ClassesPage } from "../Pages/ClassesPage";
@@ -31,7 +30,7 @@ export const routes = createBrowserRouter([
         path: "/newPassword/:token",
         element: <AuthFormPassword mode="newPassword" />,
       },
-      { path: "", element: <AuthPage /> },
+      { path: "", element: <AuthForm mode="login" /> },
     ],
   },
   {
