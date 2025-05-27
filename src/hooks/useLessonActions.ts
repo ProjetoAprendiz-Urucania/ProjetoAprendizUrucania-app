@@ -7,26 +7,40 @@ import {
   updateLessonService,
 } from "../services/lesson.service";
 import { useClass } from "./useClass";
+import { useApp } from "../context/AppContext";
 
 export const useLessonActions = () => {
+  const { handleMessage } = useApp();
   const { selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
       if (!tk || !selectedClass) return;
       const response = await createLesson(selectedClass.id, newLesson, tk);
-      if (response && newLesson.coverImage) {
-        await uploadLessonPhotoService(
-          selectedClass.id,
-          response.id,
-          tk,
-          newLesson.coverImage
-        );
+
+      try {
+        if (newLesson.coverImage)
+          await uploadLessonPhotoService(
+            selectedClass.id,
+            response.id,
+            tk,
+            newLesson.coverImage
+          );
+        handleMessage("Aula criada com sucesso!", "success", {
+          vertical: "top",
+          horizontal: "right",
+        });
+      } catch (error: unknown) {
+        handleMessage("Erro no upload da foto da aula", "error", {
+          vertical: "top",
+          horizontal: "right",
+        });
+        console.error("Erro no upload da foto da aula:", error);
       }
+
       fetchLessons();
-      fetchMaterials();
     },
-    [tk, selectedClass,fetchLessons]
+    [tk, selectedClass, handleMessage]
   );
 
   const removeLesson = useCallback(

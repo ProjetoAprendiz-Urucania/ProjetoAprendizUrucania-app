@@ -64,17 +64,27 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     }
   };
 
-  const fetchLessons = async () => {
+  const fetchLessons = useCallback(async () => {
     if (!tk || !selectedClass) return;
     try {
       const res = await getLessonsByClassId(selectedClass.id, tk);
       const updatedLessons = res || [];
+
       setLessons(updatedLessons);
+      setSelectedClass({
+        ...selectedClass,
+        lessons: updatedLessons,
+      });
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
+
       setLessons([]);
+      setSelectedClass({
+        ...selectedClass,
+        lessons: [],
+      });
     }
-  };
+  }, [tk, selectedClass]);
 
   const fetchStudentClasses = useCallback(async () => {
     if (!tk || !user) return;

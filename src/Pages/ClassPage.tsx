@@ -22,13 +22,11 @@ export function ClassPage() {
   const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
-    const loadLessonsAndMaterials = () => {
+    if (selectedClass?.id) {
       fetchLessons();
       fetchMaterials();
-    };
-
-    loadLessonsAndMaterials();
-  }, [selectedClass?.id, lessons.length]);
+    }
+  }, [selectedClass]);
 
   const filteredLessons = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -67,16 +65,18 @@ export function ClassPage() {
       </Box>
 
       {!lessonsDrop &&
-        (searchTerm ? filteredLessons : lessons).map((lesson, index) => (
-          <ContentCard
-            key={lesson.id}
-            id={lesson.id}
-            index={index}
-            name={lesson.name}
-            teacherInfo={lesson.teacher}
-            coverImage={lesson.coverImage || ""}
-          />
-        ))}
+        (searchTerm ? filteredLessons : (selectedClass?.lessons ?? [])).map(
+          (lesson, index) => (
+            <ContentCard
+              key={lesson.id}
+              id={lesson.id}
+              index={index}
+              name={lesson.name}
+              teacherInfo={lesson.teacher}
+              coverImage={lesson.coverImage || ""}
+            />
+          )
+        )}
 
       <CreateCardButton />
 
