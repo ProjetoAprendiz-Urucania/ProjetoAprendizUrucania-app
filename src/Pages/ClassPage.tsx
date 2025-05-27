@@ -23,14 +23,12 @@ export function ClassPage() {
 
   useEffect(() => {
     const loadLessonsAndMaterials = () => {
-      if (selectedClass?.id) {
-        fetchLessons();
-        fetchMaterials();
-      }
+      fetchLessons();
+      fetchMaterials();
     };
 
     loadLessonsAndMaterials();
-  }, [selectedClass?.id]);
+  }, [selectedClass?.id, lessons.length]);
 
   const filteredLessons = useMemo(() => {
     const term = searchTerm.toLowerCase();

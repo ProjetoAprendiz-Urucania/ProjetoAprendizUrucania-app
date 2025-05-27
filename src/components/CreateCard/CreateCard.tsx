@@ -20,7 +20,8 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { handleMessage } = useApp();
-  const { selectedClass, classes, lessons } = useClass();
+  const { selectedClass, classes, lessons, fetchLessons, fetchMaterials } =
+    useClass();
   const { updateLesson, addLesson } = useLessonActions();
   const { addClass, updateClass } = useClassActions();
 
@@ -146,6 +147,8 @@ export function CreateCard({
         vertical: "top",
         horizontal: "right",
       });
+      fetchLessons();
+      fetchMaterials();
     }
 
     if (name && teachers && token && selectedClass && selectedClass.id) {
