@@ -22,7 +22,7 @@ export const handleDownloadExcel = async (
     const response = await getFrequencyList(classId, lessonId);
     const { success, data } = response;
 
-    if (!success) {
+    if (!success || !data || !Array.isArray(data.students)) {
       handleMessage("Erro ao buscar presenças.", "error", {
         vertical: "top",
         horizontal: "right",
@@ -30,10 +30,10 @@ export const handleDownloadExcel = async (
       return;
     }
 
-    let allStudents = [];
+    let allStudents: IStudent[] = [];
     try {
       const studentsResponse = await getStudentsByClassId(classId);
-      allStudents = studentsResponse.students || [];
+      allStudents = studentsResponse?.students || [];
     } catch (error) {
       console.error("Erro ao obter estudantes da turma:", error);
       handleMessage("Erro ao obter estudantes da turma.", "error", {
@@ -51,9 +51,9 @@ export const handleDownloadExcel = async (
       return;
     }
 
-    const presentIds = new Set(data.students.map((s: any) => s.id));
+    const presentIds = new Set(data.students.map((s: { id: string }) => s.id));
 
-    const fullList = allStudents.map((student: any) => ({
+    const fullList = allStudents.map((student) => ({
       Nome: student.name,
       Email: student.email,
       Presença: presentIds.has(student.id) ? "Presente" : "Ausente",
@@ -68,17 +68,21 @@ export const handleDownloadExcel = async (
       { header: "Presença", key: "Presença", width: 15 },
     ];
 
-    fullList.forEach((student: IStudent) => {
+    fullList.forEach((student) => {
       worksheet.addRow(student);
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
 
+    // Remove caracteres inválidos do nome do arquivo
+    const safeTurma = data.turma.replace(/[\\/:*?"<>|]/g, "");
+    const safeAula = data.aula.replace(/[\\/:*?"<>|]/g, "");
+
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    saveAs(blob, `frequencia-${data.turma}-${data.aula}.xlsx`);
+    saveAs(blob, `frequencia-${safeTurma}-${safeAula}.xlsx`);
   } catch (error) {
     console.error("Erro ao gerar arquivo Excel:", error);
     handleMessage("Erro ao gerar arquivo Excel.", "error", {
