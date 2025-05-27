@@ -18,7 +18,7 @@ export const useLessonActions = () => {
         tk,
         newLesson,
       });
-
+      
       if (!tk || !selectedClass) return;
       try {
         const response = await createLesson(selectedClass.id, newLesson, tk);

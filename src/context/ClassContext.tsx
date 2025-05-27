@@ -68,17 +68,10 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     if (!tk || !selectedClass?.id) return;
     try {
       const res = await getLessonsByClassId(selectedClass.id, tk);
-      const updatedLessons = res || [];
-
-      setLessons(updatedLessons);
-      setSelectedClass((prev) =>
-        prev ? { ...prev, lessons: updatedLessons } : prev
-      );
+      setLessons(res || []);
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
-
       setLessons([]);
-      setSelectedClass((prev) => (prev ? { ...prev, lessons: [] } : prev));
     }
   }, [tk, selectedClass?.id]);
 
@@ -103,6 +96,13 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
   useEffect(() => {
     loadSelectedClassFromStorage();
   }, [loadSelectedClassFromStorage]);
+
+  useEffect(() => {
+    if (selectedClass?.id) {
+      fetchLessons();
+      fetchMaterials();
+    }
+  }, [selectedClass?.id]);
 
   return (
     <ClassContext.Provider

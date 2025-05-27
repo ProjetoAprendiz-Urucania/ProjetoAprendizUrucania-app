@@ -20,8 +20,7 @@ export function CreateCard({
 }) {
   const { user } = useAuth();
   const { handleMessage } = useApp();
-  const { selectedClass, classes, lessons, fetchLessons, fetchMaterials } =
-    useClass();
+  const { selectedClass, classes, lessons } = useClass();
   const { updateLesson, addLesson } = useLessonActions();
   const { addClass, updateClass } = useClassActions();
 
@@ -121,13 +120,13 @@ export function CreateCard({
     }
   };
 
-  const handleCreateLessonCard = () => {
+  const handleCreateLessonCard = async () => {
     if (name && teachers && token && selectedClass && selectedClass.id) {
       const payload: ICreateLesson = {
-        name: name,
+        name,
         teacher: teachers,
         coverImage: selectedPhoto || undefined,
-        lessonLink: lessonLink,
+        lessonLink,
       };
 
       const lessonExists = lessons.some(
@@ -142,17 +141,20 @@ export function CreateCard({
         return;
       }
 
-      addLesson(payload);
-      handleMessage("Aula criada com sucesso!", "success", {
-        vertical: "top",
-        horizontal: "right",
-      });
-      fetchLessons();
-      fetchMaterials();
-    }
-
-    if (name && teachers && token && selectedClass) {
-      setOpenProfileModal(false);
+      try {
+        await addLesson(payload);
+        handleMessage("Aula criada com sucesso!", "success", {
+          vertical: "top",
+          horizontal: "right",
+        });
+        setOpenProfileModal(false);
+      } catch (error) {
+        console.error(error);
+        handleMessage("Erro ao criar aula!", "error", {
+          vertical: "top",
+          horizontal: "right",
+        });
+      }
     }
   };
 

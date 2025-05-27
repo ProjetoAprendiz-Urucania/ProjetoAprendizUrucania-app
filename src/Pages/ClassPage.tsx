@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -14,17 +14,11 @@ import { useClass } from "../hooks/useClass";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass, fetchLessons, lessons, fetchMaterials, materials } =
-    useClass();
+  const { selectedClass, lessons, materials } = useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
   const [materialDrop, setMaterialDrop] = useState(false);
-
-  useEffect(() => {
-    fetchLessons();
-    fetchMaterials();
-  }, []);
 
   const filteredLessons = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -42,7 +36,6 @@ export function ClassPage() {
     <Box mb={12} mt={2}>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      {/* Aulas */}
       <Box
         sx={{ textAlign: "left", mb: 1, display: "flex", alignItems: "center" }}
       >
@@ -63,8 +56,12 @@ export function ClassPage() {
       </Box>
 
       {!lessonsDrop &&
-        (searchTerm ? filteredLessons : (selectedClass?.lessons ?? [])).map(
-          (lesson, index) => (
+        ((searchTerm ? filteredLessons : lessons).length === 0 ? (
+          <Typography my={4} pl={3}>
+            Nenhuma aula encontrada.
+          </Typography>
+        ) : (
+          (searchTerm ? filteredLessons : lessons).map((lesson, index) => (
             <ContentCard
               key={lesson.id}
               id={lesson.id}
@@ -73,8 +70,8 @@ export function ClassPage() {
               teacherInfo={lesson.teacher}
               coverImage={lesson.coverImage || ""}
             />
-          )
-        )}
+          ))
+        ))}
 
       <CreateCardButton />
 
@@ -98,18 +95,24 @@ export function ClassPage() {
       </Box>
 
       {!materialDrop &&
-        (searchTerm ? filteredMaterials : materials).map(
-          (material, materialIndex) => (
-            <TheoryMaterialItem
-              key={material.id}
-              index={materialIndex}
-              {...material}
-              lessonId={material.lessonId || ""}
-              classId={selectedClass?.id || ""}
-              materialId={material.id}
-            />
+        ((searchTerm ? filteredMaterials : materials).length === 0 ? (
+          <Typography my={4} pl={3}>
+            Nenhum material encontrado.
+          </Typography>
+        ) : (
+          (searchTerm ? filteredMaterials : materials).map(
+            (material, materialIndex) => (
+              <TheoryMaterialItem
+                key={material.id}
+                index={materialIndex}
+                {...material}
+                lessonId={material.lessonId || ""}
+                classId={selectedClass?.id || ""}
+                materialId={material.id}
+              />
+            )
           )
-        )}
+        ))}
 
       {user?.role === "admin" && <CreateMaterialButton lessons={lessons} />}
     </Box>
