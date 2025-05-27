@@ -9,11 +9,18 @@ import {
 import { useClass } from "./useClass";
 
 export const useLessonActions = () => {
-  const {  selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
+  const { selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
+      console.log("Tentando adicionar aula:", {
+        selectedClass,
+        tk,
+        newLesson,
+      });
+
       if (!tk || !selectedClass) return;
+      try {
         const response = await createLesson(selectedClass.id, newLesson, tk);
         if (response && newLesson.coverImage) {
           await uploadLessonPhotoService(
@@ -23,22 +30,24 @@ export const useLessonActions = () => {
             newLesson.coverImage
           );
         }
-
         fetchLessons();
+      } catch (error) {
+        console.error("Erro ao adicionar aula:", error);
+      }
     },
-    [tk, selectedClass]
+    [tk, selectedClass?.id]
   );
 
   const removeLesson = useCallback(
     async (lessonId: string) => {
       if (!tk || !selectedClass) return;
-        try {
-          await deleteLesson(selectedClass.id, lessonId, tk);
-          fetchLessons();
-          fetchMaterials();
-        } catch (error) {
-          console.error("Erro ao deletar aula:", error);
-        }
+      try {
+        await deleteLesson(selectedClass.id, lessonId, tk);
+        fetchLessons();
+        fetchMaterials();
+      } catch (error) {
+        console.error("Erro ao deletar aula:", error);
+      }
     },
     [tk, selectedClass]
   );
@@ -46,23 +55,23 @@ export const useLessonActions = () => {
   const updateLesson = useCallback(
     async (lessonId: string, updatedLesson: Partial<IUpdateLesson>) => {
       if (!tk || !selectedClass) return;
-        const response = await updateLessonService(
+      const response = await updateLessonService(
+        selectedClass.id,
+        lessonId,
+        updatedLesson,
+        tk
+      );
+
+      if (response && updatedLesson.coverImage) {
+        await uploadLessonPhotoService(
           selectedClass.id,
           lessonId,
-          updatedLesson,
-          tk
+          tk,
+          updatedLesson.coverImage
         );
+      }
 
-        if (response && updatedLesson.coverImage) {
-          await uploadLessonPhotoService(
-            selectedClass.id,
-            lessonId,
-            tk,
-            updatedLesson.coverImage
-          );
-        }
-
-        fetchLessons();
+      fetchLessons();
     },
     [tk, selectedClass]
   );
