@@ -24,7 +24,7 @@ export function ClassPage() {
   useEffect(() => {
     fetchLessons();
     fetchMaterials();
-  }, [selectedClass?.id, fetchLessons, fetchMaterials]);
+  }, []);
 
   const filteredLessons = useMemo(() => {
     const term = searchTerm.toLowerCase();
