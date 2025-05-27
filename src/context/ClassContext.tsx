@@ -69,6 +69,13 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     try {
       const res = await getLessonsByClassId(selectedClass.id, tk);
       setLessons(res || []);
+      setSelectedClass((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          lessons: res || [],
+        };
+      });
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
     }

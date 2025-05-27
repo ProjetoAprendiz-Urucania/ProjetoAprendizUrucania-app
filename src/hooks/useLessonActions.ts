@@ -54,15 +54,21 @@ export const useLessonActions = () => {
   const removeLesson = useCallback(
     async (lessonId: string) => {
       if (!tk || !selectedClass) return;
+
       try {
         await deleteLesson(selectedClass.id, lessonId, tk);
-        fetchLessons();
-        fetchMaterials();
       } catch (error) {
         console.error("Erro ao deletar aula:", error);
       }
+
+      setLessons((prevLessons) =>
+        prevLessons.filter((lesson) => lesson.id !== lessonId)
+      );
+
+      fetchLessons();
+      fetchMaterials();
     },
-    [tk, selectedClass]
+    [tk, selectedClass, fetchLessons, fetchMaterials]
   );
 
   const updateLesson = useCallback(
@@ -70,40 +76,23 @@ export const useLessonActions = () => {
       if (!tk || !selectedClass) return;
 
       try {
-        const response = await updateLessonService(
+        await updateLessonService(
           selectedClass.id,
           lessonId,
           updatedLesson,
           tk
         );
 
-        let coverImageUrl: string | undefined;
-
-        if (response && updatedLesson.coverImage instanceof File) {
-          const uploadResponse = await uploadLessonPhotoService(
+        if (updatedLesson.coverImage) {
+          await uploadLessonPhotoService(
             selectedClass.id,
             lessonId,
             tk,
             updatedLesson.coverImage
           );
-
-          const uploadedFile = uploadResponse.uploadedFiles?.[0];
-          if (uploadedFile?.status === "success") {
-            coverImageUrl = uploadedFile.fileUrl;
-          }
         }
 
-        setLessons((prevLessons) =>
-          prevLessons.map((lesson) =>
-            lesson.id === lessonId
-              ? {
-                  ...lesson,
-                  ...updatedLesson,
-                  coverImage: coverImageUrl || lesson.coverImage,
-                }
-              : lesson
-          )
-        );
+        fetchLessons();
       } catch (error) {
         console.error("Erro ao atualizar aula:", error);
       }
