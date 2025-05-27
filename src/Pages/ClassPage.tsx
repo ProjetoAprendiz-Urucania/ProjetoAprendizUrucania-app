@@ -11,10 +11,13 @@ import { TheoryMaterialItem } from "../components/TheoryMaterial/TheoryMaterial"
 
 import { useAuth } from "../hooks/useAuth";
 import { useClass } from "../hooks/useClass";
+import { useParams } from "react-router-dom";
 
 export function ClassPage() {
   const { user } = useAuth();
-  const { selectedClass, lessons, materials } = useClass();
+  const { classId } = useParams();
+  const { selectedClass, lessons, materials, fetchLessons, fetchMaterials } =
+    useClass();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [lessonsDrop, setLessonsDrop] = useState(false);
@@ -33,8 +36,11 @@ export function ClassPage() {
   }, [materials, searchTerm]);
 
   useEffect(() => {
-    console.log(lessons);
-  }, [lessons]);
+    if (selectedClass?.id) {
+      fetchLessons();
+      fetchMaterials();
+    }
+  }, [selectedClass?.id, classId, fetchLessons, fetchMaterials]);
 
   return (
     <Box mb={12} mt={2}>
