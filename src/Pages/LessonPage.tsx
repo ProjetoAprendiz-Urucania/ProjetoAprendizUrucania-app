@@ -167,6 +167,7 @@ export function LessonPage() {
               textTransform: "none",
               display: "flex",
               alignItems: "center",
+              mt: 2,
               borderRadius: 8,
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
               "&:hover": {

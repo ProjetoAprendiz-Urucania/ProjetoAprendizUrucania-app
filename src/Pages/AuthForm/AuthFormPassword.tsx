@@ -109,10 +109,6 @@ export function AuthFormPassword({ mode }: IAuthFormPassword) {
     }
   };
 
-  useEffect(() => {
-    console.log("estou em authFormPassword");
-  }, []);
-
   return (
     <Box
       sx={{
