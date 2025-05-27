@@ -72,7 +72,7 @@ export const useLessonActions = () => {
         );
       }
 
-      fetchLessons();
+       setLessons((prevLessons) => [...prevLessons, response]);
     },
     [tk, selectedClass]
   );
