@@ -45,6 +45,8 @@ export const useLessonActions = () => {
           coverImage: coverImageUrl || response.coverImage || "",
         },
       ]);
+
+      fetchLessons();
     },
     [tk, selectedClass?.id]
   );

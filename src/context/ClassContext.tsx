@@ -71,7 +71,6 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
       setLessons(res || []);
     } catch (error) {
       console.error("Erro ao buscar aulas:", error);
-      setLessons([]);
     }
   }, [tk, selectedClass?.id]);
 
