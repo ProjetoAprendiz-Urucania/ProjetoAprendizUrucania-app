@@ -16,9 +16,11 @@ export const useLessonActions = () => {
     async (newLesson: ICreateLesson) => {
       if (!tk || !selectedClass) return;
 
-      try {
-        const response = await createLesson(selectedClass.id, newLesson, tk);
+      const response = await createLesson(selectedClass.id, newLesson, tk);
 
+      let coverImageUrl = "";
+
+      try {
         if (response && newLesson.coverImage) {
           const uploadResponse = await uploadLessonPhotoService(
             selectedClass.id,
@@ -28,17 +30,23 @@ export const useLessonActions = () => {
           );
 
           const uploadedFile = uploadResponse.uploadedFiles?.[0];
-          if (uploadedFile?.status !== "success") {
-            console.warn("Upload falhou ou não retornou corretamente");
+          if (uploadedFile?.status === "success") {
+            coverImageUrl = uploadedFile.fileUrl;
           }
+          
+          setLessons((prevLessons) => [
+            ...prevLessons,
+            { ...response, coverImage: coverImageUrl },
+          ]);
         }
-
-        fetchLessons();
+        
       } catch (error) {
-        console.error("Erro ao adicionar aula:", error);
+        console.error("Erro ao enviar a imagem:", error);
       }
+
+      fetchLessons();
     },
-    [tk, selectedClass?.id, fetchLessons]
+    [tk, selectedClass?.id]
   );
 
   const removeLesson = useCallback(
