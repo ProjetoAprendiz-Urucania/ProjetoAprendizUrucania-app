@@ -9,19 +9,16 @@ import {
 import { useClass } from "./useClass";
 
 export const useLessonActions = () => {
-  const { selectedClass, fetchLessons, tk, fetchMaterials,setLessons } = useClass();
+  const { selectedClass, fetchLessons, tk, fetchMaterials, setLessons } =
+    useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
-      console.log("Tentando adicionar aula:", {
-        selectedClass,
-        tk,
-        newLesson,
-      });
-      
+   
+
       if (!tk || !selectedClass) return;
+      const response = await createLesson(selectedClass.id, newLesson, tk);
       try {
-        const response = await createLesson(selectedClass.id, newLesson, tk);
         if (response && newLesson.coverImage) {
           await uploadLessonPhotoService(
             selectedClass.id,
@@ -30,11 +27,10 @@ export const useLessonActions = () => {
             newLesson.coverImage
           );
         }
-
-       setLessons((prevLessons) => [...prevLessons, response]);
       } catch (error) {
         console.error("Erro ao adicionar aula:", error);
       }
+      setLessons((prevLessons) => [...prevLessons, response]);
     },
     [tk, selectedClass?.id]
   );
@@ -56,25 +52,46 @@ export const useLessonActions = () => {
   const updateLesson = useCallback(
     async (lessonId: string, updatedLesson: Partial<IUpdateLesson>) => {
       if (!tk || !selectedClass) return;
-      const response = await updateLessonService(
-        selectedClass.id,
-        lessonId,
-        updatedLesson,
-        tk
-      );
 
-      if (response && updatedLesson.coverImage) {
-        await uploadLessonPhotoService(
+      try {
+        const response = await updateLessonService(
           selectedClass.id,
           lessonId,
-          tk,
-          updatedLesson.coverImage
+          updatedLesson,
+          tk
         );
-      }
 
-       setLessons((prevLessons) => [...prevLessons, response]);
+        if (response && updatedLesson.coverImage) {
+          await uploadLessonPhotoService(
+            selectedClass.id,
+            lessonId,
+            tk,
+            updatedLesson.coverImage
+          );
+        }
+
+        setLessons((prevLessons) =>
+          prevLessons.map((lesson) => {
+            if (lesson.id !== lessonId) return lesson;
+            const updatedCoverImage =
+              updatedLesson.coverImage instanceof File
+                ? lesson.coverImage
+                : updatedLesson.coverImage !== undefined
+                  ? updatedLesson.coverImage
+                  : lesson.coverImage;
+            return {
+              ...lesson,
+              ...updatedLesson,
+              coverImage: updatedCoverImage,
+            };
+          })
+        );
+      } catch (error) {
+        console.error("Erro ao atualizar aula:", error);
+      }
     },
     [tk, selectedClass]
   );
+
   return { addLesson, removeLesson, updateLesson };
 };
