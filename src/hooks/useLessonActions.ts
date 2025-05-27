@@ -9,7 +9,7 @@ import {
 import { useClass } from "./useClass";
 
 export const useLessonActions = () => {
-  const { selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
+  const { selectedClass, fetchLessons, tk, fetchMaterials,setLessons } = useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
@@ -30,7 +30,8 @@ export const useLessonActions = () => {
             newLesson.coverImage
           );
         }
-        fetchLessons();
+
+       setLessons((prevLessons) => [...prevLessons, response]);
       } catch (error) {
         console.error("Erro ao adicionar aula:", error);
       }
