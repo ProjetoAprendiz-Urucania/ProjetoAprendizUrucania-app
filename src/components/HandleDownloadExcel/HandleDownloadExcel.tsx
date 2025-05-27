@@ -20,6 +20,7 @@ export const handleDownloadExcel = async (
 ) => {
   try {
     const response = await getFrequencyList(classId, lessonId);
+    console.log("Resposta da API:", response);
     const { success, data } = response;
 
     if (!success) {
@@ -52,9 +53,6 @@ export const handleDownloadExcel = async (
     }
 
     const presentIds = new Set(data.students.map((s: any) => s.id));
-
-    console.log("Lista de presenças:", data.students);
-    console.log("Lista de todos os estudantes:", allStudents);
 
     const fullList = allStudents.map((student: any) => ({
       Nome: student.name,

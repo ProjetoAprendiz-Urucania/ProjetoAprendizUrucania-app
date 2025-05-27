@@ -24,7 +24,7 @@ export function getFrequencyList(
   lessonId: string,
 ) {
   if (!lessonId || !classId) {
-    return Promise.reject("Nenhuma classe ou aula recebida.");
+    return Promise.reject("Nenhuma turma ou aula recebida.");
   }
 
   const token = localStorage.getItem("token");
