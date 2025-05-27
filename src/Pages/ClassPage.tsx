@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -31,6 +31,10 @@ export function ClassPage() {
       material.name.toLowerCase().includes(term)
     );
   }, [materials, searchTerm]);
+
+  useEffect(() => {
+    console.log(lessons);
+  }, [lessons]);
 
   return (
     <Box mb={12} mt={2}>
