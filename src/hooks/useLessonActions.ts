@@ -7,59 +7,38 @@ import {
   updateLessonService,
 } from "../services/lesson.service";
 import { useClass } from "./useClass";
-import { useApp } from "../context/AppContext";
 
 export const useLessonActions = () => {
-  const { handleMessage } = useApp();
-  const {
-    selectedClass,
-    fetchLessons,
-    tk,
-    fetchMaterials,
-    fetchStudentClasses,
-  } = useClass();
+  const {  selectedClass, fetchLessons, tk, fetchMaterials } = useClass();
 
   const addLesson = useCallback(
     async (newLesson: ICreateLesson) => {
       if (!tk || !selectedClass) return;
-      const response = await createLesson(selectedClass.id, newLesson, tk);
-
-      try {
-        if (newLesson.coverImage)
+        const response = await createLesson(selectedClass.id, newLesson, tk);
+        if (response && newLesson.coverImage) {
           await uploadLessonPhotoService(
             selectedClass.id,
             response.id,
             tk,
             newLesson.coverImage
           );
-        handleMessage("Aula criada com sucesso!", "success", {
-          vertical: "top",
-          horizontal: "right",
-        });
-      } catch (error: unknown) {
-        handleMessage("Erro no upload da foto da aula", "error", {
-          vertical: "top",
-          horizontal: "right",
-        });
-        console.error("Erro no upload da foto da aula:", error);
-      }
-      
-      fetchStudentClasses();
-      fetchLessons();
+        }
+
+        fetchLessons();
     },
-    [tk, selectedClass, handleMessage]
+    [tk, selectedClass]
   );
 
   const removeLesson = useCallback(
     async (lessonId: string) => {
       if (!tk || !selectedClass) return;
-      try {
-        await deleteLesson(selectedClass.id, lessonId, tk);
-        fetchLessons();
-        fetchMaterials();
-      } catch (error) {
-        console.error("Erro ao deletar aula:", error);
-      }
+        try {
+          await deleteLesson(selectedClass.id, lessonId, tk);
+          fetchLessons();
+          fetchMaterials();
+        } catch (error) {
+          console.error("Erro ao deletar aula:", error);
+        }
     },
     [tk, selectedClass]
   );
@@ -67,23 +46,23 @@ export const useLessonActions = () => {
   const updateLesson = useCallback(
     async (lessonId: string, updatedLesson: Partial<IUpdateLesson>) => {
       if (!tk || !selectedClass) return;
-      const response = await updateLessonService(
-        selectedClass.id,
-        lessonId,
-        updatedLesson,
-        tk
-      );
-
-      if (response && updatedLesson.coverImage) {
-        await uploadLessonPhotoService(
+        const response = await updateLessonService(
           selectedClass.id,
           lessonId,
-          tk,
-          updatedLesson.coverImage
+          updatedLesson,
+          tk
         );
-      }
 
-      fetchLessons();
+        if (response && updatedLesson.coverImage) {
+          await uploadLessonPhotoService(
+            selectedClass.id,
+            lessonId,
+            tk,
+            updatedLesson.coverImage
+          );
+        }
+
+        fetchLessons();
     },
     [tk, selectedClass]
   );

@@ -22,11 +22,9 @@ export function ClassPage() {
   const [materialDrop, setMaterialDrop] = useState(false);
 
   useEffect(() => {
-    if (selectedClass?.id) {
-      fetchLessons();
-      fetchMaterials();
-    }
-  }, [selectedClass]);
+    fetchLessons();
+    fetchMaterials();
+  }, [selectedClass, fetchLessons]);
 
   const filteredLessons = useMemo(() => {
     const term = searchTerm.toLowerCase();
