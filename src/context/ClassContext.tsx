@@ -54,15 +54,16 @@ export const ClassProvider = ({ children }: ClassProviderProps) => {
     setSelectedClass(classData);
   }, [tk]);
 
-  const fetchMaterials = async () => {
+  const fetchMaterials = useCallback(async () => {
     if (!tk || !selectedClass) return;
+
     try {
       const res = await getAllMaterials(selectedClass.id, tk);
       setMaterials(res || []);
     } catch (error) {
       console.error("Erro ao buscar materiais:", error);
     }
-  };
+  }, [tk, selectedClass, getAllMaterials]);
 
   const fetchLessons = useCallback(async () => {
     if (!tk || !selectedClass?.id) return;

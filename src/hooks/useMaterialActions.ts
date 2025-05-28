@@ -16,7 +16,7 @@ export const useMaterialActions = () => {
 
       fetchMaterials();
     },
-    [tk, selectedClass]
+    [tk, selectedClass,fetchMaterials]
   );
 
   const removeMaterial = useCallback(
@@ -25,7 +25,7 @@ export const useMaterialActions = () => {
       await deleteMaterial(selectedClass.id, lessonId, materialId);
       fetchMaterials();
     },
-    [tk, selectedClass]
+    [tk, selectedClass,fetchMaterials]
   );
 
   return { uploadMaterial, removeMaterial };
