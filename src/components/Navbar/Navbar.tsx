@@ -28,7 +28,7 @@ import {
 import { useClass } from "../../hooks/useClass";
 import { useMatch } from "react-router-dom";
 
-const menuNavigation = ["Turmas", "Sair"];
+const menuNavigation = ["Perfil", "Turmas", "Sair"];
 const avatarMenuOptions = ["Alterar Foto"];
 
 interface NavbarProps {
@@ -101,6 +101,7 @@ export function Navbar({ token, logout }: NavbarProps) {
       navigate("/login");
       return;
     }
+    if (page === "Perfil") navigate(`/classes/profile/${parsedUser?.id}`);
     if (page === "Turmas") navigate("/classes");
     if (page === "Alterar Foto") setOpenProfileModal(true);
     if (page === "Sair") {

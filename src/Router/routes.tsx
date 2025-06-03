@@ -8,6 +8,7 @@ import { LessonPage } from "../Pages/LessonPage";
 import { AppLayout } from "../layout/AppLayout";
 import { ClassProvider } from "../context/ClassContext";
 import { AuthLayout } from "../layout/AuthLayout";
+import { Profile } from "../Pages/Profile";
 
 export const routes = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ export const routes = createBrowserRouter([
             <ClassesPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "profile/:id", 
+        element: <Profile />,
       },
       {
         path: ":id/lessons",
