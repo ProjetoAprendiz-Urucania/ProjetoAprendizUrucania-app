@@ -60,6 +60,7 @@ export function Navbar({ token, logout }: NavbarProps) {
   const isClassesPage = useMatch("/classes");
   const isClassPage = useMatch("/classes/:classId/lessons");
   const isLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
+  const isProfilePage = useMatch("/classes/profile/:id");
 
   const matchClassPage = useMatch("/classes/:classId/lessons");
   const matchLessonPage = useMatch("/classes/:classId/lessons/:lessonId");
@@ -111,6 +112,10 @@ export function Navbar({ token, logout }: NavbarProps) {
   };
 
   const handleNavigate = () => {
+    if (isProfilePage) {
+      navigate("/classes");
+      return;
+    }
     if (matchClassPage) {
       navigate("/classes");
       setSelectedClass(null);
@@ -308,11 +313,13 @@ export function Navbar({ token, logout }: NavbarProps) {
                   letterSpacing: "1.4px",
                 }}
               >
-                {isClassPage
-                  ? "Turmas"
-                  : isLessonPage
-                    ? "Aulas e Materiais"
-                    : ""}
+                {isProfilePage
+                  ? "Perfil"
+                  : isClassPage
+                    ? "Turmas"
+                    : isLessonPage
+                      ? "Aulas e Materiais"
+                      : ""}
               </Typography>
             </Box>
           )}
