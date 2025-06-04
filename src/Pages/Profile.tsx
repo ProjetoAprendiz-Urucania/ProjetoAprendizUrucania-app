@@ -8,7 +8,12 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { updateStudent, uploadProfilePhoto, getStudentById, deleteProfilePhoto } from "../services/user.service";
+import {
+  updateStudent,
+  uploadProfilePhoto,
+  getStudentById,
+  deleteProfilePhoto,
+} from "../services/user.service";
 import { useApp } from "../context/AppContext";
 
 export const Profile: React.FC = () => {
@@ -38,37 +43,37 @@ export const Profile: React.FC = () => {
     }
   };
 
-const handleRemovePhoto = async () => {
-  const storedUserData = localStorage.getItem("user");
-  if (!storedUserData) {
-    handleMessage("Usuário não encontrado. Faça login novamente.", "error", {
-      vertical: "top",
-      horizontal: "right",
-    });
-    return;
-  }
-  const user = JSON.parse(storedUserData);
-
-  try {
-    const res = await deleteProfilePhoto(user.id);
-
-    if (res?.studentData) {
-      localStorage.setItem("user", JSON.stringify(res.studentData));
-      setPreview(null);
-      setProfilePicture(null);
-      handleMessage("Foto de perfil removida com sucesso!", "success", {
+  const handleRemovePhoto = async () => {
+    const storedUserData = localStorage.getItem("user");
+    if (!storedUserData) {
+      handleMessage("Usuário não encontrado. Faça login novamente.", "error", {
         vertical: "top",
         horizontal: "right",
       });
+      return;
     }
-  } catch (error) {
-    handleMessage("Erro ao remover foto de perfil.", "error", {
-      vertical: "top",
-      horizontal: "right",
-    });
-    console.error(error);
-  }
-};
+    const user = JSON.parse(storedUserData);
+
+    try {
+      const res = await deleteProfilePhoto(user.id);
+
+      if (res?.studentData) {
+        localStorage.setItem("user", JSON.stringify(res.studentData));
+        setPreview(null);
+        setProfilePicture(null);
+        handleMessage("Foto de perfil removida com sucesso!", "success", {
+          vertical: "top",
+          horizontal: "right",
+        });
+      }
+    } catch (error) {
+      handleMessage("Erro ao remover foto de perfil.", "error", {
+        vertical: "top",
+        horizontal: "right",
+      });
+      console.error(error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +104,8 @@ const handleRemovePhoto = async () => {
       const userFromBackend = await getStudentById(user.id);
 
       localStorage.setItem("user", JSON.stringify(userFromBackend));
-      if (userFromBackend.profilePicture) setPreview(userFromBackend.profilePicture);
+      if (userFromBackend.profilePicture)
+        setPreview(userFromBackend.profilePicture);
 
       handleMessage("Perfil atualizado com sucesso!", "success", {
         vertical: "top",
@@ -142,6 +148,7 @@ const handleRemovePhoto = async () => {
           component="form"
           onSubmit={handleSubmit}
           sx={{
+            display: "flex",
             flexDirection: "column",
             gap: 3,
             marginBottom: 2,
