@@ -314,7 +314,7 @@ export function Navbar({ token, logout }: NavbarProps) {
                 }}
               >
                 {isProfilePage
-                  ? "Perfil"
+                  ? "Turmas"
                   : isClassPage
                     ? "Turmas"
                     : isLessonPage

@@ -8,24 +8,26 @@ export function AppLayout() {
   const { token, logout } = useAuth();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-      }}
-    >
-      <Navbar token={token} logout={logout} />
-      <Container
-        maxWidth="xl"
+    <>
+      <Box
         sx={{
-          width: "100%",
-          py: 2,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
         }}
       >
-        <Outlet />
-      </Container>
+        <Navbar token={token} logout={logout} />
+        <Container
+          maxWidth="xl"
+          sx={{
+            width: "100%",
+            py: 2,
+          }}
+        >
+          <Outlet />
+        </Container>
+      </Box>
       <Footer />
-    </Box>
+    </>
   );
 }
